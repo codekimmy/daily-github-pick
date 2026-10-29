@@ -30,10 +30,14 @@
 | 환승역 TOP 3 | `Context` 184개 연결 · `Command` 110개 · `Parameter` 98개 |
 | 막힌 점 | ① 같은 이름이 여러 파일에 있으면 `explain`이 "모호함" 안내 → `파일경로::이름`으로 지정하면 해결 ② 테스트 코드까지 지도에 들어가 복잡해 보임 → 본 코드 폴더만 지정 추천 ③ 지도 화면(graph.html)은 인터넷이 있어야 그려짐(라이브러리를 인터넷에서 불러옴) |
 
-![터미널](media/terminal.gif)
+### 지도가 그려지는 과정
+![그래프가 자라나는 과정](media/graphify-grow.gif)
 
-![그래프 화면](media/graph-view.png)
-(움직이는 버전: `media/graph-view.mp4`)
+- 30초 영상: `media/graphify-grow.mp4`(가로), `media/graphify-grow-vertical.mp4`(세로·숏폼용)
+- Graphify 기본 화면은 완성된 그림만 보여줘서, graph.json으로 "파일을 하나씩 읽으며 지도가 자라나는" 영상을 직접 만들었다 → `demo/grow-animation/`
+
+### 터미널 실행 화면
+![터미널](media/terminal.gif)
 
 ## Windows에서 따라하기 (cmd)
 사전 준비: Python 설치 → uv 설치

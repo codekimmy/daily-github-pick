@@ -39,7 +39,8 @@
 
 ![실제 앱 시연](media/filee-demo.gif)
 
-- 시연 영상: `media/filee-demo.mp4`(가로·38초), `media/filee-demo-vertical.mp4`(세로·숏폼용)
+- **롱폼 완성 영상: `media/filee-long.mp4` (5분 6초, 13개 장)** — 설치, 앱 둘러보기, 7가지 실사용, 실패 사례, 명령어, 자동 변환 폴더
+- 숏폼·하이라이트: `media/filee-demo-vertical.mp4`(세로 38초), `media/filee-demo.mp4`(가로 38초)
 - 결과물: `media/result-hwp-to-pdf.png`, `media/result-stamp.png`, 배경 제거 실패 사례 `media/result-bg-fail.png`
 
 ## Windows에서 따라하기
@@ -91,4 +92,5 @@ filee watch C:\Users\%USERNAME%\Downloads\변환함 --to pdf
 
 ## 이 영상은 이렇게 만들었다
 `demo/` 폴더: 가상 화면(Xvfb)에 실제 Filee 앱과 파일 관리자를 띄우고(`desk.sh`), 마우스·키보드를 자동 조작하며 녹화한 뒤(`scene.sh`), 자막·결과 카드를 입혀 가로·세로로 편집(`compose.py`).
+롱폼은 `demo/long/`: 장면 8개를 따로 녹화(`record_all.py`)하고 장 제목·설명 슬라이드·결과 카드·자막을 이어 붙여 편집(`longform.py`).
 시연용 사진은 CC0(저작권 없음) 공개 사진, 회의록·도장은 직접 만든 가상 자료입니다.

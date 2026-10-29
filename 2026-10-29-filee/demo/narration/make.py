@@ -19,7 +19,7 @@ shorts=[
  (V['stamp_start'], s('stamp_tab'), '도장 사진은'),
  (s('stamp_tab'), s('stamp_drop')+1.2, '탭을 눌러 숨은 메뉴를 열고 배경 제거에 놓으면'),
  (s('stamp_drop')+1.2, V['stamp_end'], '투명한 도장 완성!'),
- (V['stamp_end'], VEND, '인터넷에 안 올리고 내 컴퓨터에서만. 링크는 고정 댓글에!'),
+ (V['stamp_end'], VEND, '인터넷에 안 올리고 내 컴퓨터에서만. 다운로드 링크는 고정 댓글에!'),
 ]
 # ---- long timeline ----
 L=[]

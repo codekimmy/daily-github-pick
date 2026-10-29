@@ -206,15 +206,15 @@ def s_about(d, fr, t):
         pill(d, (W - 470, y - 34), b_, 34, (40, 44, 62), YEL, anchor='c', alpha=al)
     d.ellipse((hub[0] - 120, hub[1] - 120, hub[0] + 120, hub[1] + 120), fill=ACC + (255,))
     d.text(hub, 'Filee', font=font(FK, 54), fill=WHITE, anchor='mm')
-    d.text((W / 2, 850), '268가지 형식을 서로 바꿔줘요 · 오피스, 한컴오피스 따로 안 깔아도 돼요', font=font(FB, 38), fill=SUB, anchor='mm')
+    d.text((W / 2, 850), '268가지 형식을 서로 바꿔 줘요 · 오피스, 한컴오피스 없이도 돼요', font=font(FB, 38), fill=SUB, anchor='mm')
 
 def s_facts(d, fr, t):
     d.text((W / 2, 150), '알고 쓰면 좋은 사실', font=font(FK, 70), fill=WHITE, anchor='mm')
-    facts = [('무료', 'MIT 라이선스 오픈소스, 회사에서도 무료'),
+    facts = [('무료', '오픈소스(MIT 라이선스)라 회사에서도 무료로 써요'),
              ('오프라인', '파일을 인터넷에 올리지 않고 내 PC에서만 변환'),
              ('한국 개발자', '김명구(KnifeLemon) 님 작품 — HWP·한글 자막·알집까지 지원'),
-             ('인기', '10월 GitHub 별 약 1.3만, C# 분야 일간 1위 7일 연속'),
-             ('지원', 'Windows 10·11 정식 / macOS·리눅스 미리보기')]
+             ('인기', '10월에만 GitHub 별 1.3만 개 · 같은 분야 인기 1위 7일 연속'),
+             ('지원', 'Windows 10·11 정식 / 맥·리눅스는 아직 시험판')]
     for i, (k, v) in enumerate(facts):
         e = ease((t - .3 - i * .35) / .4)
         if e <= 0: continue
@@ -226,9 +226,9 @@ def s_facts(d, fr, t):
 def s_install(d, fr, t):
     d.text((W / 2, 140), 'Windows에 설치하기', font=font(FK, 70), fill=WHITE, anchor='mm')
     steps = [('1', '다운로드 페이지 열기', 'github.com/KnifeLemon/Filee/releases/latest'),
-             ('2', 'Filee-버전-win-Setup.exe 받아서 실행', '마이크로소프트 스토어에서 "Filee" 검색해도 OK'),
-             ('3', '처음 켜면 "변환 엔진 선택" 창', '동영상·음악용 추가 프로그램 → 문서·사진만 쓰면 "나중에"'),
-             ('!', '아무 창도 안 뜨면?', '오래 업데이트 안 한 Windows 10 문제 → Windows 업데이트 먼저')]
+             ('2', 'Filee-버전-win-Setup.exe 받아서 실행', '마이크로소프트 스토어에서 "Filee"를 검색해 설치해도 돼요'),
+             ('3', '처음 켜면 엔진 설치 창이 떠요', '동영상·음악용 추가 프로그램이라, 문서·사진만 쓰면 건너뛰어도 돼요'),
+             ('!', '프로그램이 아예 안 켜지면?', 'Windows 업데이트를 먼저 해 주세요 (오래된 Windows 10에서 생기는 문제)')]
     for i, (n, a_, b_) in enumerate(steps):
         e = ease((t - .3 - i * .5) / .4)
         if e <= 0: continue
@@ -241,10 +241,10 @@ def s_install(d, fr, t):
 
 def s_limits(d, fr, t):
     d.text((W / 2, 150), '아쉬운 점도 알고 쓰세요', font=font(FK, 70), fill=WHITE, anchor='mm')
-    items = [('배경 제거', '흰 배경·단색 배경 전용. 인물·사물 사진 누끼는 다른 도구로'),
+    items = [('배경 제거', '흰 배경일 때만 깔끔해요. 일반 사진은 다른 도구로'),
              ('추가 엔진', '동영상·음악, 오래된 DOC·PPT는 엔진을 따로 받아야 해요'),
-             ('맥(Mac)', '아직 미리보기 버전. 처음 실행 때 보안 허용 필요'),
-             ('별 주기 안내', '몇 번 쓰면 "GitHub 별 주기" 창이 한 번 떠요 (X로 닫기)')]
+             ('맥(Mac)용', '아직 시험판이에요. 처음 실행할 때 보안 허용이 필요해요'),
+             ('응원 요청 창', '가끔 "GitHub 별 주기" 창이 떠요. X로 닫으면 돼요')]
     for i, (k, v) in enumerate(items):
         e = ease((t - .3 - i * .45) / .4)
         if e <= 0: continue
@@ -265,7 +265,7 @@ def s_cmd(d, fr, t):
         e = ease((t - .3 - i * .22) / .3)
         f = font(FB, 34) if s.startswith('::') else MONO
         d.text((320, 320 + i * 64), s, font=f, fill=c + (int(255 * e),), anchor='lm')
-    d.text((W / 2, 900), '설치할 때 "filee 명령"을 켜두면 쓸 수 있어요', font=font(FB, 36), fill=YEL, anchor='mm')
+    d.text((W / 2, 900), '설치할 때 "filee 명령"을 켜 두면 쓸 수 있어요', font=font(FB, 36), fill=YEL, anchor='mm')
 
 def s_outro(d, fr, t):
     a = lambda k: int(255 * ease((t - k) / .45))
@@ -274,7 +274,7 @@ def s_outro(d, fr, t):
         pill(d, (W / 2, 290 + i * 110), s, 42, (32, 35, 50), WHITE, anchor='c', alpha=a(.4 + i * .3))
     d.text((W / 2, 690), 'Ctrl 누르고 끌어서 놓기', font=font(FK, 66), fill=YEL + (a(1.5),), anchor='mm')
     d.text((W / 2, 790), 'github.com/KnifeLemon/Filee', font=font(FB, 40), fill=SUB + (a(1.9),), anchor='mm')
-    d.text((W / 2, 900), '내일도 쓸모 있는 오픈소스 하나 들고 올게요', font=font(FB, 38), fill=WHITE + (a(2.4),), anchor='mm')
+    d.text((W / 2, 900), '다음에 또 멋진 오픈소스 소개할게요', font=font(FB, 38), fill=WHITE + (a(2.4),), anchor='mm')
 
 # ---------- timeline ----------
 FM_CROP = (300, 110, 1320, 742)
@@ -287,20 +287,20 @@ add(Clip('hwp', FM_CROP, '미리보기', [(0, 'a_ctrl', '한컴오피스가 없�
 add(Slide(4.5, s_hook))
 add(Slide(5.0, s_title), '오늘의 오픈소스: Filee')
 add(chapter(1, 'Filee가 뭔가요?'), 'Filee가 뭔가요?')
-add(Slide(8.5, s_about, '01 Filee가 뭔가요', sub='해외여행 때 챙기는 만능 어댑터처럼, 모양(형식)이 안 맞는 파일을 맞춰줘요'))
+add(Slide(8.5, s_about, '01 Filee가 뭔가요', sub='해외여행 때 챙기는 만능 어댑터처럼, 형식이 안 맞는 파일을 맞춰 줘요'))
 add(Slide(9.5, s_facts, '01 Filee가 뭔가요'))
 add(chapter(2, '설치하기', 'Windows 10·11'), '설치하기 (Windows)')
 add(Slide(11, s_install, '02 설치하기'))
 add(chapter(3, '앱 화면 둘러보기'), '앱 화면 둘러보기')
 add(Clip('tour', (240, 90, 1440, 810), '03 앱 화면 둘러보기', [
     (0, 'toolbar', 'Filee를 켜면 나오는 첫 화면. 여기에 파일을 끌어다 놓아도 돼요'),
-    ('toolbar', 'toolbar_hwp', "'원형 툴바'에서는 동그란 메뉴에 뭐가 나올지 정해요"),
-    ('toolbar_hwp', 'toolbar_pdf', '파일 종류마다 메뉴가 달라요. 이건 한글 파일(HWP)용'),
-    ('toolbar_pdf', 'preset', '이건 PDF용 메뉴. 워드, 한글로도 바꿀 수 있어요'),
+    ('toolbar', 'toolbar_hwp', "'원형 툴바'에서는 동그란 메뉴를 꾸밀 수 있어요"),
+    ('toolbar_hwp', 'toolbar_pdf', '파일 종류마다 메뉴가 달라요. 이건 한글 파일(HWP)용이에요'),
+    ('toolbar_pdf', 'preset', '이건 PDF용. 워드, 한글로도 바꿀 수 있어요'),
     ('preset', 'watch', "'프리셋'에는 화질, 크기 같은 변환 설정을 저장해 둬요"),
-    ('watch', 'engine', "'자동 변환 폴더'는 영상 끝에서 따로 보여드릴게요"),
+    ('watch', 'engine', "'자동 변환 폴더'는 마지막에 따로 보여 드릴게요"),
     ('engine', 'home2', "'변환 엔진'은 동영상·오래된 문서용 추가 프로그램.\n필요할 때만 받으면 돼요"),
-    ('home2', 'end', '사실 이 창은 거의 안 열어도 돼요. 진짜 쓰는 법은 바로 다음!')]))
+    ('home2', 'end', '이 창은 거의 안 열어도 돼요. 진짜 쓰는 법은 지금부터!')]))
 add(chapter(4, '한글(HWP) → PDF', '한컴오피스 없이'), '한글(HWP) → PDF')
 add(Clip('hwp', FM_CROP, '04 한글 → PDF', [
     (0, 'a_ctrl', '회사 PC에 한컴오피스가 없는데 한글 파일을 받았어요'),
@@ -308,18 +308,18 @@ add(Clip('hwp', FM_CROP, '04 한글 → PDF', [
     ('a_donut+1.4', 'a_hover-1.0', '커서 옆에 동그란 메뉴가 열려요'),
     ('a_hover-1.0', 'a_drop+0.8', "'PDF' 위에서 손을 놓으면"),
     ('a_drop+0.8', 'a_done+1.0', '1초 만에 끝! 원본 옆에 PDF가 생겼어요'),
-    ('a_done+1.0', 'b_ctrl', '이번엔 한글 2005로 만든 진짜 예제 문서로 해볼게요'),
+    ('a_done+1.0', 'b_ctrl', '이번엔 오래된 한글 2005 문서로 해 볼게요'),
     ('b_ctrl', 'b_drop+0.8', '똑같이 Ctrl 누르고 끌어서 PDF에 놓기'),
-    ('b_drop+0.8', 'end', '이것도 바로 변환. 결과를 열어볼까요?')], keycap_span=('a_ctrl', 'a_drop')))
+    ('b_drop+0.8', 'end', '이것도 바로 변환됐어요. 결과를 열어 볼까요?')], keycap_span=('a_ctrl', 'a_drop')))
 add(Card(5.0, card_hwp, '04 한글 → PDF', '예시 회의록: 제목, 목록, 표까지 그대로', '변환 결과 ①'))
-add(Card(5.0, card_h2005, '04 한글 → PDF', '한글 2005 예제 문서: 그림, 색 채우기, 각주까지 정상', '변환 결과 ②'))
+add(Card(5.0, card_h2005, '04 한글 → PDF', '오래된 한글 2005 문서: 그림, 색 채우기, 각주까지 잘 나왔어요', '변환 결과 ②'))
 add(chapter(5, '아이폰 사진 여러 장 → JPG'), '아이폰 사진(HEIC) → JPG')
 add(Clip('heic', FM_CROP, '05 아이폰 사진 → JPG', [
     (0, 'sel1', '아이폰 사진을 윈도우로 옮기면 HEIC라서 안 열리죠'),
     ('sel1', 'ctrl', '여러 장을 골라요 (Ctrl 누르고 하나씩 클릭)'),
     ('ctrl', 'donut+1.4', 'Ctrl 누른 채로 끌면 4장이 한 번에 잡혀요'),
     ('donut+1.4', 'drop+0.6', "'JPG' 위에 놓으면"),
-    ('drop+0.6', 'end', '4장 모두 JPG로! 미리보기 사진도 바로 보여요')], keycap_span=('ctrl', 'drop')))
+    ('drop+0.6', 'end', '4장 모두 JPG로! 사진 미리 보기도 바로 보여요')], keycap_span=('ctrl', 'drop')))
 add(Card(4.5, card_heic, '05 아이폰 사진 → JPG', '어디서나 열리는 JPG 사진이 됐어요', '변환 결과'))
 add(chapter(6, 'PDF 계약서 → 워드', '고쳐 써야 할 때'), 'PDF → 워드(DOCX)')
 add(Clip('contract', FM_CROP, '06 PDF → 워드', [
@@ -327,27 +327,27 @@ add(Clip('contract', FM_CROP, '06 PDF → 워드', [
     ('ctrl', 'hover-1.0', 'PDF 메뉴에는 워드(DOCX)도, 한글(HWP)도 있어요'),
     ('hover-1.0', 'drop+0.6', "'DOCX' 위에 놓으면"),
     ('drop+0.6', 'end', '글자를 고칠 수 있는 워드 파일이 됐어요')], keycap_span=('ctrl', 'drop')))
-add(Card(4.5, card_docx, '06 PDF → 워드', '제목, 조항 글자가 그대로 살아 있어서 워드에서 바로 수정', '변환 결과 (워드 파일)'))
+add(Card(4.5, card_docx, '06 PDF → 워드', '글자가 그대로 살아 있어서 워드에서 바로 고쳐 쓰면 돼요', '변환 결과 (워드 파일)'))
 add(chapter(7, '영수증 3장 → PDF 한 부', '경비 처리할 때'), '영수증 사진 3장 → PDF 하나로')
 add(Clip('receipt', FM_CROP, '07 영수증 → PDF 합치기', [
     (0, 'sel1', '경비 처리할 영수증 사진 3장'),
     ('sel1', 'ctrl', '3장을 골라서 (Ctrl 누르고 클릭)'),
     ('ctrl', 'tab', 'Ctrl 누른 채로 끌고'),
-    ('tab', 'hover-1.0', 'Tab 키를 누르면 메뉴 뒷면이 나와요'),
+    ('tab', 'hover-1.0', 'Tab 키를 누르면 숨은 메뉴가 나와요'),
     ('hover-1.0', 'drop+0.6', "'PDF 병합' 위에 놓으면"),
     ('drop+0.6', 'merge_click', '합칠 순서를 정하는 창이 떠요. 위아래로 순서 바꾸기도 돼요'),
-    ('merge_click', 'end', "'PDF 병합'을 누르면 영수증 3장이 PDF 한 부로!")], keycap_span=('ctrl', 'drop')))
-add(Card(4.5, card_rcp, '07 영수증 → PDF 합치기', '3쪽짜리 PDF 하나. 그대로 경비 청구에 첨부', '변환 결과'))
+    ('merge_click', 'end', "'PDF 병합' 버튼을 누르면 끝!")], keycap_span=('ctrl', 'drop')))
+add(Card(4.5, card_rcp, '07 영수증 → PDF 합치기', 'PDF 파일 하나에 영수증 3장이 다 들어갔어요', '변환 결과'))
 add(chapter(8, '도장 사진 배경 지우기'), '도장 배경 지우기')
 add(Clip('stamp', FM_CROP, '08 도장 배경 지우기', [
     (0, 'ctrl', '흰 종이에 찍은 도장을 사진으로 찍었어요'),
     ('ctrl', 'tab', 'Ctrl 누른 채로 끌고'),
-    ('tab', 'hover-1.0', 'Tab으로 뒷면 메뉴'),
+    ('tab', 'hover-1.0', 'Tab을 눌러 숨은 메뉴 열기'),
     ('hover-1.0', 'drop+0.6', "'배경 제거' 위에 놓으면"),
     ('drop+0.6', 'end', '배경이 투명한 도장 그림 완성!')], keycap_span=('ctrl', 'drop')))
 add(Card(4.5, card_stamp, '08 도장 배경 지우기', '전자 계약서, 견적서에 바로 붙일 수 있어요', '변환 결과'))
 add(chapter(9, '아쉬운 점: 안 되는 것'), '아쉬운 점: 안 되는 것')
-add(Card(6.0, card_fail, '09 아쉬운 점', '하지만 일반 사진은 실패! 커피잔, 고양이까지 지워져요.\n배경 제거는 흰 배경·단색 배경 전용이에요', '테스트 실패 사례'))
+add(Card(6.0, card_fail, '09 아쉬운 점', '일반 사진은 배경이 잘 안 지워져요. 고양이까지 같이 지워지죠\n흰 배경일 때만 깔끔해요', '테스트 실패 사례'))
 add(Slide(9.0, s_limits, '09 아쉬운 점'))
 add(chapter(10, '수백 장도 한 번에', '명령어 한 줄'), '수백 장도 한 번에 (명령어)')
 add(Clip('cli', (200, 130, 1340, 754), '10 명령어로 한꺼번에', [
@@ -358,10 +358,10 @@ add(Clip('cli', (200, 130, 1340, 754), '10 명령어로 한꺼번에', [
 add(Slide(8.0, s_cmd, '10 명령어로 한꺼번에'))
 add(chapter(11, '자동 변환 폴더', '넣기만 하면 알아서'), '자동 변환 폴더')
 add(Clip('watch', (20, 110, 1880, 1058), '11 자동 변환 폴더', [
-    (0, 'started', "'변환함' 폴더를 지켜보게 해두고"),
-    ('started', 'drop1', '폴더에 파일이 들어오면'),
-    ('drop1', 'drop2', '알아서 PDF로 바꿔 converted 폴더에 넣어줘요'),
-    ('drop2', 'end', '한글, 워드, 사진 무엇이든. Filee가 켜져 있는 동안 계속 지켜봐요')]))
+    (0, 'started', "'변환함'이라는 폴더를 지정해 두면"),
+    ('started', 'drop1', '여기에 파일을 넣을 때마다'),
+    ('drop1', 'drop2', '알아서 PDF로 바꿔 converted 폴더에 넣어 줘요'),
+    ('drop2', 'end', '한글, 워드, 사진 뭐든지요. Filee가 켜져 있는 동안 계속 지켜봐요')]))
 add(Slide(10.0, s_outro), '정리 · 추천 대상')
 
 # ---------- render ----------

@@ -142,7 +142,7 @@ def overlay_scene(fr, s, t):
     if t < ctrl: msg = '파일을 골라서'
     elif t < donut + .3: msg = None
     elif tab and t < tab + .2: msg = '커서 옆에 변환 메뉴가 열려요'
-    elif tab and t < hover - .2: msg = 'Tab을 누르면 뒷면 메뉴'
+    elif tab and t < hover - .2: msg = 'Tab을 누르면 숨은 메뉴'
     elif t < hover - .9: msg = '커서 옆에 변환 메뉴가 열려요'
     elif t < drop + .1: msg = f"'{s['target']}' 위에 놓으면"
     elif t < drop + 1.2: msg = '변환 중…'

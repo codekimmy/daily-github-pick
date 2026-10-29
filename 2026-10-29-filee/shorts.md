@@ -2,12 +2,12 @@
 
 - **일반인 쓸모 별점**: ★★★★★ (엔딩 자막에 표시)
 - **제목**: 한컴오피스 없이 HWP 여는 법 (무료) #shorts
-- **고정 댓글**: 무료 다운로드 👉 github.com/KnifeLemon/Filee/releases/latest (Setup.exe) · 마이크로소프트 스토어에서 "Filee" 검색해도 돼요. 사용법: Ctrl 누른 채 파일 끌기 → 원하는 형식 위에 놓기
+- **고정 댓글** (업로드 후 댓글로 달고 '고정'): 무료 다운로드 👉 github.com/KnifeLemon/Filee/releases/latest (Setup.exe) · 마이크로소프트 스토어에서 "Filee" 검색해도 돼요. 사용법: Ctrl 누른 채 파일 끌기 → 원하는 형식 위에 놓기
 - **해시태그**: #Filee #한글파일 #HWP #PDF변환 #아이폰사진 #무료프로그램 #꿀팁 #shorts
 
 > 음성 합성용 대본: **`narration-shorts.txt`** (구간 시간 + 한글 읽기)
 
-**베이스 영상: `media/filee-demo-vertical.mp4` (38초, 자막·결과 카드 포함. 그대로 깔고 내레이션만 얹으면 됨)**
+**업로드할 영상: `media/filee-shorts-voice-bgm.mp4`** (38초, 음성 + 배경음악 포함) · 원본: `media/filee-demo-vertical.mp4`
 
 | 초 | 영상 구간 | 내레이션 | 추가 자막 |
 |---|---|---|---|

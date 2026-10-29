@@ -240,7 +240,7 @@ def s_install(d, fr, t):
         d.text((420, y + 96), b_, font=font(FB, 30), fill=SUB + (al,), anchor='lm')
 
 def s_limits(d, fr, t):
-    d.text((W / 2, 150), '아쉬운 점도 솔직하게', font=font(FK, 70), fill=WHITE, anchor='mm')
+    d.text((W / 2, 150), '아쉬운 점도 알고 쓰세요', font=font(FK, 70), fill=WHITE, anchor='mm')
     items = [('배경 제거', '흰 배경·단색 배경 전용. 인물·사물 사진 누끼는 다른 도구로'),
              ('추가 엔진', '동영상·음악, 오래된 DOC·PPT는 엔진을 따로 받아야 해요'),
              ('맥(Mac)', '아직 미리보기 버전. 처음 실행 때 보안 허용 필요'),
@@ -311,7 +311,7 @@ add(Clip('hwp', FM_CROP, '04 한글 → PDF', [
     ('a_done+1.0', 'b_ctrl', '이번엔 한글 2005로 만든 진짜 예제 문서로 해볼게요'),
     ('b_ctrl', 'b_drop+0.8', '똑같이 Ctrl 누르고 끌어서 PDF에 놓기'),
     ('b_drop+0.8', 'end', '이것도 바로 변환. 결과를 열어볼까요?')], keycap_span=('a_ctrl', 'a_drop')))
-add(Card(5.0, card_hwp, '04 한글 → PDF', '직접 만든 회의록: 제목, 목록, 표까지 그대로', '변환 결과 ①'))
+add(Card(5.0, card_hwp, '04 한글 → PDF', '예시 회의록: 제목, 목록, 표까지 그대로', '변환 결과 ①'))
 add(Card(5.0, card_h2005, '04 한글 → PDF', '한글 2005 예제 문서: 그림, 색 채우기, 각주까지 정상', '변환 결과 ②'))
 add(chapter(5, '아이폰 사진 여러 장 → JPG'), '아이폰 사진(HEIC) → JPG')
 add(Clip('heic', FM_CROP, '05 아이폰 사진 → JPG', [
@@ -346,9 +346,9 @@ add(Clip('stamp', FM_CROP, '08 도장 배경 지우기', [
     ('hover-1.0', 'drop+0.6', "'배경 제거' 위에 놓으면"),
     ('drop+0.6', 'end', '배경이 투명한 도장 그림 완성!')], keycap_span=('ctrl', 'drop')))
 add(Card(4.5, card_stamp, '08 도장 배경 지우기', '전자 계약서, 견적서에 바로 붙일 수 있어요', '변환 결과'))
-add(chapter(9, '솔직 후기: 안 되는 것'), '솔직 후기: 안 되는 것')
-add(Card(6.0, card_fail, '09 솔직 후기', '하지만 일반 사진은 실패! 커피잔, 고양이까지 지워졌어요.\n배경 제거는 흰 배경·단색 배경 전용이에요', '직접 해본 실패 사례'))
-add(Slide(9.0, s_limits, '09 솔직 후기'))
+add(chapter(9, '아쉬운 점: 안 되는 것'), '아쉬운 점: 안 되는 것')
+add(Card(6.0, card_fail, '09 아쉬운 점', '하지만 일반 사진은 실패! 커피잔, 고양이까지 지워져요.\n배경 제거는 흰 배경·단색 배경 전용이에요', '테스트 실패 사례'))
+add(Slide(9.0, s_limits, '09 아쉬운 점'))
 add(chapter(10, '수백 장도 한 번에', '명령어 한 줄'), '수백 장도 한 번에 (명령어)')
 add(Clip('cli', (200, 130, 1340, 754), '10 명령어로 한꺼번에', [
     (0, 'ls1', '사진이 수백 장이면 하나씩 끌기 번거롭죠'),

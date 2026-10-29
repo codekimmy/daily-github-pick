@@ -1,0 +1,238 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0b0f1c;overflow:hidden}canvas{display:block}</style>
+<script src="../anim/data.js"></script><script src="script.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤): 장(챕터)마다 장면 함수 + 아래 자막. 시간 기준은 본편 시작 = 0초.
+const W = 1920, H = 1080, FPS = 30, S = 1;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const ctx = cv.getContext('2d');
+const F = '"Noto Sans CJK KR", sans-serif', MONO = '"DejaVu Sans Mono", monospace';
+const BG = '#0b0f1c', INK = '#f4efe4', SUB = '#a9b2c8', GOLD = '#f2b84b', BLUE = '#9fc3ff', RED = '#ff9f8a', GREEN = '#7bd389';
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+
+const load = src => { const im = new Image(); im.src = src; return im; };
+const IM = { sprite: load('../anim/sprite.jpg'), cards: load('../../media/result-cards.png'), quiz: load('../../media/result-quiz.png') };
+DATA.cards.forEach(c => IM[c.id] = load(`../anim/img/${c.id}.webp`));
+Promise.all(Object.values(IM).map(i => i.decode())).then(() => READY = true);
+const card = id => DATA.cards.find(c => c.id === id);
+
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const lerp = (a, b, x) => a + (b - a) * x;
+function text(s, x, y, size, color = INK, weight = 700, align = 'left', alpha = 1, font = F) {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.font = `${weight} ${size}px ${font}`;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); ctx.restore();
+}
+const tw = (s, size, weight = 700, font = F) => { ctx.font = `${weight} ${size}px ${font}`; return ctx.measureText(s).width; };
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function box(x, y, w, h, r, fill, stroke, a = 1) { ctx.save(); ctx.globalAlpha *= a; rr(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke(); } ctx.restore(); }
+function img(im, x, y, w, h, r = 20, a = 1) { if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a; rr(x, y, w, h, r); ctx.clip(); ctx.drawImage(im, x, y, w, h); ctx.restore(); }
+function wrap(s, maxW, size, weight = 400, font = F) {
+  ctx.font = `${weight} ${size}px ${font}`; const out = []; let line = '';
+  for (const word of s.split(' ')) { const t = line ? line + ' ' + word : word;
+    if (ctx.measureText(t).width > maxW && line) { out.push(line); line = word; } else line = t; }
+  if (line) out.push(line); return out;
+}
+function bars(x, y, on, t, n = 5, col = GOLD) { if (!on) return; for (let b = 0; b < n; b++) { const hh = 10 + 24 * Math.abs(Math.sin(t * 13 + b * 1.7)); ctx.fillStyle = col; ctx.fillRect(x + b * 10, y - hh / 2, 5, hh); } }
+function mosaicBG(a) { ctx.save(); ctx.globalAlpha = a; const sw = IM.sprite.width, sh = IM.sprite.height, sc = Math.max(W / sw, H / sh) * 1.05; ctx.drawImage(IM.sprite, (W - sw * sc) / 2, (H - sh * sc) / 2, sw * sc, sh * sc); ctx.restore(); ctx.fillStyle = 'rgba(11,15,28,.82)'; ctx.fillRect(0, 0, W, H); }
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const audioOn = (c, name, lt) => (c.audio || []).some(([at, n]) => n === name && lt >= at && lt < at + (name.endsWith('_ex') ? 3.2 : 1.0));
+
+// ---------- 장면 ----------
+const SC = {};
+SC.title = (lt) => {
+  mosaicBG(0.9);
+  text('오늘의 오픈소스', W / 2, 250, 40, SUB, 500, 'center', app(lt, 0.2));
+  text('Word Atlas (词光)', W / 2, 345, 112, INK, 800, 'center', app(lt, 0.4, 0.7));
+  text('그림으로 외우는 영어 단어장 · 무료 오픈소스', W / 2, 450, 42, SUB, 500, 'center', app(lt, 0.9));
+  text('일반인 쓸모  ★★★☆☆', W / 2, 545, 60, GOLD, 800, 'center', app(lt, 3.5));
+  ['그림 단어카드를 A4로 인쇄해 아이 영어 공부에', '영국식·미국식 발음 녹음으로 듣기·받아쓰기 연습', '암기앱(Anki)용 수준별·주제별 단어장 만들기'].forEach((s, i) =>
+    text(`${i + 1}. ${s}`, W / 2 - 520, 650 + i * 66, 40, INK, 500, 'left', app(lt, 7 + i * 1.3)));
+};
+SC.what = (lt) => {
+  // 왼쪽: 펼친 그림 사전
+  const bx = 120, by = 190, bw = 760, bh = 520;
+  ctx.save(); ctx.globalAlpha = app(lt, 0.2, 0.8);
+  box(bx, by, bw, bh, 26, '#fff8ea'); ctx.fillStyle = '#e4d9c3'; ctx.fillRect(bx + bw / 2 - 2, by + 20, 4, bh - 40);
+  img(IM.canal, bx + 40, by + 50, bw / 2 - 80, bw / 2 - 80, 14);
+  const c = card('canal');
+  text('canal', bx + bw / 2 + 40, by + 90, 64, '#1d2433', 800);
+  text('UK ' + c.uk + '  US ' + c.us, bx + bw / 2 + 40, by + 160, 22, '#667', 500);
+  wrap(c.def, bw / 2 - 80, 26, 500).forEach((l, i) => text(l, bx + bw / 2 + 40, by + 220 + i * 36, 26, '#3a4256', 500));
+  wrap('“' + c.ex + '”', bw / 2 - 80, 24, 400).forEach((l, i) => text(l, bx + bw / 2 + 40, by + 330 + i * 34, 24, '#3b4a6b', 400));
+  ctx.restore();
+  text('= 영어 그림 사전 한 권', bx + bw / 2, by + bh + 70, 46, GOLD, 800, 'center', app(lt, 2));
+  // 오른쪽: 들어 있는 것
+  const rx = 980; const items = [[5.5, '그림', '단어마다 1장 · 7,298장'], [12, '발음', '영국식 · 미국식 녹음'], [13.2, '예문', '단어마다 2개 + 읽어주기 녹음'], [18.5, '복습', '잊을 때쯤 다시 보여 주기 (FSRS)']];
+  items.forEach(([at, k, v], i) => { const a = app(lt, at); const y = 230 + i * 120;
+    box(rx, y - 46, 820, 92, 20, 'rgba(255,255,255,.06)', null, a);
+    text(k, rx + 34, y, 40, GOLD, 800, 'left', a); text(v, rx + 170, y, 36, INK, 500, 'left', a); });
+  const a5 = app(lt, 25);
+  box(rx, 720, 820, 120, 20, 'rgba(123,211,137,.10)', GREEN, a5);
+  text('만든 사람: 중국 개발자 (designfuchen)', rx + 34, 758, 30, INK, 600, 'left', a5);
+  text('코드 MIT · 그림·발음·뜻 데이터 CC BY 4.0 (출처만 밝히면 재사용 OK)', rx + 34, 805, 26, GREEN, 500, 'left', a5);
+};
+SC.words = (lt, c) => {
+  const k = Math.min(2, Math.floor(lt / 20)), l = lt - k * 20;
+  const id = ['canal', 'honeymoon', 'visa'][k], ko = ['운하', '신혼여행', '비자'][k], w = card(id);
+  const a = app(l, 0, 0.6) * (1 - prog(l, 19.5, 20));
+  ctx.save(); ctx.globalAlpha = a;
+  text(`${k + 1} / 3`, 1800, 60, 30, SUB, 600, 'right');
+  img(IM[id], 120, 150, 660, 660, 28);
+  const tx = 870; text(w.w, tx, 230, 120, INK, 800);
+  text(w.pos, tx + tw(w.w, 120, 800) + 24, 250, 40, GOLD, 500);
+  box(tx, 300, tw(ko, 40, 700) + 60, 64, 32, 'rgba(242,184,75,.18)'); text(ko, tx + 30, 332, 40, GOLD, 700);
+  text('(한국어 뜻은 영상용으로 덧붙인 것)', tx + tw(ko, 40, 700) + 80, 332, 22, '#6f7891', 400);
+  [['영국식 ' + w.uk, id + '_uk'], ['미국식 ' + w.us, id + '_us']].forEach(([s, n], i) => {
+    const bx = tx + i * 440, by = 430, on = audioOn(c, n, lt);
+    box(bx, by - 36, 410, 72, 36, on ? 'rgba(242,184,75,.35)' : 'rgba(242,184,75,.12)');
+    text('▶', bx + 34, by, 28, GOLD, 700, 'center'); text(s, bx + 64, by, 32, INK, 600); bars(bx + 340, by, on, lt);
+  });
+  wrap(w.def, 900, 40, 500).forEach((ln, i) => text(ln, tx, 545 + i * 56, 40, INK, 500));
+  const exOn = audioOn(c, id + '_ex', lt);
+  if (exOn) box(tx - 20, 660, 940, 150, 18, 'rgba(159,195,255,.12)');
+  wrap('“' + w.ex + '”', 880, 38, 400).forEach((ln, i) => text(ln, tx, 700 + i * 54, 38, BLUE, 400));
+  if (exOn) text('🔊', tx + 900, 690, 30, BLUE, 400, 'right');
+  ctx.restore();
+};
+SC.stats = (lt) => {
+  const L = DATA.levels, mx = 2127, KO = { A1: '입문', A2: '초급', B1: '중급', B2: '중상급', C1: '고급', C2: '최상급' };
+  text('수준별 단어 수', 140, 150, 40, SUB, 600, 'left', app(lt, 0.2));
+  L.forEach(([l, n], i) => { const y = 230 + i * 92, p = ease(prog(lt, 0.6 + i * 0.35, 2.2 + i * 0.35)), hl = l === 'B2' && lt > 6.5;
+    text(`${l} ${KO[l]}`, 140, y, 34, hl ? GOLD : INK, 700, 'left', app(lt, 0.4 + i * 0.3));
+    box(360, y - 28, 900 * n / mx * p + 2, 56, 12, hl ? GOLD : 'rgba(159,195,255,.55)');
+    text(Math.round(n * p).toLocaleString('en-US') + '개', 380 + 900 * n / mx * p, y, 32, hl ? GOLD : INK, 700, 'left', p); });
+  const tops = [['일상', 1828], ['사회', 824], ['생각', 516], ['자연', 443], ['일', 414], ['건강', 381], ['교육', 378], ['감정', 364], ['과학', 325], ['여행', 300]];
+  const a = app(lt, 13); text('주제 19가지 (많은 순)', 140, 815, 34, SUB, 600, 'left', a);
+  let x = 140; tops.forEach(([k, n], i) => { const s = `${k} ${n}`; const wv = tw(s, 28, 600) + 40; const ai = app(lt, 13.2 + i * 0.15);
+    box(x, 850, wv, 56, 28, 'rgba(255,255,255,.08)', null, ai); text(s, x + 20, 878, 28, INK, 600, 'left', ai); x += wv + 14; });
+  const b = app(lt, 19.5);
+  box(1480, 330, 360, 200, 24, 'rgba(242,184,75,.12)', GOLD, b);
+  text('예) B1 + 여행', 1660, 390, 36, GOLD, 800, 'center', b); text('→ 75단어', 1660, 460, 48, INK, 800, 'center', b);
+};
+SC.howto = (lt) => {
+  const a1 = app(lt, 0.2);
+  box(100, 140, 820, 560, 26, 'rgba(255,255,255,.05)', null, a1);
+  text('① 웹사이트 (제일 쉬움)', 140, 200, 42, GOLD, 800, 'left', a1);
+  box(140, 260, 520, 70, 35, 'rgba(159,195,255,.15)', null, a1); text('0xlei.tech/words', 175, 295, 36, BLUE, 700, 'left', a1, MONO);
+  ['설치 없음', '회원가입 없음', '공부 기록은 내 브라우저에 저장'].forEach((s, i) => text('• ' + s, 150, 395 + i * 62, 36, INK, 500, 'left', app(lt, 6.5 + i * 0.6)));
+  text('※ 웹사이트는 저장소 버전과 기능이 다를 수 있음', 150, 640, 28, RED, 500, 'left', app(lt, 13));
+  const a2 = app(lt, 20);
+  box(980, 140, 840, 560, 26, 'rgba(255,255,255,.05)', null, a2);
+  text('② 내 PC에서 (Windows cmd)', 1020, 200, 42, GOLD, 800, 'left', a2);
+  box(1020, 250, 760, 330, 16, '#05070d', null, a2);
+  const L = [[':: Node.js 20 이상, Git 먼저 설치', '#6f7891'], ['git clone --depth 1 https://github.com/', INK], ['    designfuchen/word-atlas.git', INK], ['cd word-atlas', INK], ['npm ci', INK], ['npm run dev', INK]];
+  L.forEach(([s, col], i) => text(s, 1045, 290 + i * 48, 25, col, 400, 'left', app(lt, 21 + i * 0.8), MONO));
+  const a3 = app(lt, 28);
+  box(1020, 600, 760, 70, 35, 'rgba(123,211,137,.15)', null, a3);
+  text('브라우저 주소창 → localhost:5188', 1050, 635, 32, GREEN, 700, 'left', a3);
+  const a4 = app(lt, 34);
+  box(300, 760, 1320, 90, 20, 'rgba(255,159,138,.12)', RED, a4);
+  text('이번 테스트 환경: 앱 실행이 보안 정책으로 막힘 → 공개 데이터(단어·그림·발음)로만 시연', W / 2, 805, 30, RED, 600, 'center', a4);
+};
+SC.cards = (lt) => {
+  const ta = 1 - prog(lt, 18.5, 19.3);
+  if (ta > 0) { ctx.save(); ctx.globalAlpha = ta;
+    box(160, 130, 1600, 680, 20, '#05070d');
+    ctx.fillStyle = '#2a3042'; ctx.fillRect(160, 130, 1600, 50); [0, 1, 2].forEach(i => { ctx.beginPath(); ctx.arc(195 + i * 32, 155, 9, 0, 7); ctx.fillStyle = ['#ff5f57', '#febc2e', '#28c840'][i]; ctx.fill(); });
+    text('명령 프롬프트', 960, 155, 22, SUB, 500, 'center');
+    const cmd = 'py make_deck.py --atlas word-atlas --level B1 --topic travel --count 12 --pdf';
+    const n = Math.floor(cmd.length * prog(lt, 7, 11));
+    text('C:\\단어카드> ' + cmd.slice(0, n) + (lt % 1 < .5 && lt < 12 ? '▌' : ''), 200, 230, 26, INK, 400, 'left', app(lt, 6.5, .3), MONO);
+    const out = ['전체 단어 7,298개 중 조건에 맞는 단어 75개', '뽑은 단어: canal, duty-free, guesthouse, guidebook, honeymoon, hut,', '           lounge, minibus, take-off, track, unpack, visa', '그림·발음 파일 36개 복사 → out\\B1-travel\\media', '단어카드: out\\B1-travel\\cards.html , cards.pdf', 'Anki 단어장: out\\B1-travel\\anki.csv', '걸린 시간: 1.4초'];
+    out.forEach((s, i) => text(s, 200, 300 + i * 52, 26, i === 6 ? GOLD : '#cfd6e6', i === 6 ? 700 : 400, 'left', app(lt, 11.5 + i * 0.35, .2), MONO));
+    ctx.restore(); }
+  const ra = prog(lt, 19, 19.8);
+  if (ra > 0) {
+    const z = 1 + 0.9 * ease(prog(lt, 27, 31)) * (1 - ease(prog(lt, 35, 38)));
+    const ih = 800, iw = ih * IM.cards.width / IM.cards.height, ix = 200, iy = 100;
+    ctx.save(); ctx.globalAlpha = ra; rr(ix, iy, iw, ih, 10); ctx.clip();
+    ctx.translate(ix, iy); ctx.scale(z, z); ctx.drawImage(IM.cards, 0, 0, iw, ih); ctx.restore();
+    const rx = 920; [['A4 한 장에 12장', 19.5], ['그림 + 단어 + 발음기호', 21], ['영어 뜻(영영) + 예문', 22.5], ['출처 표기 자동 포함', 24]].forEach(([s, at], i) =>
+      { const a = app(lt, at); box(rx, 200 + i * 110, 820, 84, 20, 'rgba(255,255,255,.06)', null, a); text('✓ ' + s, rx + 30, 242 + i * 110, 38, INK, 600, 'left', a); });
+    text('바꿔 보기: --level A1 --topic daily --count 24', rx, 700, 30, GOLD, 600, 'left', app(lt, 35), MONO);
+  }
+};
+SC.quiz = (lt) => {
+  const ih = 800, iw = ih * IM.quiz.width / IM.quiz.height, ix = 200, iy = 100;
+  const z = 1 + 1.4 * ease(prog(lt, 7, 10)) * (1 - ease(prog(lt, 14.5, 17)));
+  ctx.save(); ctx.globalAlpha = app(lt, 0, .6); rr(ix, iy, iw, ih, 10); ctx.clip();
+  ctx.translate(ix, iy); ctx.scale(z, z); ctx.drawImage(IM.quiz, 0, 0, iw, ih); ctx.restore();
+  const rx = 920; [['그림만 보고 단어 떠올리기', 0.6], ['예문 속 단어 → 빈칸 _____', 7], ['힌트: 글자 수 · 첫 글자', 8.5], ['카드 순서 섞기', 14.5]].forEach(([s, at], i) =>
+    { const a = app(lt, at); box(rx, 200 + i * 110, 820, 84, 20, 'rgba(255,255,255,.06)', null, a); text('✓ ' + s, rx + 30, 242 + i * 110, 38, INK, 600, 'left', a); });
+};
+SC.anki = (lt) => {
+  const a = app(lt, 0.3);
+  box(100, 140, 820, 470, 20, '#05070d', null, a);
+  text('anki.csv (일부)', 130, 180, 26, SUB, 600, 'left', a);
+  ['#separator:Comma', '#html:true', '#tags column:3', '"<img src=""canal.webp"">', '  [sound:canal_uk.mp3]",', '<b>canal</b> /kəˈnæl/<br>an artificial', '  waterway for boats ...,B1 travel'].forEach((s, i) =>
+    text(s, 130, 235 + i * 50, 25, i < 3 ? '#6f7891' : '#cfd6e6', 400, 'left', app(lt, 7 + i * 0.25), MONO));
+  const c = card('canal'), b = app(lt, 14.5);
+  text('카드 구성 예시 (Anki 실제 화면 아님)', 1400, 160, 26, SUB, 500, 'center', b);
+  box(1000, 200, 380, 470, 20, '#fffaf0', null, b); img(IM.canal, 1020, 220, 340, 340, 14, b);
+  text('앞면', 1190, 600, 30, '#1d2433', 800, 'center', b); text('🔊 발음 재생', 1190, 640, 24, '#8a6d3b', 500, 'center', b);
+  box(1420, 200, 400, 470, 20, '#fffaf0', null, b);
+  text('뒷면', 1620, 240, 30, '#1d2433', 800, 'center', b);
+  text('canal', 1450, 320, 56, '#1d2433', 800, 'left', b); text(c.uk, 1450, 380, 26, '#667', 500, 'left', b);
+  wrap(c.def, 340, 26, 500).forEach((l, i) => text(l, 1450, 440 + i * 36, 26, '#3a4256', 500, 'left', b));
+  wrap(c.ex, 340, 24, 400).forEach((l, i) => text(l, 1450, 540 + i * 34, 24, '#3b4a6b', 400, 'left', b));
+  const d = app(lt, 21.5);
+  box(100, 720, 1720, 110, 20, 'rgba(242,184,75,.12)', GOLD, d);
+  text('media 폴더 안 그림·소리 → %APPDATA%\\Anki2\\(프로필 이름)\\collection.media 에 복사', W / 2, 775, 30, GOLD, 600, 'center', d);
+};
+SC.dict = (lt, c) => {
+  const k = Math.min(2, Math.floor(lt / 12)), l = lt - k * 12;
+  const id = ['unpack', 'track', 'guidebook'][k], w = card(id), on = audioOn(c, id + '_ex', lt);
+  const a = app(l, 0, .5) * (1 - prog(l, 11.6, 12));
+  ctx.save(); ctx.globalAlpha = a;
+  text(`받아쓰기 ${k + 1} / 3`, W / 2, 170, 44, SUB, 700, 'center');
+  ctx.beginPath(); ctx.arc(W / 2, 400, 150, 0, 7); ctx.fillStyle = on ? 'rgba(242,184,75,.25)' : 'rgba(255,255,255,.06)'; ctx.fill();
+  text('🎧', W / 2, 400, 120, INK, 400, 'center');
+  bars(W / 2 - 24, 610, on, lt, 6);
+  const rv = prog(l, 7.3, 7.9);
+  if (rv > 0) { img(IM[id], W / 2 - 760, 290, 260, 260, 18, rv);
+    wrap(w.ex, 1300, 50, 600).forEach((ln, i) => text(ln, W / 2, 730 + i * 66, 50, BLUE, 600, 'center', rv)); }
+  else text('들리는 문장을 받아 적어 보세요', W / 2, 730, 44, INK, 600, 'center', app(l, 0.5));
+  ctx.restore();
+};
+SC.cons = (lt) => {
+  text('아쉬운 점', 140, 140, 52, INK, 800, 'left', app(lt, 0.1));
+  [['한국어 뜻 없음', '뜻풀이는 중국어 + 영어(영영)뿐'], ['AI로 만든 콘텐츠', '뜻·예문·그림·발음 모두 AI 생성, 하나하나 사람 검수는 안 함'], ['공식 IELTS 단어장 아님', '시험 주관 기관과 관계없음'],
+   ['용량이 큼', '그림·녹음 포함 — 내려받기 약 700MB, 풀면 1GB 이상'], ['화면이 중국어', '앱 메뉴·안내 문구가 중국어']].forEach(([k, v], i) => {
+    const at = [0.3, 8, 15.5, 22, 28.5][i], a = app(lt, at), y = 250 + i * 135;
+    box(140, y - 52, 1640, 108, 20, 'rgba(255,159,138,.08)', null, a);
+    text(`${i + 1}`, 190, y, 44, RED, 800, 'center', a); text(k, 250, y - 2, 40, INK, 800, 'left', a); text(v, 760, y, 32, SUB, 500, 'left', a); });
+};
+SC.end = (lt) => {
+  mosaicBG(0.6);
+  text('이런 분께 추천', W / 2, 170, 52, INK, 800, 'center', app(lt, 0.2));
+  [['학부모', '아이 영어 그림카드 인쇄'], ['영어 선생님', '발음·예문 녹음 수업 자료'], ['수험생', '영영 풀이 + 수준별 단어장']].forEach(([k, v], i) => {
+    const a = app(lt, [0.5, 2.5, 7.5][i]), x = 210 + i * 520;
+    box(x, 270, 460, 260, 24, 'rgba(20,26,46,.92)', GOLD, a); text(k, x + 230, 350, 48, GOLD, 800, 'center', a); text(v, x + 230, 440, 32, INK, 500, 'center', a); });
+  const e = app(lt, 14.5);
+  text('Word Atlas (词光) · github.com/designfuchen/word-atlas', W / 2, 640, 36, SUB, 500, 'center', e);
+  text('다음에 또 멋진 오픈소스 소개할게요!', W / 2, 740, 56, INK, 800, 'center', e);
+  text('그림·데이터: Word Atlas contributors — CC BY 4.0', W / 2, 1050, 20, '#6f7891', 400, 'center', 1);
+};
+
+function subtitle(s, a) {
+  if (!s || a <= 0) return;
+  ctx.font = `700 42px ${F}`; const w = ctx.measureText(s).width;
+  ctx.save(); ctx.globalAlpha = a; rr(W / 2 - w / 2 - 34, 920, w + 68, 84, 22); ctx.fillStyle = 'rgba(5,7,13,.86)'; ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s, W / 2, 962); ctx.restore();
+}
+function frame(f) {
+  const t = f / FPS; const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1]; const lt = t - c.t0;
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalAlpha = prog(lt, 0, 0.4) * (1 - prog(lt, c.dur - 0.3, c.dur)); SC[c.id](lt, c); ctx.restore();
+  if (c.tag) { const a = 1; ctx.font = `700 28px ${F}`; const w = ctx.measureText(c.tag).width; box(36, 28, w + 48, 54, 27, 'rgba(5,7,13,.8)', null, a); text(c.tag, 60, 56, 28, INK, 700, 'left', a); }
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]);
+  if (cue) subtitle(cue[2], prog(lt, cue[0], cue[0] + 0.2) * (1 - prog(lt, cue[1] - 0.15, cue[1])));
+}
+</script></body></html>

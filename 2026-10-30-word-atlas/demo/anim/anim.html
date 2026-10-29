@@ -1,0 +1,237 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0b0f1c;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 단어 7,298개 그림이 한 칸씩 채워지는 과정 → 카드 한 장 확대 → 단어카드 12장 출력 → 엔딩
+const P = new URLSearchParams(location.search);
+const W = +P.get('w') || 1920, H = +P.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const ctx = cv.getContext('2d');
+const S = Math.min(W, H) / 1080;
+const F = '"Noto Sans CJK KR", sans-serif';
+const BG = '#0b0f1c', INK = '#f4efe4', SUB = '#a9b2c8', GOLD = '#f2b84b';
+const LVC = { A1: '#7bd389', A2: '#4cc9f0', B1: '#f2b84b', B2: '#ff8c61', C1: '#c77dff', C2: '#ff5d8f' };
+const LVK = { A1: '입문', A2: '초급', B1: '중급', B2: '중상급', C1: '고급', C2: '최상급' };
+const T = { intro: 0, fill0: 2.6, fill1: 11.6, badge0: 12.0, badge1: 15.0, zoom0: 15.0, card0: 16.4, card1: 21.0,
+            deck0: 21.0, quiz: 24.6, deck1: 26.6, end1: 30 };
+const TOTAL = Math.round(T.end1 * FPS);
+let READY = false;
+
+// ---------- 이미지 불러오기 ----------
+const sprite = new Image(); sprite.src = 'sprite.jpg';
+const imgs = {}; DATA.cards.forEach(c => { const im = new Image(); im.src = `img/${c.id}.webp`; imgs[c.id] = im; });
+Promise.all([sprite, ...Object.values(imgs)].map(im => im.decode())).then(() => READY = true);
+
+// ---------- 도우미 ----------
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const out3 = x => 1 - Math.pow(1 - x, 3);
+const lerp = (a, b, x) => a + (b - a) * x;
+function text(s, x, y, size, color = INK, weight = 700, align = 'center', alpha = 1) {
+  ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.font = `${weight} ${size * S}px ${F}`;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); ctx.restore();
+}
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function wrap(s, maxW, size, weight = 400) {
+  ctx.font = `${weight} ${size * S}px ${F}`; const out = []; let line = '';
+  for (const word of s.split(' ')) { const t = line ? line + ' ' + word : word;
+    if (ctx.measureText(t).width > maxW && line) { out.push(line); line = word; } else line = t; }
+  if (line) out.push(line); return out;
+}
+const fmt = n => Math.round(n).toLocaleString('en-US');
+
+// ---------- 모자이크 배치 ----------
+const N = DATA.n;
+const area = VERT ? { x: 40 * S, y: 330 * S, w: W - 80 * S, h: H - 700 * S } : { x: 60 * S, y: 190 * S, w: W - 120 * S, h: H - 330 * S };
+let tile = Math.floor(Math.sqrt(area.w * area.h / N));
+let cols, rows;
+for (;; tile--) { cols = Math.floor(area.w / tile); rows = Math.ceil(N / cols); if (rows * tile <= area.h) break; }
+const gx = area.x + (area.w - cols * tile) / 2, gy = area.y + (area.h - rows * tile) / 2;
+const tilePos = i => [gx + (i % cols) * tile, gy + Math.floor(i / cols) * tile];
+const lvStart = []; { let s = 0; for (const [l, n] of DATA.levels) { lvStart.push(s); s += n; } }
+const levelOf = i => { let k = 0; for (let j = 0; j < lvStart.length; j++) if (i >= lvStart[j]) k = j; return k; };
+const FOCUS = 'canal';
+// canal 은 B1 구간 안 어딘가 — 화면용으로 B1 구간 가운데 칸을 쓴다
+const focusIdx = lvStart[2] + Math.floor(DATA.levels[2][1] / 2);
+
+function filledAt(t) { return Math.floor(N * ease(prog(t, T.fill0, T.fill1))); }
+
+function drawMosaic(t, f, dim) {
+  const k = filledAt(t);
+  const st = DATA.tile, sc = DATA.cols;
+  for (let i = 0; i < k; i++) {
+    const [x, y] = tilePos(i);
+    ctx.drawImage(sprite, (i % sc) * st, Math.floor(i / sc) * st, st, st, x, y, tile - 1, tile - 1);
+  }
+  // 새로 생긴 칸 반짝임
+  const k2 = filledAt(t - 0.35);
+  ctx.fillStyle = 'rgba(255,255,255,0.55)';
+  for (let i = k2; i < k; i++) { const [x, y] = tilePos(i); ctx.fillRect(x, y, tile - 1, tile - 1); }
+  // 비어 있는 칸 자리
+  ctx.fillStyle = 'rgba(255,255,255,0.04)';
+  for (let i = k; i < N; i += 1) { const [x, y] = tilePos(i); ctx.fillRect(x, y, tile - 1, tile - 1); }
+  if (dim > 0) { ctx.fillStyle = `rgba(11,15,28,${dim})`; ctx.fillRect(0, 0, W, H); }
+  return k;
+}
+
+function drawHUD(t, k, alpha) {
+  if (alpha <= 0) return;
+  ctx.save(); ctx.globalAlpha = alpha;
+  const cy = VERT ? 150 * S : 95 * S;
+  text('영어 단어', VERT ? W / 2 : 60 * S, cy - 42 * S, 30, SUB, 500, VERT ? 'center' : 'left');
+  text(`${fmt(k)} / 7,298`, VERT ? W / 2 : 60 * S, cy + 12 * S, 64, INK, 800, VERT ? 'center' : 'left');
+  // 수준 칩
+  const lv = k > 0 ? levelOf(Math.min(k - 1, N - 1)) : 0;
+  const cw = (VERT ? 160 : 150) * S, ch = 62 * S, gap = 12 * S;
+  const tw = DATA.levels.length * cw + (DATA.levels.length - 1) * gap;
+  const x0 = VERT ? (W - tw) / 2 : W - 60 * S - tw, y0 = VERT ? H - 330 * S : cy - 30 * S;
+  DATA.levels.forEach(([l, n], j) => {
+    const x = x0 + j * (cw + gap); const done = clamp((k - lvStart[j]) / n);
+    rr(x, y0, cw, ch, 12 * S); ctx.fillStyle = 'rgba(255,255,255,0.06)'; ctx.fill();
+    if (done > 0) { ctx.save(); ctx.clip(); ctx.fillStyle = LVC[l] + (j === lv && done < 1 ? 'cc' : '55'); ctx.fillRect(x, y0, cw * done, ch); ctx.restore(); }
+    text(`${l} ${LVK[l]}`, x + cw / 2, y0 + 20 * S, 19, done > 0 ? INK : SUB, 700);
+    text(fmt(Math.min(n, Math.max(0, k - lvStart[j]))), x + cw / 2, y0 + 44 * S, 18, done > 0 ? INK : SUB, 500);
+  });
+  if (VERT) text('쉬운 단어(A1)부터 어려운 단어(C2) 순서', W / 2, H - 230 * S, 26, SUB, 500);
+  ctx.restore();
+}
+
+function drawCard(c, x, y, w, alpha, opt = {}) {
+  // 세로형 단어카드 한 장 (그림 + 단어 + 뜻 + 예문)
+  const pad = w * 0.05, imgH = w;
+  const h = opt.h || w * 1.55;
+  ctx.save(); ctx.globalAlpha *= alpha;
+  ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 18 * S;
+  rr(x, y, w, h, w * 0.06); ctx.fillStyle = '#fffaf0'; ctx.fill(); ctx.shadowBlur = 0;
+  ctx.save(); rr(x, y, w, h, w * 0.06); ctx.clip(); ctx.drawImage(imgs[c.id], x, y, w, imgH); ctx.restore();
+  const fs = w / 9;
+  const s1 = fs / S, word = opt.quiz ? '_______' : c.w;
+  text(word, x + pad, y + imgH + fs * 0.95, s1, opt.quiz ? '#b9b3a6' : '#1d2433', 800, 'left');
+  const lines = wrap(opt.quiz ? c.ex.replace(new RegExp('\\b' + c.w.slice(0, c.w.length > 4 ? -1 : undefined).replace('-', '\\-') + '\\w*', 'i'), '_____') : c.def, w - 2 * pad, s1 * 0.5);
+  lines.slice(0, 3).forEach((ln, i) => text(ln, x + pad, y + imgH + fs * (1.95 + i * 0.68), s1 * 0.5, opt.quiz ? '#3b4a6b' : '#3a4256', 400, 'left'));
+  ctx.restore();
+}
+
+function frame(f) {
+  const t = f / FPS;
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+
+  // A. 인트로 질문
+  if (t < T.fill0 + 0.4) {
+    const a = prog(t, 0.1, 0.7) * (1 - prog(t, T.fill0 - 0.2, T.fill0 + 0.4));
+    const y = H / 2 - (VERT ? 60 : 30) * S;
+    text('영어 단어 7,298개,', W / 2, y - 45 * S, VERT ? 76 : 72, INK, 800, 'center', a);
+    text('전부 그림이 있다면?', W / 2, y + 55 * S, VERT ? 76 : 72, GOLD, 800, 'center', a * prog(t, 0.7, 1.3));
+  }
+
+  // B~D. 모자이크
+  if (t >= T.fill0 && t < T.card0 + 0.2) {
+    let z = 1, cx = W / 2, cy = H / 2;
+    const zp = ease(prog(t, T.zoom0, T.card0));
+    const [fx, fy] = tilePos(focusIdx);
+    if (zp > 0) { z = lerp(1, 90 * S / tile, zp); cx = lerp(W / 2, fx + tile / 2, zp); cy = lerp(H / 2, fy + tile / 2, zp); }
+    ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(z, z); ctx.translate(-cx, -cy);
+    const dim = 0.72 * prog(t, T.badge0, T.badge0 + 0.5) * (1 - prog(t, T.zoom0, T.zoom0 + 0.4));
+    const k = drawMosaic(t, f, dim);
+    if (zp > 0) { ctx.drawImage(imgs[FOCUS], fx, fy, tile - 1, tile - 1); ctx.strokeStyle = GOLD; ctx.lineWidth = 3 * S / z; ctx.strokeRect(fx - 1, fy - 1, tile + 1, tile + 1); }
+    ctx.restore();
+    drawHUD(t, k, 1 - prog(t, T.badge0, T.badge0 + 0.4));
+    if (zp > 0.6) { ctx.fillStyle = `rgba(11,15,28,${prog(zp, 0.6, 1)})`; ctx.fillRect(0, 0, W, H); }
+  }
+
+  // C. 완성 배지
+  if (t >= T.badge0 && t < T.badge1 + 0.3) {
+    const a = out3(prog(t, T.badge0, T.badge0 + 0.5)) * (1 - prog(t, T.badge1 - 0.3, T.badge1));
+    const sc = lerp(0.85, 1, out3(prog(t, T.badge0, T.badge0 + 0.5)));
+    ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(sc, sc); ctx.globalAlpha = a;
+    const bw = (VERT ? 900 : 1000) * S, bh = (VERT ? 640 : 480) * S;
+    rr(-bw / 2, -bh / 2, bw, bh, 36 * S); ctx.fillStyle = 'rgba(20,26,46,.92)'; ctx.fill();
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 3 * S; ctx.stroke();
+    text('✓ 7,298칸 완성', 0, -bh / 2 + 80 * S, 58, GOLD, 800);
+    const items = [['그림', '7,298장'], ['영국·미국 발음 녹음', '14,596개'], ['예문', '14,596개'], ['예문 읽어주기 녹음', '8,309개']];
+    items.forEach(([k, v], i) => {
+      const yy = -bh / 2 + (VERT ? 190 : 165) * S + i * (VERT ? 92 : 68) * S;
+      text(k, -bw / 2 + 90 * S, yy, VERT ? 38 : 36, SUB, 500, 'left'); text(v, bw / 2 - 90 * S, yy, VERT ? 40 : 38, INK, 800, 'right');
+    });
+    text('전부 무료 공개 (CC BY 4.0)', 0, bh / 2 - 50 * S, VERT ? 34 : 32, '#7bd389', 700);
+    ctx.restore();
+  }
+
+  // D. 카드 한 장 크게
+  if (t >= T.card0 - 0.4 && t < T.deck0 + 1.2) {
+    const a = prog(t, T.card0 - 0.4, T.card0 + 0.2);
+    const c = DATA.cards.find(c => c.id === FOCUS);
+    const mv = ease(prog(t, T.deck0, T.deck0 + 1.0));   // 덱으로 줄어드는 정도
+    ctx.save(); ctx.globalAlpha = a * (1 - mv);
+    const isz = (VERT ? 760 : 620) * S;
+    const ix = VERT ? (W - isz) / 2 : 150 * S, iy = VERT ? 230 * S : (H - isz) / 2;
+    rr(ix, iy, isz, isz, 28 * S); ctx.save(); ctx.clip(); ctx.drawImage(imgs[c.id], ix, iy, isz, isz); ctx.restore();
+    const tx = VERT ? 90 * S : ix + isz + 90 * S; let ty = VERT ? iy + isz + 110 * S : iy + 90 * S;
+    const ap = i => prog(t, T.card0 + 0.3 + i * 0.55, T.card0 + 0.8 + i * 0.55);
+    text(c.w, tx, ty, VERT ? 110 : 120, INK, 800, 'left', ap(0));
+    ctx.font = `800 ${(VERT ? 110 : 120) * S}px ${F}`; const ww = ctx.measureText(c.w).width;
+    text(c.pos, tx + ww + 24 * S, ty + 18 * S, 40, GOLD, 500, 'left', ap(0));
+    ty += (VERT ? 100 : 110) * S;
+    // 발음 버튼 + 소리 막대
+    ['영국식 ' + c.uk, '미국식 ' + c.us].forEach((s, i) => {
+      const bx = tx + i * (VERT ? 450 : 400) * S, al = ap(1 + i * 0.5);
+      ctx.save(); ctx.globalAlpha *= al;
+      rr(bx, ty - 34 * S, (VERT ? 420 : 370) * S, 68 * S, 34 * S); ctx.fillStyle = 'rgba(242,184,75,.15)'; ctx.fill();
+      text('▶', bx + 34 * S, ty, 28, GOLD, 700); text(s, bx + 66 * S, ty, 30, INK, 600, 'left');
+      const on = t > T.card0 + 1.3 + i * 0.9 && t < T.card0 + 2.2 + i * 0.9;
+      if (on) for (let b = 0; b < 5; b++) { const hh = (10 + 22 * Math.abs(Math.sin(t * 13 + b * 1.7))) * S;
+        ctx.fillStyle = GOLD; ctx.fillRect(bx + (VERT ? 360 : 310) * S + b * 9 * S, ty - hh / 2, 5 * S, hh); }
+      ctx.restore();
+    });
+    ty += (VERT ? 100 : 105) * S;
+    const maxw = VERT ? W - 180 * S : W - tx - 110 * S;
+    wrap(c.def, maxw, VERT ? 40 : 38, 500).forEach((ln, i) => text(ln, tx, ty + i * 54 * S, VERT ? 40 : 38, INK, 500, 'left', ap(2.5)));
+    ty += (VERT ? 140 : 130) * S;
+    wrap('“' + c.ex + '”', maxw, VERT ? 36 : 34, 400).forEach((ln, i) => text(ln, tx, ty + i * 50 * S, VERT ? 36 : 34, '#9fc3ff', 400, 'left', ap(3.5)));
+    ctx.restore();
+    const ca = prog(t, T.card0 + 0.2, T.card0 + 0.8) * (1 - prog(t, T.deck0 - 0.3, T.deck0));
+    text('단어마다 그림 + 발음 2가지 + 예문 2개', W / 2, H - (VERT ? 150 : 70) * S, VERT ? 40 : 36, SUB, 600, 'center', ca);
+  }
+
+  // E. 명령 한 줄 → 단어카드 12장
+  if (t >= T.deck0 && t < T.deck1 + 0.4) {
+    const a = 1 - prog(t, T.deck1, T.deck1 + 0.4);
+    const C = VERT ? 4 : 6, R = VERT ? 3 : 2;
+    const cw = VERT ? 230 * S : 232 * S, ch = cw * 1.55, gp = VERT ? 20 * S : 24 * S;
+    const tw = C * cw + (C - 1) * gp, th = R * ch + (R - 1) * gp;
+    const x0 = (W - tw) / 2, y0 = VERT ? 360 * S : 200 * S;
+    ctx.save(); ctx.globalAlpha = a;
+    const head = t < T.quiz ? '명령 한 줄 → 그림 단어카드 12장 (1.4초)' : '빈칸 퀴즈 페이지도 자동으로';
+    const ha = t < T.quiz ? prog(t, T.deck0 + 0.2, T.deck0 + 0.7) : prog(t, T.quiz, T.quiz + 0.4);
+    text(head, W / 2, VERT ? 200 * S : 105 * S, VERT ? 46 : 50, t < T.quiz ? INK : GOLD, 800, 'center', ha);
+    if (VERT) text('B1 수준 · 여행 주제 · A4 인쇄용 PDF', W / 2, 275 * S, 32, SUB, 500, 'center', ha);
+    DATA.cards.forEach((c, i) => {
+      const p = out3(prog(t, T.deck0 + 0.4 + i * 0.13, T.deck0 + 0.9 + i * 0.13));
+      if (p <= 0) return;
+      const x = x0 + (i % C) * (cw + gp), y = y0 + Math.floor(i / C) * (ch + gp);
+      const flip = prog(t, T.quiz + i * 0.06, T.quiz + 0.3 + i * 0.06);
+      const sx = Math.abs(Math.cos(flip * Math.PI));
+      ctx.save(); ctx.translate(x + cw / 2, lerp(y + 80 * S, y, p) + ch / 2); ctx.scale(sx, 1);
+      drawCard(c, -cw / 2, -ch / 2, cw, p, { quiz: flip > 0.5, h: ch });
+      ctx.restore();
+    });
+    if (!VERT) text('B1 수준 · 여행 주제 · A4 인쇄용 PDF + 암기앱(Anki) 파일', W / 2, H - 55 * S, 32, SUB, 500, 'center', prog(t, T.deck0 + 1.5, T.deck0 + 2));
+    else text('+ 암기앱(Anki) 파일까지', W / 2, H - 250 * S, 36, SUB, 600, 'center', prog(t, T.deck0 + 1.5, T.deck0 + 2));
+    ctx.restore();
+  }
+
+  // F. 엔딩
+  if (t >= T.deck1) {
+    const a = prog(t, T.deck1 + 0.2, T.deck1 + 0.8);
+    const y = H / 2 - (VERT ? 160 : 120) * S;
+    text('Word Atlas (词光)', W / 2, y, VERT ? 84 : 88, INK, 800, 'center', a);
+    text('그림으로 외우는 영어 단어장 · 무료 오픈소스', W / 2, y + 95 * S, VERT ? 38 : 40, SUB, 500, 'center', a);
+    text('일반인 쓸모 ★★★☆☆', W / 2, y + 190 * S, VERT ? 52 : 54, GOLD, 800, 'center', prog(t, T.deck1 + 0.7, T.deck1 + 1.2));
+    text('뜻풀이는 중국어·영영만 (한국어 없음)', W / 2, y + 280 * S, VERT ? 34 : 34, '#ff9f8a', 600, 'center', prog(t, T.deck1 + 1.2, T.deck1 + 1.7));
+    text('그림·데이터: Word Atlas contributors — CC BY 4.0', W / 2, H - 50 * S, 22, '#6f7891', 400, 'center', a);
+  }
+}
+</script></body></html>

@@ -1,0 +1,130 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="ko.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 30초 과정 애니메이션: 비밀번호를 넣을 때마다 '자물쇠 따는 시간'이 늘어나는 과정 → 순위표 → 이름 효과 → 핵심 → 엔딩
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30, TOTAL = 30 * FPS;
+const S = VERT ? W / 1080 : W / 1920;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
+const F = '"Noto Sans CJK KR", sans-serif', MONO = '"DejaVu Sans Mono", monospace';
+const INK = '#f0f3f6', SUB = '#9aa7b8', BLUE = '#58a6ff', RED = '#ff7b72', GOLD = '#f2c14e', GREEN = '#7ee787';
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x)), prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2, out3 = x => 1 - Math.pow(1 - x, 3), lerp = (a, b, k) => a + (b - a) * k;
+function text(s, x, y, size, color = INK, weight = 700, align = 'center', alpha = 1, font = F) {
+  if (alpha <= 0) return; ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.font = `${weight} ${size * S}px ${font}`;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); ctx.restore();
+}
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function box(x, y, w, h, r, fill, stroke, a = 1) { if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a; rr(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 3 * S; ctx.stroke(); } ctx.restore(); }
+const COL = KO.color, MAXLOG = 24;
+const pick = pw => DATA.find(d => d.pw === pw && !d.hint);
+const READY = true;
+// 시간표(초)
+const T = { intro1: 2.4, typ0: 2.4, typ1: 12.4, rank0: 12.4, rank1: 19.6, name0: 19.6, name1: 23.6, key0: 23.6, end0: 27.0 };
+const TYPE = ['123456', 'P@ssw0rd', 'Summer2026!', 'tiger-gimbap-umbrella'].map(pick);
+
+// 자물쇠 막대: 왼쪽 '바로 뚫림' → 오른쪽 '100년 넘게' (로그 눈금)
+function lockBar(x, y, w, h, frac, score, a = 1) {
+  box(x, y, w, h, h / 2, '#21262d', null, a);
+  if (frac > 0) box(x, y, Math.max(h, w * frac), h, h / 2, COL[score], null, a);
+}
+
+function sceneType(t) {
+  const per = (T.typ1 - T.typ0) / TYPE.length, i = Math.min(TYPE.length - 1, Math.floor((t - T.typ0) / per)), lt = t - T.typ0 - i * per, d = TYPE[i];
+  const a = prog(t, T.typ0, T.typ0 + .3) * (1 - prog(t, T.typ1 - .3, T.typ1));
+  ctx.save(); ctx.globalAlpha = a;
+  const cx = W / 2, top = VERT ? 640 * S : 230 * S;
+  text('훔친 비밀번호 파일을 1초에 1만 번씩 맞혀 볼 때', cx, top, VERT ? 38 : 36, SUB, 500);
+  // 입력칸
+  const n = Math.floor(d.pw.length * prog(lt, .1, .9)), shown = d.pw.slice(0, n) + (lt < 1.1 && lt % .5 < .25 ? '▌' : '');
+  const iw = (VERT ? 900 : 1100) * S, iy = top + 70 * S;
+  box(cx - iw / 2, iy, iw, 120 * S, 24 * S, '#010409', BLUE);
+  text(shown, cx - iw / 2 + 40 * S, iy + 60 * S, VERT ? 60 : 64, INK, 600, 'left', 1, MONO);
+  // 결과
+  const k = out3(prog(lt, 1.0, 1.9)), frac = Math.min(1, d.log10 / 14) * k; // 10^14 이상 = 100년 넘게(막대 끝)
+  const ry = iy + (VERT ? 260 : 230) * S;
+  const sec = k >= 1 ? d.slow : Math.pow(10, lerp(-2, Math.log10(Math.max(d.slow, .01)), k));
+  text(k > 0 ? koTime(sec) : '', cx, ry, VERT ? 130 : 130, COL[d.score], 800, 'center', prog(lt, 1, 1.2));
+  lockBar(cx - iw / 2, ry + 110 * S, iw, 34 * S, frac, d.score);
+  text('바로 뚫림', cx - iw / 2, ry + 175 * S, 26, SUB, 500, 'left'); text('100년 넘게', cx + iw / 2, ry + 175 * S, 26, SUB, 500, 'right');
+  text(`${KO.score[d.score]} · ${d.desc}`, cx, ry + 250 * S, VERT ? 40 : 40, INK, 700, 'center', prog(lt, 1.6, 2));
+  // 지금까지 넣어 본 것 (작게)
+  TYPE.slice(0, i).forEach((p, j) => text(`${p.pw}  →  ${koTime(p.slow)}`, VERT ? cx : 120 * S, (VERT ? 1480 : 880) * S + j * 52 * S, 30, SUB, 500, VERT ? 'center' : 'left', .8, F));
+  ctx.restore();
+}
+
+function sceneRank(t) {
+  const a = prog(t, T.rank0, T.rank0 + .4) * (1 - prog(t, T.rank1 - .3, T.rank1));
+  ctx.save(); ctx.globalAlpha = a;
+  const rows = DATA.filter(d => !d.hint).sort((x, y) => x.log10 - y.log10);
+  text('비밀번호 11개, 도둑이 푸는 시간', W / 2, (VERT ? 330 : 110) * S, VERT ? 56 : 52, INK, 800);
+  const x0 = VERT ? 70 * S : 200 * S, lw = VERT ? 0 : 680 * S, bw = VERT ? W - 140 * S - 260 * S : 760 * S, y0 = VERT ? 460 * S : 200 * S, gap = VERT ? 108 * S : 78 * S;
+  rows.forEach((d, i) => {
+    const p = out3(prog(t, T.rank0 + .4 + i * .32, T.rank0 + 1.2 + i * .32)); if (p <= 0) return;
+    const y = y0 + i * gap;
+    text(d.pw, x0, y, VERT ? 36 : 34, INK, 600, 'left', p, MONO);
+    const bx = x0 + lw, by = y + (VERT ? 42 * S : 0) - 16 * S, w = Math.max(14 * S, bw * Math.min(1, d.log10 / 14) * p);
+    box(bx, by, w, 32 * S, 10 * S, COL[d.score], null, p);
+    text(koTime(d.slow), bx + w + 18 * S, by + 16 * S, VERT ? 30 : 30, COL[d.score], 800, 'left', p);
+  });
+  ctx.restore();
+}
+
+function sceneName(t) {
+  const a = prog(t, T.name0, T.name0 + .4) * (1 - prog(t, T.name1 - .3, T.name1)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  const A = pick('minsu1995'), B = DATA.find(d => d.pw === 'minsu1995' && d.hint), k = ease(prog(t, T.name0 + 1.4, T.name0 + 2.6));
+  const cy = H / 2 - (VERT ? 120 : 60) * S;
+  text('이름 + 태어난 해', W / 2, cy - 230 * S, VERT ? 46 : 46, SUB, 600);
+  text('minsu1995', W / 2, cy - 130 * S, VERT ? 90 : 96, INK, 700, 'center', 1, MONO);
+  text(t < T.name0 + 1.3 ? '도둑이 내 이름을 모를 때' : '도둑이 내 이름(minsu)을 알면', W / 2, cy + 10 * S, VERT ? 40 : 40, t < T.name0 + 1.3 ? SUB : GOLD, 700);
+  const sec = Math.exp(lerp(Math.log(A.slow), Math.log(B.slow), k));
+  text(koTime(sec), W / 2, cy + 150 * S, VERT ? 140 : 150, k >= 1 ? RED : GOLD, 800);
+  text('SNS에 이름·생일이 있다면, 생각보다 훨씬 빨리 뚫려요', W / 2, cy + 300 * S, VERT ? 36 : 40, INK, 600, 'center', prog(t, T.name0 + 2.6, T.name0 + 3));
+  ctx.restore();
+}
+
+function sceneKey(t) {
+  const a = prog(t, T.key0, T.key0 + .4) * (1 - prog(t, T.end0 - .3, T.end0)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  const P = pick('P@ssw0rd'), Q = pick('tiger-gimbap-umbrella');
+  text('기호로 바꾸기보다, 길게!', W / 2, (VERT ? 520 : 200) * S, VERT ? 70 : 72, GOLD, 800);
+  const cards = [[P, '글자를 기호로 바꿔도'], [Q, '관련 없는 단어 3개 이어 쓰기']];
+  cards.forEach(([d, lab], i) => {
+    const p = out3(prog(t, T.key0 + .5 + i * .8, T.key0 + 1.1 + i * .8));
+    const cw = (VERT ? 900 : 760) * S, ch = (VERT ? 330 : 380) * S;
+    const x = VERT ? W / 2 - cw / 2 : W / 2 - cw - 30 * S + i * (cw + 60 * S), y = VERT ? (700 + i * 400) * S : 330 * S;
+    box(x, y, cw, ch, 28 * S, 'rgba(22,27,34,.95)', COL[d.score], p);
+    text(lab, x + cw / 2, y + 60 * S, 36, SUB, 600, 'center', p);
+    text(d.pw, x + cw / 2, y + 150 * S, d.pw.length > 12 ? 48 : 62, INK, 700, 'center', p, MONO);
+    text(koTime(d.slow), x + cw / 2, y + (VERT ? 260 : 270) * S, 72, COL[d.score], 800, 'center', p);
+  });
+  ctx.restore();
+}
+
+function sceneEnd(t) {
+  const a = prog(t, T.end0 + .2, T.end0 + .8), y = H / 2 - (VERT ? 180 : 150) * S;
+  text('zxcvbn', W / 2, y, VERT ? 120 : 130, INK, 800, 'center', a, MONO);
+  text('Dropbox가 공개한 무료 비밀번호 강도 계산기', W / 2, y + 110 * S, VERT ? 40 : 42, SUB, 500, 'center', a);
+  text('일반인 쓸모 ★★★★☆', W / 2, y + 210 * S, VERT ? 58 : 58, GOLD, 800, 'center', prog(t, T.end0 + .7, T.end0 + 1.2));
+  const b = prog(t, T.end0 + 1.2, T.end0 + 1.7);
+  box(W / 2 - 400 * S, y + 280 * S, 800 * S, 84 * S, 42 * S, 'rgba(126,231,135,.13)', null, b);
+  text('인터넷 없이, 내 컴퓨터 안에서만 계산', W / 2, y + 322 * S, VERT ? 38 : 38, GREEN, 700, 'center', b);
+}
+
+function frame(f) {
+  const t = f / FPS;
+  ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  if (t < T.intro1 + .3) { const a = prog(t, .1, .6) * (1 - prog(t, T.intro1 - .3, T.intro1 + .2));
+    text('내 비밀번호,', W / 2, H / 2 - 55 * S, VERT ? 92 : 86, INK, 800, 'center', a);
+    text('몇 초면 뚫릴까?', W / 2, H / 2 + 60 * S, VERT ? 92 : 86, GOLD, 800, 'center', a * prog(t, .6, 1.1)); }
+  if (t >= T.typ0 && t < T.typ1) sceneType(t);
+  if (t >= T.rank0 && t < T.rank1) sceneRank(t);
+  if (t >= T.name0 && t < T.name1) sceneName(t);
+  if (t >= T.key0 && t < T.end0) sceneKey(t);
+  if (t >= T.end0) sceneEnd(t);
+}
+</script></body></html>

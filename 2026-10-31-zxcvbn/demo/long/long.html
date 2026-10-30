@@ -1,0 +1,179 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="data.js"></script><script src="ko.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 실제 계산기 화면 녹화는 clips/<이름>/%05d.png 프레임을 그려 넣는다 (rec_page.py 결과)
+const CLIPDIR = new URLSearchParams(location.search).get('clips') || 'clips';
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const ctx = cv.getContext('2d');
+const F = '"Noto Sans CJK KR", sans-serif', MONO = '"DejaVu Sans Mono", monospace';
+const INK = '#f0f3f6', SUB = '#9aa7b8', BLUE = '#58a6ff', RED = '#ff7b72', GOLD = '#f2c14e', GREEN = '#7ee787', PURPLE = '#d2a8ff';
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+const READY = true;
+const COL = KO.color, pick = pw => DATA.find(d => d.pw === pw && !d.hint);
+
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+function text(s, x, y, size, color = INK, weight = 700, align = 'left', alpha = 1, font = F) {
+  if (alpha <= 0) return; ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.font = `${weight} ${size}px ${font}`;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); ctx.restore();
+}
+const tw = (s, size, weight = 700, font = F) => { ctx.font = `${weight} ${size}px ${font}`; return ctx.measureText(s).width; };
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function box(x, y, w, h, r, fill, stroke, a = 1) { if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a; rr(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke(); } ctx.restore(); }
+function term(x, y, w, h, title, a = 1) {
+  box(x, y, w, h, 16, '#010409', '#30363d', a); ctx.save(); ctx.globalAlpha = a;
+  ctx.fillStyle = '#161b22'; rr(x, y, w, 46, [16, 16, 0, 0]); ctx.fill();
+  ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => { ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, 7); ctx.fillStyle = c; ctx.fill(); });
+  text(title, x + w / 2, y + 23, 20, SUB, 500, 'center'); ctx.restore();
+}
+function typed(s, lt, a, b) { const n = Math.floor(s.length * prog(lt, a, b)); return s.slice(0, n) + (lt > a - 0.6 && lt < b + 0.6 && lt % 1 < .5 ? '▌' : ''); }
+function bar(x, y, w, h, col, a = 1) { box(x, y, Math.max(2, w), h, 10, col, null, a); }
+
+// ---------- 화면 녹화 조각 ----------
+const imgCache = {}, lastClip = {};
+async function clipFrame(name, i) {
+  const src = `${CLIPDIR}/${name}/${String(i + 1).padStart(5, '0')}.png`;
+  if (!imgCache[src]) {
+    for (let k = 0; k < 3 && !imgCache[src]; k++) { const im = new Image(); im.src = src; try { await im.decode(); imgCache[src] = im; } catch (e) {} }
+    if (!imgCache[src]) return lastClip[name] || null;
+  }
+  lastClip[name] = imgCache[src]; return imgCache[src];
+}
+async function drawClip(c, lt, label) {
+  const [name, start, dur] = c.clip; const a = prog(lt, start - 0.4, start) * (1 - prog(lt, start + dur + 0.6, start + dur + 1.0));
+  if (a <= 0) return;
+  const i = Math.max(0, Math.min(Math.round(dur * FPS) - 1, Math.floor((lt - start) * FPS)));
+  const im = await clipFrame(name, i); const x = 260, y = 110, w = 1400, h = 788;
+  ctx.save(); ctx.globalAlpha = a; ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 30;
+  rr(x, y, w, h, 18); ctx.fillStyle = '#000'; ctx.fill(); ctx.shadowBlur = 0; rr(x, y, w, h, 18); ctx.clip(); if (im) ctx.drawImage(im, x, y, w, h); ctx.restore();
+  if (label) { const lw = tw(label, 24, 700) + 40; box(x + w - lw - 16, y + 16, lw, 44, 22, 'rgba(1,4,9,.85)', BLUE, a); text(label, x + w - lw / 2 - 16, y + 38, 24, BLUE, 700, 'center', a); }
+}
+// 녹화가 끝난 뒤 나오는 정리 카드
+function resultRows(rows, lt, at, title) {
+  const a = app(lt, at); if (a <= 0) return;
+  text(title, W / 2, 190, 46, INK, 800, 'center', a);
+  rows.forEach(([pw, sec, score, note], i) => { const b = app(lt, at + .3 + i * .35), y = 300 + i * 120;
+    box(260, y - 46, 1400, 92, 18, 'rgba(255,255,255,.05)', null, b);
+    text(pw, 310, y, 40, INK, 600, 'left', b, MONO); text(koTime(sec), 1610, y, 42, COL[score], 800, 'right', b);
+    if (note) text(note, 1000, y, 28, SUB, 500, 'left', b); });
+}
+const R = pw => { const d = pick(pw); return [pw, d.slow, d.score]; };
+
+// ---------- 장면 ----------
+const SC = {};
+SC.title = (lt) => {
+  text('오늘의 오픈소스', W / 2, 250, 40, SUB, 500, 'center', app(lt, .2));
+  text('zxcvbn', W / 2, 350, 130, INK, 800, 'center', app(lt, .4, .7), MONO);
+  text('비밀번호가 몇 초면 뚫릴지 재 주는 무료 계산기 (Dropbox 공개)', W / 2, 460, 42, SUB, 500, 'center', app(lt, .9));
+  text('일반인 쓸모  ★★★★☆', W / 2, 560, 60, GOLD, 800, 'center', app(lt, 3.8));
+  ['새 비밀번호를 만들기 전에 얼마나 버틸지 미리 재 보기', '부모님·가족 비밀번호를 같이 점검하기', '"기호보다 길이"를 숫자로 확인하고 더 센 비밀번호 만들기'].forEach((s, i) =>
+    text(`${i + 1}. ${s}`, W / 2 - 560, 670 + i * 64, 38, INK, 500, 'left', app(lt, 7.3 + i * 1.3)));
+};
+SC.what = (lt) => {
+  text('= 자물쇠 따는 시간을 재는 "초시계"', 160, 170, 50, GOLD, 800, 'left', app(lt, .5));
+  // 도둑이 넣어 보는 순서
+  const steps = [['흔한 비밀번호 목록', '123456, password …', RED], ['영어 단어·이름', 'tiger, minsu …', '#ff9f43'], ['키보드 줄·날짜', 'qwer, 1995 …', GOLD], ['그래도 안 되면 하나씩 전부', 'aaaa, aaab …', GREEN]];
+  steps.forEach(([k, v, col], i) => { const a = app(lt, 6 + i * 1.3), y = 320 + i * 120;
+    box(160, y - 48, 800, 96, 18, 'rgba(255,255,255,.05)', col, a); text(`${i + 1}`, 210, y, 40, col, 800, 'center', a);
+    text(k, 260, y - 14, 34, INK, 700, 'left', a); text(v, 260, y + 26, 24, SUB, 400, 'left', a, MONO); });
+  text('도둑이 넣어 보는 순서', 160, 245, 28, SUB, 600, 'left', app(lt, 6));
+  const a2 = app(lt, 12.5); text('몇 번 만에 맞힐까?', 1360, 330, 40, INK, 700, 'center', a2);
+  text('→ 시간으로 바꿔 보여 줌', 1360, 400, 40, GOLD, 800, 'center', app(lt, 14));
+  // 키보드 아랫줄
+  const keys = 'ZXCVBNM'.split(''), a3 = app(lt, 18.5);
+  keys.forEach((k, i) => { const hi = i < 6; box(1060 + i * 88, 520, 76, 76, 12, hi ? 'rgba(242,193,78,.2)' : '#161b22', hi ? GOLD : '#30363d', a3); text(k, 1098 + i * 88, 558, 34, hi ? GOLD : SUB, 700, 'center', a3, MONO); });
+  text('이름 = 키보드 맨 아랫줄', 1360, 650, 32, SUB, 600, 'center', a3);
+  const a5 = app(lt, 24); box(160, 790, 1600, 110, 20, 'rgba(126,231,135,.1)', GREEN, a5);
+  text('만든 곳: Dropbox(미국) · 별 약 1.6만 개 · MIT 라이선스(무료, 회사에서도 사용 가능) · 원래는 회원가입 화면용 부품', 960, 845, 30, GREEN, 600, 'center', a5);
+};
+SC.install = (lt) => {
+  // 방법 1
+  const a1 = app(lt, .3) * (1 - app(lt, 12.6, .4));
+  if (a1 > 0) { box(260, 180, 1400, 560, 24, 'rgba(22,27,34,.95)', BLUE, a1);
+    text('방법 1 · 설치 없이', 320, 250, 36, BLUE, 800, 'left', a1);
+    text('📄 password-check.html', 320, 360, 56, INK, 700, 'left', a1, F);
+    text('저장소에서 파일 1개 받기 → 더블클릭 → 크롬·엣지에서 열림', 320, 460, 34, INK, 500, 'left', a1);
+    text('✔ 인터넷 연결 없이 계산 (테스트: 외부 요청 0건)', 320, 560, 34, GREEN, 700, 'left', a1 * app(lt, 6.5));
+    text('✔ 입력한 비밀번호를 어디에도 보내지 않음', 320, 630, 34, GREEN, 700, 'left', a1 * app(lt, 8)); }
+  // 방법 2
+  const a2 = app(lt, 13);
+  if (a2 > 0) { term(260, 150, 1400, 640, '명령 프롬프트 (cmd) · 방법 2: 파이썬', a2);
+    const L = [[':: python.org 에서 파이썬 설치 ("Add python.exe to PATH" 체크)', '#6e7681', 13.3],
+               ['C:\\> pip install zxcvbn', INK, 14.5], ['Successfully installed zxcvbn-4.5.0', GREEN, 16.6],
+               ['C:\\> python check_password.py', INK, 19.6], ['비밀번호 (입력해도 화면에 안 보여요): ', '#c9d1d9', 21.6],
+               ['등급: 보통 (5단계 중 3단계) …', GOLD, 23.5],
+               [':: 원래 명령(zxcvbn)은 Windows에서 입력 대기 방식 때문에 막힐 수 있음', '#6e7681', 26.2]];
+    L.forEach(([s, col, at]) => text(s.startsWith('C:') ? typed(s, lt, at, at + 1.6) : s, 300, 250 + L.findIndex(x => x[0] === s) * 72, 30, col, 400, 'left', app(lt, at, .3) * a2, MONO)); }
+};
+SC.common = async (lt, c) => { await drawClip(c, lt, '실제 계산기 화면 · password-check.html');
+  resultRows([R('123456'), R('password1'), R('qwer1234!'), R('iloveyou')].map((r, i) => [...r, ['가장 흔한 10위 안', '아주 흔함', '키보드 줄', '흔한 100위 안'][i]]), lt, 19.8, '흔한 비밀번호 4개'); };
+SC.speed = (lt) => {
+  text('같은 비밀번호도 "도둑이 얼마나 빨리 넣어 보느냐"에 따라', W / 2, 170, 40, INK, 700, 'center', app(lt, .3));
+  const d = pick('Summer2026!');
+  const rows = [['🌐 로그인 창에 계속 넣어 보기', '1초에 10번', d.online, 6.5], ['🗄️ 훔친 파일 · 잘 보호된 사이트', '1초에 1만 번', d.slow, 12.5], ['⚡ 훔친 파일 · 허술한 사이트', '1초에 100억 번', d.offline, 15.5]];
+  text('예: Summer2026!', W / 2, 260, 36, SUB, 600, 'center', app(lt, 3), MONO);
+  rows.forEach(([k, v, sec, at], i) => { const a = app(lt, at), y = 380 + i * 140, hi = i === 1;
+    box(260, y - 56, 1400, 112, 20, hi ? 'rgba(242,193,78,.1)' : 'rgba(255,255,255,.05)', hi ? GOLD : null, a);
+    text(k, 310, y, 38, INK, 700, 'left', a); text(v, 1000, y, 32, SUB, 600, 'left', a); text(koTime(sec), 1610, y, 44, hi ? GOLD : INK, 800, 'right', a); });
+  text('이 영상의 큰 숫자 = 가운데 줄 기준', W / 2, 880, 38, GOLD, 800, 'center', app(lt, 19));
+};
+SC.swap = async (lt, c) => { await drawClip(c, lt, '글자를 기호로 바꿔 보기');
+  const d = pick('P@ssw0rd');
+  resultRows([['password', 0.0003, 0, ''], R('P@ssw0rd'), ['P@ssw0rd!2026', 1001, 2, '연도·느낌표 추가']], lt, 16.6, '기호로 바꿔도 도둑은 알아요'); };
+SC.name = async (lt, c) => { await drawClip(c, lt, '내 정보 칸에 이름 넣어 보기');
+  const A = pick('minsu1995'), B = DATA.find(d => d.pw === 'minsu1995' && d.hint);
+  resultRows([['minsu1995', A.slow, A.score, '이름을 모를 때'], ['minsu1995', B.slow, B.score, '이름(minsu)을 알 때']], lt, 15.6, '이름 + 태어난 해'); };
+SC.words = async (lt, c) => { await drawClip(c, lt, '단어를 하나씩 이어 쓰기');
+  resultRows([['tiger', 0.0211, 0, '단어 1개'], ['tiger-gimbap', 420001, 3, '단어 2개'], R('tiger-gimbap-umbrella').concat('단어 3개')], lt, 16.1, '단어가 늘수록 시간이 확 늘어요'); };
+SC.rank = (lt) => {
+  text('테스트한 비밀번호 11개 (훔친 파일 · 1초에 1만 번 기준)', W / 2, 130, 40, INK, 800, 'center', app(lt, .2));
+  const rows = DATA.filter(d => !d.hint).sort((x, y) => x.log10 - y.log10);
+  rows.forEach((d, i) => { const p = ease(app(lt, .8 + i * .35, .7)), y = 215 + i * 64;
+    text(d.pw, 220, y, 30, INK, 600, 'left', p, MONO);
+    const w = Math.max(14, 760 * Math.min(1, d.log10 / 14) * p); bar(860, y - 16, w, 32, COL[d.score], p);
+    text(koTime(d.slow), 880 + w, y, 28, COL[d.score], 800, 'left', p); });
+};
+SC.korean = async (lt, c) => { await drawClip(c, lt, '"안녕하세요"를 영어 자판으로 치면');
+  const a = app(lt, 11.3);
+  if (a > 0) { text('dkssudgktpdy', W / 2, 330, 80, INK, 700, 'center', a, MONO);
+    text('= 한글 "안녕하세요"를 영어 자판으로 친 것', W / 2, 430, 40, SUB, 600, 'center', a);
+    text('zxcvbn 결과: 매우 안전 · 약 3년', W / 2, 560, 50, GREEN, 800, 'center', a);
+    text('⚠ 한글 자판 바꾸기를 모르는 계산 → 실제로는 더 약할 수 있음', W / 2, 690, 40, '#ff9f43', 800, 'center', app(lt, 18.5)); } };
+SC.cons = (lt) => {
+  text('아쉬운 점', 200, 150, 52, INK, 800, 'left', app(lt, .1));
+  [['한국어를 몰라요', '한국어 단어·한글 자판 꼼수(dkssud…)를 흔한 비밀번호로 보지 않음'], ['원본 업데이트 멈춤', '자바스크립트 원본 4.4.2(2017년)가 마지막 · 파이썬판 4.5.0'],
+   ['유출 여부는 모름', '이미 털린 비밀번호인지는 확인 안 함 (그건 다른 서비스 몫)'], ['시간은 어림값', '실제 공격 방법·컴퓨터에 따라 달라짐 → "차이"를 보는 용도']].forEach(([k, v], i) => {
+    const at = [4.3, 10, 16, 22][i], a = app(lt, at), y = 290 + i * 140;
+    box(200, y - 54, 1520, 108, 20, 'rgba(255,123,114,.08)', null, a);
+    text(`${i + 1}`, 250, y, 42, RED, 800, 'center', a); text(k, 310, y, 36, INK, 800, 'left', a); text(v, 700, y, 28, SUB, 500, 'left', a); });
+};
+SC.end = (lt) => {
+  text('이런 분께 추천', W / 2, 170, 52, INK, 800, 'center', app(lt, .2));
+  [['새 비밀번호 만들 때', '만들기 전에 미리 재 보기'], ['가족 비밀번호 점검', '부모님 계정 같이 확인'], ['보안 교육', '"기호보다 길이"를 숫자로']].forEach(([k, v], i) => {
+    const a = app(lt, .5 + i * .8), x = 210 + i * 520;
+    box(x, 270, 460, 240, 24, 'rgba(22,27,34,.95)', GOLD, a); text(k, x + 230, 350, 44, GOLD, 800, 'center', a); text(v, x + 230, 440, 32, INK, 500, 'center', a); });
+  text('password-check.html  ·  github.com/dropbox/zxcvbn', W / 2, 620, 34, BLUE, 500, 'center', app(lt, 7), MONO);
+  text('다음에 또 멋진 오픈소스 소개할게요!', W / 2, 740, 56, INK, 800, 'center', app(lt, 13.5));
+};
+
+function subtitle(s, a) {
+  if (!s || a <= 0) return; ctx.font = `700 40px ${F}`; const w = ctx.measureText(s).width;
+  ctx.save(); ctx.globalAlpha = a; rr(W / 2 - w / 2 - 32, 940, w + 64, 80, 22); ctx.fillStyle = 'rgba(1,4,9,.88)'; ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s, W / 2, 980); ctx.restore();
+}
+async function frame(f) {
+  const t = f / FPS; const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1]; const lt = t - c.t0;
+  ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalAlpha = prog(lt, 0, .4) * (1 - prog(lt, c.dur - .3, c.dur)); await SC[c.id](lt, c); ctx.restore();
+  if (c.tag) { ctx.font = `700 28px ${F}`; const w = ctx.measureText(c.tag).width; box(36, 28, w + 48, 54, 27, 'rgba(1,4,9,.85)'); text(c.tag, 60, 56, 28, INK, 700); }
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]);
+  if (cue) subtitle(cue[2], prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1])));
+}
+</script></body></html>

@@ -61,7 +61,7 @@
 | 추천 | 저장소 | 한 줄 | 만든 곳 | 별 | 설치 | 테스트 결과 | 숏폼 훅 | 쓸모 |
 |---|---|---|---|---|---|---|---|---|
 | ⭐ | ORB-HD/deface | 사진·영상 속 얼굴 자동 블러 | 독일 하이델베르크대 | 1.6천 | pip `deface` (모델 내장) | 0.8초, 얼굴만 정확히 블러 | 단톡방 올리기 전 모자이크 | ★5 |
-| ⭐ | dropbox/zxcvbn | 내 비밀번호가 몇 초 만에 뚫리는지 | 미국 Dropbox | 1.6만 | pip `zxcvbn` | password1 '1초 미만' / 긴 문장 '수백 년' | 내 비번은 몇 초? | ★5 |
+| ⭐ ✅ Day 4 | dropbox/zxcvbn | 내 비밀번호가 몇 초 만에 뚫리는지 | 미국 Dropbox | 1.6만 | pip `zxcvbn` | password1 '1초 미만' / 긴 문장 '수백 년' | 내 비번은 몇 초? | ★5 |
 | ⭐ | beancount/fava | 텍스트 가계부를 차트 대시보드로 | 독일 | 2.6천 | pip `fava` | 가상 9개월 가계부 → 월별 막대그래프 화면 | 메모장 가계부가 대시보드로 | ★4 |
 |  | thampiman/reverse-geocoder | 사진 GPS → 동네 이름 (오프라인) | 개인 | 1.9천 | pip `reverse_geocoder` | 가짜 남산 좌표 → Seoul, 0.6초 | 사진 한 장으로 사는 동네가 드러난다 | ★4 |
 |  | RapidAI/RapidOCR | CPU에서 도는 OCR | 중국 | 8.4천 | pip `rapidocr_onnxruntime` | 영문·숫자 영수증 정확, **한글 못 읽음** | 영수증 → 가계부 | ★3 |

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>내 비밀번호 몇 초면 뚫릴까</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--line:#30363d;--ink:#f0f3f6;--sub:#9aa7b8;--blue:#58a6ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","Noto Sans CJK KR","Apple SD Gothic Neo",sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:40px 16px}
+h1{font-size:34px;margin:0 0 6px}.lead{color:var(--sub);margin:0 0 26px;font-size:17px}
+.safe{display:inline-block;background:rgba(126,231,135,.12);color:#7ee787;border:1px solid #2ea04366;border-radius:20px;padding:6px 14px;font-size:14px;margin-bottom:22px}
+label{display:block;font-weight:700;margin:16px 0 8px}
+.row{display:flex;gap:8px}input{flex:1;font-size:24px;padding:14px 16px;border-radius:12px;border:2px solid var(--line);background:#010409;color:var(--ink);font-family:Consolas,monospace;min-width:0}
+input:focus{outline:none;border-color:var(--blue)}input.small{font-size:18px}
+button{font-size:16px;padding:0 16px;border-radius:12px;border:2px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-top:22px}
+.big{font-size:44px;font-weight:800;margin:4px 0}.cap{color:var(--sub);font-size:15px}
+.meter{height:14px;border-radius:7px;background:#21262d;overflow:hidden;margin:14px 0 6px}.meter i{display:block;height:100%;width:0;transition:.25s}
+.grade{font-weight:800;font-size:20px}
+.sc{display:grid;grid-template-columns:1fr auto;gap:10px 16px;margin-top:8px;font-size:17px}.sc b{text-align:right}
+.tip{margin:6px 0;padding-left:1.2em;text-indent:-1.2em}.warn{color:#ff9f43;font-weight:700}
+.foot{color:var(--sub);font-size:13px;margin-top:28px;line-height:1.6}
+</style></head><body><div class="wrap">
+<h1>🔒 내 비밀번호, 몇 초면 뚫릴까?</h1>
+<p class="lead">비밀번호를 넣으면, 도둑이 자물쇠를 따듯 하나씩 맞혀 볼 때 걸리는 시간을 알려 줘요.</p>
+<span class="safe">✔ 인터넷 없이 이 컴퓨터 안에서만 계산해요 · 입력한 글자는 어디에도 보내지 않아요</span>
+<label for="pw">비밀번호 넣어 보기</label>
+<div class="row"><input id="pw" type="password" autocomplete="off" spellcheck="false" placeholder="여기에 입력"><button id="eye" type="button">보기</button></div>
+<label for="me">내 정보 (선택) — 이름·생일·아이디를 넣으면 그걸 섞은 비밀번호를 더 엄격하게 봐요</label>
+<div class="row"><input id="me" class="small" autocomplete="off" spellcheck="false" placeholder="예: minsu 0315 kim"></div>
+<div class="card" id="out">
+  <div class="cap">잘 지켜진 사이트의 비밀번호 파일을 도둑이 훔쳐서 풀 때</div>
+  <div class="big" id="t">—</div>
+  <div class="meter"><i id="bar"></i></div><div class="grade" id="g">비밀번호를 넣어 보세요</div>
+  <div class="sc">
+    <span>🌐 로그인 창에 계속 넣어 보기 (1초에 10번)</span><b id="t1">—</b>
+    <span>🗄️ 훔친 파일, 잘 보호된 경우 (1초에 1만 번)</span><b id="t2">—</b>
+    <span>⚡ 훔친 파일, 허술하게 보호된 경우 (1초에 100억 번)</span><b id="t3">—</b>
+  </div>
+  <div id="fb" style="margin-top:16px"></div>
+</div>
+<p class="foot">계산: Dropbox가 공개한 zxcvbn 4.4.2 (MIT 라이선스) · 한국어 화면: daily-github-pick · 시간은 '얼마나 맞히기 어려운가'를 어림한 값이에요. 실제 공격 방식에 따라 달라질 수 있어요.<br>한글 단어를 영어 자판으로 친 비밀번호(예: 안녕하세요 → dkssudgktpdy)는 이 계산기가 몰라서 실제보다 안전하게 나올 수 있어요.</p>
+</div>
+<script>/*ZXCVBN*/</script>
+<script>/*KO*/</script>
+<script>
+const $ = id => document.getElementById(id);
+function run() {
+  const pw = $('pw').value, me = $('me').value.split(/[\s,]+/).filter(Boolean);
+  if (!pw) { ['t','t1','t2','t3'].forEach(i => $(i).textContent = '—'); $('g').textContent = '비밀번호를 넣어 보세요'; $('bar').style.width = 0; $('fb').innerHTML = ''; return; }
+  const r = zxcvbn(pw, me), c = r.crack_times_seconds;
+  $('t').textContent = koTime(c.offline_slow_hashing_1e4_per_second);
+  $('t1').textContent = koTime(c.online_no_throttling_10_per_second);
+  $('t2').textContent = koTime(c.offline_slow_hashing_1e4_per_second);
+  $('t3').textContent = koTime(c.offline_fast_hashing_1e10_per_second);
+  $('bar').style.width = (r.score + 1) * 20 + '%'; $('bar').style.background = KO.color[r.score];
+  $('g').textContent = `${KO.score[r.score]} (5단계 중 ${r.score + 1}단계)`; $('g').style.color = KO.color[r.score];
+  let h = '';
+  if (r.feedback.warning) h += `<div class="tip warn">⚠ ${koWarn(r.feedback.warning)}</div>`;
+  r.feedback.suggestions.forEach(s => h += `<div class="tip">💡 ${koSugg(s)}</div>`);
+  if (!h && r.score >= 3) h = '<div class="tip">👍 맞히기 어려운 비밀번호예요. 다른 사이트와 같이 쓰지만 않으면 돼요</div>';
+  $('fb').innerHTML = h;
+}
+$('pw').addEventListener('input', run); $('me').addEventListener('input', run);
+$('eye').onclick = () => { const p = $('pw'); p.type = p.type === 'password' ? 'text' : 'password'; $('eye').textContent = p.type === 'password' ? '보기' : '숨기기'; };
+</script></body></html>

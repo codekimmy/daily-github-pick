@@ -1,0 +1,230 @@
+[
+ {
+  "pw": "123456",
+  "desc": "숫자 연속",
+  "hint": null,
+  "score": 0,
+  "guesses": 2.0,
+  "log10": 0.3,
+  "online": 0.2,
+  "offline": 2e-10,
+  "slow": 0.0002,
+  "display_slow": "less than a second",
+  "display_online": "less than a second",
+  "patterns": [
+   "dictionary:passwords"
+  ],
+  "warning": "This is a top-10 common password.",
+  "ms": 1.8
+ },
+ {
+  "pw": "password1",
+  "desc": "영어 단어 + 숫자 1",
+  "hint": null,
+  "score": 0,
+  "guesses": 190.0,
+  "log10": 2.28,
+  "online": 19.0,
+  "offline": 1.9e-08,
+  "slow": 0.019,
+  "display_slow": "less than a second",
+  "display_online": "19 seconds",
+  "patterns": [
+   "dictionary:passwords"
+  ],
+  "warning": "This is a very common password.",
+  "ms": 0.6
+ },
+ {
+  "pw": "qwer1234!",
+  "desc": "키보드 줄 + 숫자 + 느낌표",
+  "hint": null,
+  "score": 1,
+  "guesses": 13058.0,
+  "log10": 4.12,
+  "online": 1305.8,
+  "offline": 1.3058e-06,
+  "slow": 1.3058,
+  "display_slow": "1 second",
+  "display_online": "22 minutes",
+  "patterns": [
+   "dictionary:passwords",
+   "bruteforce"
+  ],
+  "warning": "This is similar to a commonly used password.",
+  "ms": 0.6
+ },
+ {
+  "pw": "P@ssw0rd",
+  "desc": "글자를 기호로 바꾼 password",
+  "hint": null,
+  "score": 0,
+  "guesses": 17.0,
+  "log10": 1.23,
+  "online": 1.7,
+  "offline": 1.7e-09,
+  "slow": 0.0017,
+  "display_slow": "less than a second",
+  "display_online": "2 seconds",
+  "patterns": [
+   "dictionary:passwords"
+  ],
+  "warning": "This is similar to a commonly used password.",
+  "ms": 0.5
+ },
+ {
+  "pw": "iloveyou",
+  "desc": "영어 문장 붙여 쓰기",
+  "hint": null,
+  "score": 0,
+  "guesses": 48.0,
+  "log10": 1.68,
+  "online": 4.8,
+  "offline": 4.8e-09,
+  "slow": 0.0048,
+  "display_slow": "less than a second",
+  "display_online": "5 seconds",
+  "patterns": [
+   "dictionary:passwords"
+  ],
+  "warning": "This is a top-100 common password.",
+  "ms": 0.4
+ },
+ {
+  "pw": "minsu1995",
+  "desc": "이름 + 태어난 해",
+  "hint": null,
+  "score": 2,
+  "guesses": 10010000.0,
+  "log10": 7.0,
+  "online": 1001000.0,
+  "offline": 0.001001,
+  "slow": 1001.0,
+  "display_slow": "17 minutes",
+  "display_online": "12 days",
+  "patterns": [
+   "bruteforce",
+   "regex"
+  ],
+  "warning": "",
+  "ms": 0.5
+ },
+ {
+  "pw": "minsu1995",
+  "desc": "이름 + 태어난 해 (이름을 알려 준 경우)",
+  "hint": [
+   "minsu"
+  ],
+  "score": 1,
+  "guesses": 15000.0,
+  "log10": 4.18,
+  "online": 1500.0,
+  "offline": 1.5e-06,
+  "slow": 1.5,
+  "display_slow": "2 seconds",
+  "display_online": "25 minutes",
+  "patterns": [
+   "dictionary:user_inputs",
+   "regex"
+  ],
+  "warning": "",
+  "ms": 0.5
+ },
+ {
+  "pw": "dkssudgktpdy",
+  "desc": "한글 '안녕하세요'를 영어 자판으로",
+  "hint": null,
+  "score": 4,
+  "guesses": 1000000000001.0,
+  "log10": 12.0,
+  "online": 100000000000.1,
+  "offline": 100.0000000001,
+  "slow": 100000000.0001,
+  "display_slow": "3 years",
+  "display_online": "centuries",
+  "patterns": [
+   "bruteforce"
+  ],
+  "warning": "",
+  "ms": 0.4
+ },
+ {
+  "pw": "Summer2026!",
+  "desc": "계절 + 올해 + 느낌표",
+  "hint": null,
+  "score": 2,
+  "guesses": 27610000.0,
+  "log10": 7.44,
+  "online": 2761000.0,
+  "offline": 0.002761,
+  "slow": 2761.0,
+  "display_slow": "46 minutes",
+  "display_online": "1 month",
+  "patterns": [
+   "dictionary:passwords",
+   "bruteforce"
+  ],
+  "warning": "This is similar to a commonly used password.",
+  "ms": 0.6
+ },
+ {
+  "pw": "tiger-gimbap-umbrella",
+  "desc": "관련 없는 단어 3개",
+  "hint": null,
+  "score": 4,
+  "guesses": 298998100000000.0,
+  "log10": 14.48,
+  "online": 29899810000000.0,
+  "offline": 29899.81,
+  "slow": 29899810000.0,
+  "display_slow": "centuries",
+  "display_online": "centuries",
+  "patterns": [
+   "dictionary:passwords",
+   "bruteforce",
+   "dictionary:passwords"
+  ],
+  "warning": "",
+  "ms": 1.1
+ },
+ {
+  "pw": "blue-tiger-gimbap-umbrella-77",
+  "desc": "관련 없는 단어 4개 + 숫자",
+  "hint": null,
+  "score": 4,
+  "guesses": 5.9799601e+23,
+  "log10": 23.78,
+  "online": 5.9799601e+22,
+  "offline": 59799601000000.0,
+  "slow": 5.9799601e+19,
+  "display_slow": "centuries",
+  "display_online": "centuries",
+  "patterns": [
+   "bruteforce",
+   "dictionary:passwords",
+   "bruteforce",
+   "dictionary:passwords",
+   "bruteforce"
+  ],
+  "warning": "",
+  "ms": 3.5
+ },
+ {
+  "pw": "X9#qLm2$vR8!",
+  "desc": "무작위 12자리",
+  "hint": null,
+  "score": 4,
+  "guesses": 1000000000001.0,
+  "log10": 12.0,
+  "online": 100000000000.1,
+  "offline": 100.0000000001,
+  "slow": 100000000.0001,
+  "display_slow": "3 years",
+  "display_online": "centuries",
+  "patterns": [
+   "bruteforce"
+  ],
+  "warning": "",
+  "ms": 0.5
+ }
+]

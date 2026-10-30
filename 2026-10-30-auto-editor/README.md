@@ -42,7 +42,8 @@
 
 ![터미널](media/terminal.gif)
 
-- **롱폼 완성 영상: `media/auto-editor-long.mp4` (6분 19초, 13개 장, 원본·결과·여유·빨리 감기 실제 영상 포함)**
+- **업로드용: `media/auto-editor-long-voice-bgm.mp4`(롱폼, 내레이션 + 배경음악), `media/auto-editor-shorts-voice-bgm.mp4`(숏폼 30초)**
+- 롱폼 원본(음성 없음): `media/auto-editor-long.mp4` (6분 19초, 13개 장, 원본·결과·여유·빨리 감기 실제 영상 포함)**
 - 과정 애니메이션: `media/auto-editor-anim.mp4`(가로 30초), `media/auto-editor-anim-vertical.mp4`(세로 30초, 숏폼용) — auto-editor가 실제로 잰 소리 크기와 자른 구간 데이터로 그림
 - 썸네일: `media/thumbnail.jpg`
 
@@ -101,4 +102,5 @@ for %f in (*.mp4) do auto-editor "%f" --no-open -o "완성\%~nf.mp4"
 - `demo/anim/`: `auto-editor levels`(실제 소리 크기)와 `--export v1`(실제 자른 구간)로 데이터를 만들고(`prep.py`) 프레임 단위로 렌더링(`anim.html`, `render.py`)
 - `demo/long/`: 실제 결과 영상 조각을 프레임·소리로 뽑아(`prep_clips.py`) 장면 사이에 넣고(`long.html`, `script.js`, `render_long.py`) 합침(`compose.py`)
 - `demo/narration/make.py`: 음성용 대본 (구간 시간, 한글 읽기, 초당 6글자 검사)
+- `demo/voice/voiceover.py`: 운영자가 만든 내레이션 음성을 문장별로 잘라 자막 구간에 배치 + `bgm.py`로 만든 배경음악을 목소리 아래 자동으로 낮춰 깔기
 - 시연 영상 속 강의 내용·목소리는 모두 직접 만든 가상 자료입니다

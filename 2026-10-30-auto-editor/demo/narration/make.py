@@ -53,3 +53,5 @@ def write(name, title, video, length, cues):
 
 write("long", "롱폼", "auto-editor-long.mp4", LONG_LEN, long_cues)
 write("shorts", "숏폼", "auto-editor-anim-vertical.mp4", 30.0, SHORTS)
+# 음성 입히기(voice/voiceover.py)에서 쓰는 구간 목록
+(here / "cues.json").write_text(json.dumps({"long": long_cues, "shorts": SHORTS}, ensure_ascii=False, indent=0), encoding="utf-8")

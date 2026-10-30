@@ -25,7 +25,7 @@
 설치: 파이썬 설치 후 cmd에서 pip install auto-editor → auto-editor 영상.mp4 (말 앞뒤 여유는 -m 0.5s). 자세한 사용법은 관련 동영상(전체 영상)에 있어요.
 ```
 
-**영상**: `media/auto-editor-anim-vertical.mp4`
+**영상**: `media/auto-editor-shorts-voice-bgm.mp4`  (내레이션 + 배경음악, 30초) · 원본: `media/auto-editor-anim-vertical.mp4`
 
 ---
 아래는 참고용 원본 메모입니다.

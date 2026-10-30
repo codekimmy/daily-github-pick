@@ -15,10 +15,10 @@ with sync_playwright() as p:
     total = pg.evaluate("TOTAL")
     for f in (only or range(total)):
         pg.evaluate(f"frame({f})")
-        pg.screenshot(path=f"{fr}/{f:05d}.jpg", type="jpeg", quality=92)  # 화면 캡처로 프레임 찍기
+        pg.screenshot(path=f"{fr}/{f:05d}.png")  # 화면 캡처로 프레임 찍기
         if f % 150 == 0: print(f, "/", total, flush=True)
     b.close()
 if only is None:
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", "30", "-i", f"{fr}/%05d.jpg", "-c:v", "libx264",
-                    "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", out], check=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-framerate", "30", "-i", f"{fr}/%05d.png", "-c:v", "libx264",
+                    "-preset", "slow", "-crf", "14", "-tune", "animation", "-sws_flags", "spline+accurate_rnd+full_chroma_int", "-pix_fmt", "yuv420p", out], check=True)
     print("saved", out)

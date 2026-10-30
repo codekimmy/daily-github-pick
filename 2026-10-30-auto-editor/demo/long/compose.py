@@ -9,8 +9,8 @@ S = json.loads(src[src.index("{"): src.rindex("}") + 1])
 pre = S["preview"]["dur"]; tmp = tempfile.mkdtemp()
 run = lambda *a: subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *a], check=True)
 
-run("-t", str(pre), "-i", anim, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", "-r", "30", f"{tmp}/pre.mp4")
-run("-framerate", "30", "-i", f"{frames}/%05d.jpg", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p", f"{tmp}/body.mp4")
+run("-t", str(pre), "-i", anim, "-c:v", "libx264", "-preset", "slow", "-crf", "14", "-tune", "animation", "-sws_flags", "spline+accurate_rnd+full_chroma_int", "-pix_fmt", "yuv420p", "-r", "30", f"{tmp}/pre.mp4")
+run("-framerate", "30", "-i", f"{frames}/%05d.png", "-c:v", "libx264", "-preset", "slow", "-crf", "14", "-tune", "animation", "-sws_flags", "spline+accurate_rnd+full_chroma_int", "-pix_fmt", "yuv420p", f"{tmp}/body.mp4")
 open(f"{tmp}/list.txt", "w").write(f"file '{tmp}/pre.mp4'\nfile '{tmp}/body.mp4'\n")
 run("-f", "concat", "-safe", "0", "-i", f"{tmp}/list.txt", "-c", "copy", f"{tmp}/video.mp4")
 

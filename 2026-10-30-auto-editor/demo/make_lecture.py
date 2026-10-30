@@ -98,5 +98,5 @@ fc = (f"[0:v]fps=30,format=yuv420p,{clock}[bg];"
       "[bg][wv]overlay=50:580[v]")
 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", "slides.txt", "-i", "lecture.wav",
                 "-filter_complex", fc, "-map", "[v]", "-map", "[a2]", "-t", f"{total:.3f}",
-                "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-c:a", "aac", "-b:a", "128k", "lecture.mp4"], cwd=work, check=True)
+                "-c:v", "libx264", "-preset", "medium", "-crf", "10", "-c:a", "aac", "-b:a", "128k", "lecture.mp4"], cwd=work, check=True)
 print(f"lecture.mp4 {total:.1f}초, 문장 {len(segs)}개, 말하는 시간 {sum(s['speak_end'] - s['start'] for s in segs):.1f}초")

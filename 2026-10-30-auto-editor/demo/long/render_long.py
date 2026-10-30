@@ -20,6 +20,6 @@ with sync_playwright() as p:
     print("total", total, flush=True)
     for f in frames:
         pg.evaluate(f"frame({f})")
-        pg.screenshot(path=f"{out}/{f:05d}.jpg", type="jpeg", quality=88)
+        pg.screenshot(path=f"{out}/{f:05d}.png")  # 무손실로 찍어야 색번짐·깜빡임이 안 생김
         if f % 600 == 0: print(f, "/", total, flush=True)
     b.close()

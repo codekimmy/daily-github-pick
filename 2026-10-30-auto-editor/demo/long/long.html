@@ -37,11 +37,14 @@ function bar(x, y, w, h, col, a = 1) { box(x, y, Math.max(2, w), h, 10, col, nul
 const mmss = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
 
 // ---------- 영상 조각 ----------
-const imgCache = {};
+const imgCache = {}, lastClip = {};
 async function clipFrame(name, i) {
-  const src = `${CLIPDIR}/${name}/${String(i + 1).padStart(5, '0')}.jpg`;
-  if (!imgCache[src]) { const im = new Image(); im.src = src; try { await im.decode(); } catch (e) { return null; } imgCache[src] = im; }
-  return imgCache[src];
+  const src = `${CLIPDIR}/${name}/${String(i + 1).padStart(5, '0')}.png`;
+  if (!imgCache[src]) {  // 가끔 그림 읽기가 실패하면 검은 화면이 한 장 끼므로 3번까지 다시 읽고, 그래도 안 되면 바로 앞 장면 유지
+    for (let k = 0; k < 3 && !imgCache[src]; k++) { const im = new Image(); im.src = src; try { await im.decode(); imgCache[src] = im; } catch (e) {} }
+    if (!imgCache[src]) return lastClip[name] || null;
+  }
+  lastClip[name] = imgCache[src]; return imgCache[src];
 }
 async function drawClip(c, lt, label) {
   const [name, start, dur] = c.clip; const a = prog(lt, start - 0.4, start) * (1 - prog(lt, start + dur, start + dur + 0.4));

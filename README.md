@@ -14,6 +14,7 @@
 | `demo/` | 직접 만든 데모 코드 |
 
 - 전체 목록: [INDEX.md](INDEX.md)
+- 예비 후보(실행 확인됨): [CANDIDATES.md](CANDIDATES.md)
 - 제작 규칙: [GUIDE.md](GUIDE.md)
 - 빈 양식: [templates/](templates/)
 - 녹화 도구: [tools/](tools/)

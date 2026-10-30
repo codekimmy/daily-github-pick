@@ -10,4 +10,4 @@
 6. `YYYY-MM-DD-이름/`에 README.md, blog.md, youtube-long.md, shorts.md를 templates 형식으로 작성한다. 초보자 눈높이 규칙(GUIDE 3장)을 반드시 지킨다. 명령어는 Windows cmd 기준. 원문 문장을 베끼지 않는다. "직접 써봤다/써본 후기/해봤더니" 같은 1인칭 체험 표현은 쓰지 않는다(GUIDE 3장).
 6-1. 롱폼·숏폼 영상 각각의 음성용 대본 `narration-long.txt`, `narration-shorts.txt`를 GUIDE 5-1장 규칙대로 만든다(구간 시간 + 영어·숫자를 한글 읽기로).
 7. `INDEX.md`에 한 줄 추가(예비 후보에서 골랐다면 `CANDIDATES.md` 해당 줄 추천 칸에 `✅ Day N` 표시) 후 main에 커밋·푸시. 커밋 메시지: `Day N: 저장소명 — 한 줄 설명`.
-8. 마지막에 사용자에게 한국어로 짧게 보고: 오늘의 프로젝트 한 줄 소개, 직접 해본 핵심 결과 1~2줄, 저장소 폴더 링크, 대표 GIF/영상 파일 전송.
+8. 마지막에 사용자에게 한국어로 짧게 보고(음성 대본을 보낼 때는 문장만 있는 `narration-long-text.txt`, `narration-shorts-text.txt`를 보낸다): 오늘의 프로젝트 한 줄 소개, 직접 해본 핵심 결과 1~2줄, 저장소 폴더 링크, 대표 GIF/영상 파일 전송.

@@ -9,7 +9,7 @@ levels = [round(float(x), 4) for x in out.split() if x[0].isdigit()]
 subprocess.run(["auto-editor", "lecture.mp4", "--no-open", "--progress", "none", "--export", "v1", "-o", "tl.v1"], cwd=work, check=True)
 chunks = json.loads((work / "tl.v1").read_text())["chunks"]
 data = {"fps": 30, "levels": levels, "chunks": [[a, b, 0 if s > 1000 else 1] for a, b, s in chunks],
-        "results": {"orig": 67.6, "cut": 36.3, "m05": 42.3, "m1": 52.3, "fast4": 44.2, "took": 6}}
+        "results": {"orig": 57.9, "cut": 29.0, "m05": 35.0, "m1": 45.0, "fast4": 36.2, "took": 7}}
 (here / "data.js").write_text("const DATA=" + json.dumps(data) + ";", encoding="utf-8")
 keep = sum(b - a for a, b, k in data["chunks"] if k) / 30
 print("levels", len(levels), "chunks", len(chunks), f"남는 길이 {keep:.1f}초")

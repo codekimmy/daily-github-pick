@@ -20,6 +20,6 @@ for c in range(NC):
 d.text((50, 70), "지루한 컷 편집,", font=fb(96), fill=(240, 243, 246))
 d.text((50, 190), "명령 한 줄로", font=fb(110), fill=(242, 193, 78))
 d.rounded_rectangle((820, 90, 1240, 300), 30, fill=(126, 231, 135))
-d.text((1030, 150), "1:08 → 0:36", font=fb(58), fill=(13, 17, 23), anchor="mm")
+d.text((1030, 150), "0:58 → 0:29", font=fb(58), fill=(13, 17, 23), anchor="mm")
 d.text((1030, 240), "무음 자동 컷", font=fb(52), fill=(13, 17, 23), anchor="mm")
 im.save(sys.argv[1], quality=90); print("saved", sys.argv[1])

@@ -85,7 +85,7 @@ function frame(f) {
     const seenGaps = DATA.chunks.filter(([a, b, k]) => !k && (a / NF <= scan || t > T.scan1));
     const silentSec = seenGaps.reduce((s, [a, b]) => s + (Math.min(b, NF * scan) - a) / FPS, 0);
     if (t < T.cut0) {
-      text('10분짜리 강의 대신 1분 8초짜리 가상 강의로 시연', W / 2, ty - 70 * S, VERT ? 30 : 28, SUB, 500, 'center');
+      text('58초짜리 가상 강의로 시연', W / 2, ty - 70 * S, VERT ? 30 : 28, SUB, 500, 'center');
       text('🔵 말하는 곳   🔴 조용한 곳', W / 2, ty, VERT ? 42 : 44, INK, 700);
       text(`조용한 구간 ${seenGaps.length}곳 · 합계 ${silentSec.toFixed(1)}초`, W / 2, ty + 70 * S, VERT ? 52 : 52, RED, 800, 'center', prog(t, T.scan0 + 0.5, T.scan0 + 1));
     } else {
@@ -101,8 +101,8 @@ function frame(f) {
     const by = VERT ? 1420 * S : 860 * S;
     ctx.save(); ctx.globalAlpha = a; const bw = (VERT ? 960 : 1100) * S, bh = 130 * S;
     rr(W / 2 - bw / 2, by - bh / 2, bw, bh, 30 * S); ctx.fillStyle = 'rgba(126,231,135,.12)'; ctx.fill(); ctx.strokeStyle = GREEN; ctx.lineWidth = 3 * S; ctx.stroke();
-    text('1분 7.6초 → 36.3초  (−46%)', W / 2, by - 18 * S, VERT ? 50 : 54, GREEN, 800);
-    text('조용한 31.3초를 잘라냄 · 걸린 시간 약 6초', W / 2, by + 38 * S, VERT ? 30 : 30, INK, 500);
+    text('57.9초 → 29.0초  (−50%)', W / 2, by - 18 * S, VERT ? 50 : 54, GREEN, 800);
+    text('조용한 28.9초를 잘라냄 · 걸린 시간 약 6초', W / 2, by + 38 * S, VERT ? 30 : 30, INK, 500);
     ctx.restore();
   }
   // F. 옵션 3가지

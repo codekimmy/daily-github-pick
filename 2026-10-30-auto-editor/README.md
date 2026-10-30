@@ -28,7 +28,7 @@
 
 | 항목 | 결과 |
 |---|---|
-| 설치 | `pip install auto-editor` 몇 초 + **첫 실행 때 본체(약 40MB)를 GitHub에서 자동으로 받음** |
+| 설치 | `pip install auto-editor` 몇 초 + **첫 실행 때 실제 편집 프로그램 파일(약 40MB)을 GitHub에서 자동으로 받음** |
 | 기본 자르기 (`auto-editor lecture.mp4`) | ✅ **57.9초 → 29.0초 (−50%)**, 걸린 시간 약 6초(여러 번 재면 5~9초). 원본은 그대로 두고 `lecture_ALTERED.mp4` 생성 |
 | 미리보기 (`--preview`) | ✅ 자르기 전에 결과 길이·남는 조각(10개)·잘릴 구간 길이를 표로 보여 줌 |
 | 여유 두기 (`-m`) | 0.2초(기본) 29.0초 / 0.5초 **35.0초** / 1초 45.0초 — 0.5초가 가장 자연스러움 |
@@ -42,7 +42,7 @@
 
 ![터미널](media/terminal.gif)
 
-- **롱폼 완성 영상: `media/auto-editor-long.mp4` (6분 15초, 13개 장, 원본·결과·여유·빨리 감기 실제 영상 포함)**
+- **롱폼 완성 영상: `media/auto-editor-long.mp4` (6분 19초, 13개 장, 원본·결과·여유·빨리 감기 실제 영상 포함)**
 - 과정 애니메이션: `media/auto-editor-anim.mp4`(가로 30초), `media/auto-editor-anim-vertical.mp4`(세로 30초, 숏폼용) — auto-editor가 실제로 잰 소리 크기와 자른 구간 데이터로 그림
 - 썸네일: `media/thumbnail.jpg`
 
@@ -51,7 +51,7 @@
 :: 0) 준비: https://python.org 에서 파이썬 설치 ("Add python.exe to PATH" 꼭 체크)
 :: 1) 설치
 pip install auto-editor
-:: 2) 처음 한 번: 본체(약 40MB) 자동 다운로드 + 버전 확인
+:: 2) 처음 한 번: 실제 편집 프로그램 파일(약 40MB) 자동 다운로드 + 버전 확인
 auto-editor --version
 :: 3) 영상이 있는 폴더로 이동 (예: 동영상 폴더)
 cd %USERPROFILE%\Videos

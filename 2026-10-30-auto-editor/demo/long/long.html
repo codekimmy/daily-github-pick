@@ -1,0 +1,183 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 실제 영상 조각은 clips/<이름>/%05d.jpg 프레임을 그려 넣는다 (소리는 compose.py가 깔아 줌)
+const CLIPDIR = new URLSearchParams(location.search).get('clips') || 'clips';
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const ctx = cv.getContext('2d');
+const F = '"Noto Sans CJK KR", sans-serif', MONO = '"DejaVu Sans Mono", monospace';
+const INK = '#f0f3f6', SUB = '#9aa7b8', BLUE = '#58a6ff', RED = '#ff7b72', GOLD = '#f2c14e', GREEN = '#7ee787', PURPLE = '#d2a8ff';
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+const READY = true;
+
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+function text(s, x, y, size, color = INK, weight = 700, align = 'left', alpha = 1, font = F) {
+  if (alpha <= 0) return; ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.font = `${weight} ${size}px ${font}`;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); ctx.restore();
+}
+const tw = (s, size, weight = 700, font = F) => { ctx.font = `${weight} ${size}px ${font}`; return ctx.measureText(s).width; };
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function box(x, y, w, h, r, fill, stroke, a = 1) { if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a; rr(x, y, w, h, r); ctx.fillStyle = fill; ctx.fill(); if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = 2; ctx.stroke(); } ctx.restore(); }
+function term(x, y, w, h, title, a = 1) {
+  box(x, y, w, h, 16, '#010409', '#30363d', a); ctx.save(); ctx.globalAlpha = a;
+  ctx.fillStyle = '#161b22'; rr(x, y, w, 46, [16, 16, 0, 0]); ctx.fill();
+  ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => { ctx.beginPath(); ctx.arc(x + 28 + i * 26, y + 23, 8, 0, 7); ctx.fillStyle = c; ctx.fill(); });
+  text(title, x + w / 2, y + 23, 20, SUB, 500, 'center'); ctx.restore();
+}
+function typed(s, lt, a, b) { const n = Math.floor(s.length * prog(lt, a, b)); return s.slice(0, n) + (lt > a - 0.6 && lt < b + 0.6 && lt % 1 < .5 ? '▌' : ''); }
+function bar(x, y, w, h, col, a = 1) { box(x, y, Math.max(2, w), h, 10, col, null, a); }
+const mmss = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+
+// ---------- 영상 조각 ----------
+const imgCache = {};
+async function clipFrame(name, i) {
+  const src = `${CLIPDIR}/${name}/${String(i + 1).padStart(5, '0')}.jpg`;
+  if (!imgCache[src]) { const im = new Image(); im.src = src; try { await im.decode(); } catch (e) { return null; } imgCache[src] = im; }
+  return imgCache[src];
+}
+async function drawClip(c, lt, label) {
+  const [name, start, dur] = c.clip; const a = prog(lt, start - 0.4, start) * (1 - prog(lt, start + dur, start + dur + 0.4));
+  if (a <= 0) return;
+  const i = Math.max(0, Math.min(dur * FPS - 1, Math.floor((lt - start) * FPS)));
+  const im = await clipFrame(name, i); const x = 400, y = 130, w = 1120, h = 630;
+  ctx.save(); ctx.globalAlpha = a; ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 30;
+  rr(x, y, w, h, 18); ctx.fillStyle = '#000'; ctx.fill(); ctx.shadowBlur = 0; rr(x, y, w, h, 18); ctx.clip(); if (im) ctx.drawImage(im, x, y, w, h); ctx.restore();
+  box(x, y + h + 18, tw(label, 26, 700) + 40, 48, 24, 'rgba(88,166,255,.18)', null, a); text(label, x + 20, y + h + 42, 26, BLUE, 700, 'left', a);
+}
+
+// ---------- 장면 ----------
+const SC = {};
+SC.title = (lt) => {
+  text('오늘의 오픈소스', W / 2, 250, 40, SUB, 500, 'center', app(lt, .2));
+  text('auto-editor', W / 2, 350, 124, INK, 800, 'center', app(lt, .4, .7));
+  text('조용한 부분을 알아서 잘라 주는 무료 영상 편집 도구', W / 2, 460, 42, SUB, 500, 'center', app(lt, .9));
+  text('일반인 쓸모  ★★★★☆', W / 2, 560, 60, GOLD, 800, 'center', app(lt, 3.8));
+  ['강의·브이로그 녹화에서 말 없는 구간 자동 컷', '회의·수업 녹화를 짧게 줄여 몰아보기', '프리미어·다빈치 리졸브용 초벌 컷 편집 파일 만들기'].forEach((s, i) =>
+    text(`${i + 1}. ${s}`, W / 2 - 500, 670 + i * 64, 38, INK, 500, 'left', app(lt, 7.3 + i * 1.3)));
+};
+SC.what = (lt) => {
+  // 소리 막대 → 가위 → 이어 붙이기
+  const bars = [8, 60, 75, 50, 6, 5, 7, 70, 82, 64, 55, 4, 6, 5, 4, 66, 72, 58, 5, 6];
+  const cut = ease(prog(lt, 13, 17)); let x = 160, y = 420;
+  text('소리 크기', 160, 220, 34, SUB, 600, 'left', app(lt, 6));
+  bars.forEach((v, i) => { const quiet = v < 10, w = quiet ? 44 * (1 - cut) : 44, a = app(lt, 6 + i * 0.1, .3);
+    if (w > 1) bar(x + 4, y - v * 2.2, w - 8, v * 2.2 + 2, quiet ? (lt > 12.5 ? RED : '#484f58') : BLUE, a);
+    if (quiet && lt > 12.5 && lt < 14) text('✂', x + w / 2, y - 60, 34, RED, 700, 'center', 1); x += w; });
+  text('= 조용한 곳만 오려 내는 "자동 가위"', 160, 560, 46, GOLD, 800, 'left', app(lt, .5));
+  const rx = 1100; [['소리 크기를 한 칸씩 잰다', 6], ['조용한 곳을 찾아 잘라낸다', 12.5], ['남은 곳을 이어 붙인다', 15.5], ['손으로 하던 컷 편집을 대신', 18.5]].forEach(([s, at], i) =>
+    { const a = app(lt, at); box(rx, 200 + i * 100, 680, 80, 18, 'rgba(255,255,255,.06)', null, a); text(`${i + 1}  ${s}`, rx + 30, 240 + i * 100, 34, INK, 600, 'left', a); });
+  const a5 = app(lt, 24); box(160, 700, 1620, 110, 20, 'rgba(126,231,135,.1)', GREEN, a5);
+  text('만든 사람: WyattBlue (미국) · 별 약 5,700개 · Unlicense(저작권을 포기한 완전 무료 공개)', 960, 755, 32, GREEN, 600, 'center', a5);
+};
+SC.install = (lt) => {
+  term(260, 120, 1400, 640, '명령 프롬프트 (cmd)');
+  const L = [[':: 1) python.org 에서 파이썬 설치 ("Add python.exe to PATH" 체크)', '#6e7681', .5],
+             ['C:\\> pip install auto-editor', INK, 6.2],
+             ['Successfully installed auto-editor-29.3.1', GREEN, 9.5],
+             [':: 2) 처음 실행하면 프로그램 본체(약 40MB)를 자동으로 받음', '#6e7681', 12.2],
+             ['C:\\> auto-editor --version', INK, 19.2],
+             ['Downloading auto-editor binary for your platform...', SUB, 21.5],
+             ['29.3.1', GOLD, 22.5],
+             [':: 3) 영상 처리 도구(FFmpeg)가 안에 들어 있어 따로 설치할 것 없음', '#6e7681', 25.7]];
+  L.forEach(([s, col, at], i) => text(s.startsWith('C:') ? typed(s, lt, at, at + 1.6) : s, 300, 220 + i * 62, 30, col, 400, 'left', app(lt, at, .3), MONO));
+};
+SC.orig = async (lt, c) => { await drawClip(c, lt, '원본 · 1분 7.6초'); };
+SC.after = async (lt, c) => { await drawClip(c, lt, 'auto-editor 결과 · 36.3초'); };
+SC.cmd = (lt) => {
+  term(160, 100, 1600, 720, '명령 프롬프트 (cmd)');
+  text(typed('C:\\강의> auto-editor lecture.mp4 --preview', lt, 1, 4), 200, 190, 30, INK, 400, 'left', app(lt, .5, .3), MONO);
+  const P = ['length:', ' - input:     0:01:07.60  100.0%', ' - output:    0:00:36.33  53.75%', ' - diff:     -0:00:31.27  -46.25%'];
+  P.forEach((s, i) => text(s, 200, 250 + i * 50, 30, i === 3 ? GOLD : '#c9d1d9', i === 3 ? 700 : 400, 'left', app(lt, 6.5 + i * 0.4, .2), MONO));
+  if (lt > 12) box(190, 380, 760, 50, 8, 'rgba(242,193,78,.15)', null, app(lt, 12));
+  text(typed('C:\\강의> auto-editor lecture.mp4', lt, 18.5, 20.5), 200, 520, 30, INK, 400, 'left', app(lt, 18, .3), MONO);
+  text('완료! 걸린 시간 약 6초', 200, 580, 30, GREEN, 700, 'left', app(lt, 21.5, .3), MONO);
+  text('C:\\강의> dir /b', 200, 650, 30, INK, 400, 'left', app(lt, 24.5, .3), MONO);
+  text('lecture.mp4              ← 원본은 그대로', 200, 700, 30, '#c9d1d9', 400, 'left', app(lt, 25.5, .3), MONO);
+  text('lecture_ALTERED.mp4      ← 잘린 새 파일', 200, 750, 30, GOLD, 700, 'left', app(lt, 26.2, .3), MONO);
+};
+SC.numbers = (lt) => {
+  text('같은 강의, 길이 비교', 200, 170, 44, INK, 800, 'left', app(lt, .2));
+  const mx = 1300, p = ease(prog(lt, .6, 2.4)), q = ease(prog(lt, 1.6, 3.4));
+  text('원본', 200, 290, 36, SUB, 700, 'left', p); bar(360, 262, mx * p, 56, '#484f58'); text('1:07.6', 380 + mx * p, 290, 36, INK, 700, 'left', p);
+  text('결과', 200, 400, 36, GREEN, 700, 'left', q); bar(360, 372, mx * 36.3 / 67.6 * q, 56, BLUE); text('0:36.3  (−46%)', 380 + mx * 36.3 / 67.6 * q, 400, 36, GREEN, 800, 'left', q);
+  [['남은 조각', '10개 (0.8초 ~ 5.8초)', 6.5], ['가장 긴 잘린 구간', '약 5초 ("어, 잠시만요" 뒤)', 7.5], ['10분 강의라면?', '4~5분이 줄어드는 셈 (침묵 비율에 따라 다름)', 12.5]].forEach(([k, v, at], i) => {
+    const a = app(lt, at); box(200, 500 + i * 100, 1520, 80, 18, 'rgba(255,255,255,.06)', null, a);
+    text(k, 240, 540 + i * 100, 34, GOLD, 700, 'left', a); text(v, 680, 540 + i * 100, 34, INK, 500, 'left', a); });
+};
+SC.margin = async (lt, c) => {
+  const ta = 1 - prog(lt, 13.4, 13.9);
+  if (ta > 0) { ctx.save(); ctx.globalAlpha = ta;
+    text('-m (margin) = 말 앞뒤에 남겨 둘 여유', 200, 200, 46, INK, 800, 'left', app(lt, .3));
+    const rows = [['-m 0.2s (기본)', 36.3, BLUE], ['-m 0.5s', 42.3, GOLD], ['-m 1s', 52.3, PURPLE], ['원본', 67.6, '#484f58']];
+    rows.forEach(([k, s, col], i) => { const a = app(lt, 7 + i * .6), y = 340 + i * 120;
+      text(k, 200, y, 36, INK, 700, 'left', a, MONO); bar(560, y - 28, 1100 * s / 67.6 * a, 56, col, a); text(mmss(s), 580 + 1100 * s / 67.6 * a, y, 34, INK, 700, 'left', a); });
+    ctx.restore(); }
+  await drawClip(c, lt, 'auto-editor lecture.mp4 -m 0.5s  → 42.3초');
+  const b = app(lt, 26.3); if (lt > 26) { text('여유가 클수록 자연스럽지만 덜 줄어요', W / 2, 860, 40, GOLD, 700, 'center', b); }
+};
+SC.fast = async (lt, c) => {
+  if (lt < 5.6) text('--when-silent speed:4', W / 2, 450, 64, PURPLE, 700, 'center', app(lt, .5) * (1 - prog(lt, 5, 5.6)), MONO);
+  if (lt < 5.6) text('조용한 곳을 자르지 않고 4배속으로', W / 2, 560, 44, INK, 700, 'center', app(lt, 1.5) * (1 - prog(lt, 5, 5.6)));
+  await drawClip(c, lt, '조용한 곳만 4배속 → 44.2초');
+  if (lt > 21.5) { const a = app(lt, 21.7);
+    text('목소리 높이는 그대로 (rate:4 로 바꾸면 다람쥐 목소리처럼 높아짐)', W / 2, 450, 38, INK, 600, 'center', a);
+    text('길이 44.2초 — 잘라낸 36.3초보다 길지만, 화면 흐름은 남아요', W / 2, 540, 38, GOLD, 700, 'center', app(lt, 23)); }
+};
+SC.export = (lt) => {
+  text('--export 로 편집 프로그램용 파일 만들기', 200, 170, 46, INK, 800, 'left', app(lt, .3));
+  const R = [['Adobe 프리미어 프로', '--export premiere', '.xml (22KB)'], ['다빈치 리졸브', '--export resolve', '.fcpxml'], ['파이널 컷 프로', '--export final-cut-pro', '.fcpxml'],
+             ['샷컷 (무료)', '--export shotcut', '.mlt'], ['케이든라이브 (무료)', '--export kdenlive', '.kdenlive']];
+  R.forEach(([k, cmd, f], i) => { const a = app(lt, 6.5 + i * .7), y = 290 + i * 100;
+    box(200, y - 40, 1520, 80, 16, 'rgba(255,255,255,.06)', null, a);
+    text(k, 240, y, 34, INK, 700, 'left', a); text(cmd, 760, y, 30, BLUE, 400, 'left', a, MONO); text(f, 1500, y, 28, SUB, 500, 'left', a); });
+  const a = app(lt, 13); box(200, 800, 1520, 90, 18, 'rgba(126,231,135,.1)', GREEN, a);
+  text('열면 컷이 이미 나뉜 타임라인 → 자막·효과만 손보면 끝 (5가지 모두 파일 생성 확인)', W / 2, 845, 32, GREEN, 600, 'center', a);
+};
+SC.thr = (lt) => {
+  text('--edit audio:threshold=숫자  (기본 0.04 = 4%)', 200, 180, 44, INK, 700, 'left', app(lt, .3), MONO);
+  const rows = [['threshold=0.01 (예민하게)', 36.4], ['0.04 (기본)', 36.3], ['threshold=0.10 (둔하게)', 35.9]];
+  rows.forEach(([k, s], i) => { const a = app(lt, 6.5 + i * .5), y = 330 + i * 110;
+    text(k, 200, y, 34, INK, 600, 'left', a, MONO); bar(820, y - 26, 800 * s / 67.6 * a, 52, BLUE, a); text(mmss(s), 840 + 800 * s / 67.6 * a, y, 32, INK, 700, 'left', a); });
+  text('조용한 방에서 녹음한 시연 영상은 숫자를 바꿔도 결과가 거의 같아요', 200, 700, 34, GOLD, 600, 'left', app(lt, 13));
+  text('→ 선풍기·에어컨 소음이 깔린 영상이면 숫자를 올려서 시험해 보기', 200, 770, 34, INK, 500, 'left', app(lt, 19.5));
+};
+SC.cons = (lt) => {
+  text('아쉬운 점', 200, 150, 52, INK, 800, 'left', app(lt, .1));
+  [['배경음악 깔린 영상', '음악 소리 때문에 "조용한 곳"이 거의 없음 → 음악 넣기 전에 쓰기'], ['말 없는 시연 장면', '화면만 보여 주는 부분도 잘림 → 빨리 감기 옵션이나 --cut-out/--add-in 으로 조절'],
+   ['명령어 방식', '버튼 누르는 화면이 없음 (명령 한 줄은 복붙 가능)'], ['첫 실행에 인터넷', '프로그램 본체(약 40MB)를 GitHub에서 받음']].forEach(([k, v], i) => {
+    const at = [.3, 6.5, 12.5, 18.5][i], a = app(lt, at), y = 270 + i * 130;
+    box(200, y - 50, 1520, 104, 20, 'rgba(255,123,114,.08)', null, a);
+    text(`${i + 1}`, 250, y, 42, RED, 800, 'center', a); text(k, 310, y, 36, INK, 800, 'left', a); text(v, 700, y, 28, SUB, 500, 'left', a); });
+  text('→ "초벌 컷"은 auto-editor, 마무리는 사람이', W / 2, 830, 42, GOLD, 800, 'center', app(lt, 24.5));
+};
+SC.end = (lt) => {
+  text('이런 분께 추천', W / 2, 170, 52, INK, 800, 'center', app(lt, .2));
+  [['유튜버', '말 없는 구간 초벌 컷'], ['선생님·강사', '수업 녹화 줄이기'], ['직장인', '회의 녹화 몰아보기']].forEach(([k, v], i) => {
+    const a = app(lt, .5 + i * .8), x = 210 + i * 520;
+    box(x, 270, 460, 240, 24, 'rgba(22,27,34,.95)', GOLD, a); text(k, x + 230, 350, 48, GOLD, 800, 'center', a); text(v, x + 230, 440, 32, INK, 500, 'center', a); });
+  text('pip install auto-editor  ·  github.com/WyattBlue/auto-editor', W / 2, 620, 34, BLUE, 500, 'center', app(lt, 7), MONO);
+  text('다음에 또 멋진 오픈소스 소개할게요!', W / 2, 740, 56, INK, 800, 'center', app(lt, 13.5));
+};
+
+function subtitle(s, a) {
+  if (!s || a <= 0) return; ctx.font = `700 40px ${F}`; const w = ctx.measureText(s).width;
+  ctx.save(); ctx.globalAlpha = a; rr(W / 2 - w / 2 - 32, 940, w + 64, 80, 22); ctx.fillStyle = 'rgba(1,4,9,.88)'; ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s, W / 2, 980); ctx.restore();
+}
+async function frame(f) {
+  const t = f / FPS; const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1]; const lt = t - c.t0;
+  ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalAlpha = prog(lt, 0, .4) * (1 - prog(lt, c.dur - .3, c.dur)); await SC[c.id](lt, c); ctx.restore();
+  if (c.tag) { ctx.font = `700 28px ${F}`; const w = ctx.measureText(c.tag).width; box(36, 28, w + 48, 54, 27, 'rgba(1,4,9,.85)'); text(c.tag, 60, 56, 28, INK, 700); }
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]);
+  if (cue) subtitle(cue[2], prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1])));
+}
+</script></body></html>

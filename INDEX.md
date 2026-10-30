@@ -7,3 +7,4 @@
 | 0 (보류) | 2026-10-29 | [Graphify-Labs/graphify](https://github.com/Graphify-Labs/graphify) | 코드 폴더를 지하철 노선도처럼 지도로 | 개발도구·AI | ★★☆☆☆ | 13.6만 | [바로가기](2026-10-29-graphify/) |
 | 1 | 2026-10-29 | [KnifeLemon/Filee](https://github.com/KnifeLemon/Filee) | 끌어서 놓으면 끝나는 무료 파일 변환기 (HWP·HEIC·PDF) | 생산성·문서 | ★★★★★ | 1.3만 | [바로가기](2026-10-29-filee/) |
 | 2 | 2026-10-30 | [designfuchen/word-atlas](https://github.com/designfuchen/word-atlas) | 영어 단어 7,298개마다 그림·발음이 붙은 무료 그림 단어장 | 교육·영어 | ★★★☆☆ | 약 3천 | [바로가기](2026-10-30-word-atlas/) |
+| 3 | 2026-10-30 | [WyattBlue/auto-editor](https://github.com/WyattBlue/auto-editor) | 영상에서 말 없는 부분을 자동으로 잘라 주는 무료 도구 | 영상·편집 | ★★★★☆ | 약 5,700 | [바로가기](2026-10-30-auto-editor/) |

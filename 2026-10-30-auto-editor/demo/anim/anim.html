@@ -1,0 +1,138 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// auto-editor 과정 애니메이션: 실제 소리 크기 → 조용한 구간 빨갛게 → 잘라서 줄어듦 → 결과 숫자 → 옵션 → 엔딩
+const P = new URLSearchParams(location.search);
+const W = +P.get('w') || 1920, H = +P.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H;
+const ctx = cv.getContext('2d');
+const S = Math.min(W, H) / 1080;
+const F = '"Noto Sans CJK KR", sans-serif', MONO = '"DejaVu Sans Mono", monospace';
+const INK = '#f0f3f6', SUB = '#9aa7b8', BLUE = '#58a6ff', RED = '#ff6b6b', GOLD = '#f2c14e', GREEN = '#7ee787';
+const T = { intro1: 2.6, scan0: 2.6, scan1: 10.0, cut0: 11.6, cut1: 16.4, badge0: 16.4, opt0: 20.4, end0: 26.4, end1: 30 };
+const TOTAL = Math.round(T.end1 * FPS);
+const READY = true;
+
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const ease = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const out3 = x => 1 - Math.pow(1 - x, 3);
+const lerp = (a, b, x) => a + (b - a) * x;
+function text(s, x, y, size, color = INK, weight = 700, align = 'center', alpha = 1, font = F) {
+  if (alpha <= 0) return; ctx.save(); ctx.globalAlpha *= alpha; ctx.fillStyle = color; ctx.font = `${weight} ${size * S}px ${font}`;
+  ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); ctx.restore();
+}
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+const mmss = s => `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+
+// ---------- 데이터 → 막대 ----------
+const L = DATA.levels, NF = L.length;
+const keepF = new Array(NF).fill(1); DATA.chunks.forEach(([a, b, k]) => { for (let i = a; i < Math.min(b, NF); i++) keepF[i] = k; });
+const NC = VERT ? 240 : 400, per = NF / NC;
+const cols = [];
+for (let c = 0; c < NC; c++) { const a = Math.floor(c * per), b = Math.floor((c + 1) * per); let mx = 0, k = 0;
+  for (let i = a; i < b; i++) { mx = Math.max(mx, L[i]); k += keepF[i]; } cols.push({ lv: mx, keep: k * 2 >= (b - a), t: a / FPS }); }
+const LMAX = Math.max(...L);
+// 조용한 구간(연속된 잘릴 칸) 묶음
+const gaps = []; cols.forEach((c, i) => { if (!c.keep) { if (gaps.length && gaps[gaps.length - 1].e === i) gaps[gaps.length - 1].e = i + 1; else gaps.push({ s: i, e: i + 1 }); } });
+
+const area = VERT ? { x: 60 * S, w: W - 120 * S, cy: 1000 * S, h: 300 * S } : { x: 80 * S, w: W - 160 * S, cy: 560 * S, h: 300 * S };
+const cw = area.w / NC;
+
+function drawWave(t) {
+  const scan = prog(t, T.scan0, T.scan1);                // 재생 바늘 위치(0~1)
+  const cut = ease(prog(t, T.cut0, T.cut1));             // 잘린 칸이 사라지는 정도
+  const keepW = cols.filter(c => c.keep).length * cw, totalW = lerp(area.w, keepW, cut);
+  let x = area.x + (area.w - totalW) / 2;
+  cols.forEach((c, i) => {
+    const w = c.keep ? cw : cw * (1 - cut);
+    const seen = i / NC <= scan || t > T.scan1;
+    const h = Math.max(3 * S, Math.sqrt(c.lv / LMAX) * area.h);
+    let col = '#30363d';
+    if (seen) col = c.keep ? BLUE : RED;
+    if (w > 0.3) { ctx.fillStyle = col; ctx.globalAlpha = c.keep ? 1 : (1 - cut * 0.6); ctx.fillRect(x + w * 0.12, area.cy - h / 2, Math.max(0.6, w * 0.76), h); ctx.globalAlpha = 1; }
+    c.x = x; c.w = w; x += w;
+  });
+  // 빨간 구간 위 가위 표시 (자르기 직전)
+  const sa = prog(t, T.scan1 + 0.3, T.cut0) * (1 - prog(t, T.cut0, T.cut0 + 0.5));
+  if (sa > 0) gaps.forEach((g, j) => { const gx = (cols[g.s].x + cols[g.e - 1].x + cols[g.e - 1].w) / 2;
+    text('✂', gx, area.cy - area.h / 2 - 40 * S, 40, RED, 700, 'center', sa * prog(t, T.scan1 + 0.3 + j * 0.08, T.scan1 + 0.5 + j * 0.08)); });
+  // 재생 바늘
+  if (t >= T.scan0 && t < T.scan1 + 0.2) { const px = area.x + area.w * scan; ctx.fillStyle = GOLD; ctx.fillRect(px - 1.5 * S, area.cy - area.h / 2 - 20 * S, 3 * S, area.h + 40 * S); }
+  // 시간 눈금 (자르기 전)
+  const ta = 1 - prog(t, T.cut0, T.cut0 + 0.5);
+  if (t > T.scan0) for (let s = 0; s <= 60; s += 10) text(`${s}초`, area.x + area.w * (s * FPS / NF), area.cy + area.h / 2 + 34 * S, 22, SUB, 500, 'center', ta);
+  return { scan, cut };
+}
+
+function frame(f) {
+  const t = f / FPS;
+  ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  // A. 인트로
+  if (t < T.intro1 + 0.4) { const a = prog(t, 0.1, 0.6) * (1 - prog(t, T.intro1 - 0.2, T.intro1 + 0.4));
+    text('말하다 멈춘 시간,', W / 2, H / 2 - 50 * S, VERT ? 80 : 76, INK, 800, 'center', a);
+    text('합치면 몇 초일까?', W / 2, H / 2 + 50 * S, VERT ? 80 : 76, GOLD, 800, 'center', a * prog(t, 0.6, 1.1)); }
+  // B~D. 파형
+  if (t >= T.scan0 - 0.2 && t < T.opt0 + 0.4) {
+    const a = prog(t, T.scan0 - 0.2, T.scan0 + 0.3) * (1 - prog(t, T.opt0, T.opt0 + 0.4));
+    ctx.save(); ctx.globalAlpha = a;
+    const { scan, cut } = drawWave(t);
+    // 위쪽 안내 + 카운터
+    const ty = VERT ? 560 * S : 150 * S;
+    const seenGaps = DATA.chunks.filter(([a, b, k]) => !k && (a / NF <= scan || t > T.scan1));
+    const silentSec = seenGaps.reduce((s, [a, b]) => s + (Math.min(b, NF * scan) - a) / FPS, 0);
+    if (t < T.cut0) {
+      text('10분짜리 강의 대신 1분 8초짜리 가상 강의로 시연', W / 2, ty - 70 * S, VERT ? 30 : 28, SUB, 500, 'center');
+      text('🔵 말하는 곳   🔴 조용한 곳', W / 2, ty, VERT ? 42 : 44, INK, 700);
+      text(`조용한 구간 ${seenGaps.length}곳 · 합계 ${silentSec.toFixed(1)}초`, W / 2, ty + 70 * S, VERT ? 52 : 52, RED, 800, 'center', prog(t, T.scan0 + 0.5, T.scan0 + 1));
+    } else {
+      const len = lerp(DATA.results.orig, DATA.results.cut, cut);
+      text('auto-editor 명령 한 줄 → 빨간 곳 자르기', W / 2, ty, VERT ? 42 : 44, INK, 700);
+      text(`영상 길이 ${mmss(len)}`, W / 2, ty + 80 * S, VERT ? 66 : 66, cut >= 1 ? GREEN : GOLD, 800);
+    }
+    ctx.restore();
+  }
+  // E. 완성 배지
+  if (t >= T.badge0 && t < T.opt0 + 0.3) {
+    const a = out3(prog(t, T.badge0 + 0.2, T.badge0 + 0.7)) * (1 - prog(t, T.opt0 - 0.2, T.opt0 + 0.2));
+    const by = VERT ? 1420 * S : 860 * S;
+    ctx.save(); ctx.globalAlpha = a; const bw = (VERT ? 960 : 1100) * S, bh = 130 * S;
+    rr(W / 2 - bw / 2, by - bh / 2, bw, bh, 30 * S); ctx.fillStyle = 'rgba(126,231,135,.12)'; ctx.fill(); ctx.strokeStyle = GREEN; ctx.lineWidth = 3 * S; ctx.stroke();
+    text('1분 7.6초 → 36.3초  (−46%)', W / 2, by - 18 * S, VERT ? 50 : 54, GREEN, 800);
+    text('조용한 31.3초를 잘라냄 · 걸린 시간 약 6초', W / 2, by + 38 * S, VERT ? 30 : 30, INK, 500);
+    ctx.restore();
+  }
+  // F. 옵션 3가지
+  if (t >= T.opt0 && t < T.end0 + 0.4) {
+    const a = 1 - prog(t, T.end0, T.end0 + 0.4);
+    ctx.save(); ctx.globalAlpha = a;
+    text('상황에 맞게 바꿔 쓰기', W / 2, VERT ? 330 * S : 150 * S, VERT ? 56 : 56, INK, 800, 'center', prog(t, T.opt0, T.opt0 + 0.4));
+    const R = DATA.results, opts = [['기본: 자르기', 'auto-editor 영상.mp4', R.cut, BLUE], ['숨 쉴 여유 0.5초', '-m 0.5s', R.m05, GOLD], ['자르지 말고 4배 빨리', '--when-silent speed:4', R.fast4, '#d2a8ff'], ['원본 그대로', '', R.orig, '#484f58']];
+    const bx = VERT ? 80 * S : 260 * S, bwMax = VERT ? W - 160 * S : W - 520 * S, y0 = VERT ? 520 * S : 270 * S, gap = VERT ? 230 * S : 165 * S;
+    opts.forEach(([k, cmd, sec, col], i) => {
+      const p = out3(prog(t, T.opt0 + 0.5 + i * 0.9, T.opt0 + 1.3 + i * 0.9)); if (p <= 0) return;
+      const y = y0 + i * gap;
+      text(k, bx, y, VERT ? 40 : 38, INK, 800, 'left', p);
+      if (cmd) text(cmd, bx + (VERT ? 0 : 560 * S), y + (VERT ? 50 * S : 0), VERT ? 30 : 30, SUB, 400, 'left', p, MONO);
+      const by = y + (VERT ? 100 * S : 55 * S), w = bwMax * (sec / R.orig) * p;
+      rr(bx, by - 22 * S, w, 44 * S, 10 * S); ctx.fillStyle = col; ctx.fill();
+      text(mmss(sec), bx + w + 18 * S, by, 34, INK, 700, 'left', p);
+    });
+    const ea = prog(t, T.opt0 + 4.2, T.opt0 + 4.8);
+    text('+ 프리미어·다빈치 리졸브·파이널컷용 편집 파일로 내보내기', W / 2, VERT ? 1560 * S : 960 * S, VERT ? 34 : 36, GREEN, 700, 'center', ea);
+    ctx.restore();
+  }
+  // G. 엔딩
+  if (t >= T.end0) {
+    const a = prog(t, T.end0 + 0.2, T.end0 + 0.8), y = H / 2 - (VERT ? 160 : 130) * S;
+    text('auto-editor', W / 2, y, VERT ? 104 : 110, INK, 800, 'center', a);
+    text('조용한 부분을 알아서 잘라 주는 무료 오픈소스', W / 2, y + 100 * S, VERT ? 38 : 40, SUB, 500, 'center', a);
+    text('일반인 쓸모 ★★★★☆', W / 2, y + 200 * S, VERT ? 54 : 56, GOLD, 800, 'center', prog(t, T.end0 + 0.7, T.end0 + 1.2));
+    rr(W / 2 - 330 * S, y + 265 * S, 660 * S, 80 * S, 40 * S); ctx.fillStyle = `rgba(88,166,255,${0.15 * prog(t, T.end0 + 1.2, T.end0 + 1.7)})`; ctx.fill();
+    text('pip install auto-editor', W / 2, y + 305 * S, VERT ? 40 : 40, BLUE, 700, 'center', prog(t, T.end0 + 1.2, T.end0 + 1.7), MONO);
+  }
+}
+</script></body></html>

@@ -122,7 +122,7 @@ SC.speed = (lt) => {
   rows.forEach(([k, v, sec, at], i) => { const a = app(lt, at), y = 380 + i * 140, hi = i === 1;
     box(260, y - 56, 1400, 112, 20, hi ? 'rgba(242,193,78,.1)' : 'rgba(255,255,255,.05)', hi ? GOLD : null, a);
     text(k, 310, y, 38, INK, 700, 'left', a); text(v, 1000, y, 32, SUB, 600, 'left', a); text(koTime(sec), 1610, y, 44, hi ? GOLD : INK, 800, 'right', a); });
-  text('이 영상의 큰 숫자 = 가운데 줄 기준', W / 2, 880, 38, GOLD, 800, 'center', app(lt, 19));
+  text('▲ 노란 줄이 기준', W / 2, 880, 38, GOLD, 800, 'center', app(lt, 19));
 };
 SC.swap = async (lt, c) => { await drawClip(c, lt, '글자를 기호로 바꿔 보기');
   const d = pick('P@ssw0rd');

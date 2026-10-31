@@ -1,0 +1,98 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 30초 과정 애니메이션: 사진 3장의 배경이 지워지는 과정 + 초시계 → 모델 4종 비교 → 활용(흰 배경·새 배경) → 핵심 → 엔딩
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30, TOTAL = 30 * FPS;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), VERT ? W / 1080 : W / 1920);
+let READY = false;
+const T = { intro1: 2.4, p0: 2.4, p1: 12.4, m0: 12.4, m1: 19.6, u0: 19.6, u1: 23.6, k0: 23.6, e0: 27.0 };
+const PH = ['coffee', 'cat', 'rocket'], LABEL = { coffee: '커피잔', cat: '고양이', rocket: '로켓' };
+const MODELS = [['u2netp', '가벼운 모델 (5MB)'], ['silueta', '중간 모델 (44MB)'], ['u2net', '기본 추천 (176MB)'], ['isnet-general-use', '꼼꼼한 모델 (179MB)']];
+const imgs = { coffee: '../input/coffee.png', cat: '../input/cat.png', rocket: '../input/rocket.jpg', white: '../out/coffee-white.jpg', newbg: '../out/coffee-newbg.jpg' };
+PH.forEach(p => MODELS.forEach(([m]) => imgs[`${p}-${m}`] = `../out/${p}-${m}.png`));
+loadImages(imgs).then(() => document.fonts.load(`800 40px ${F}`)).then(() => READY = true);
+
+function scenePhotos(t) {
+  const a = prog(t, T.p0, T.p0 + .3) * (1 - prog(t, T.p1 - .3, T.p1)); if (a <= 0) return;
+  const per = (T.p1 - T.p0) / 3, i = Math.min(2, Math.floor((t - T.p0) / per)), lt = t - T.p0 - i * per, p = PH[i], sec = R.models.u2net.photos[p].sec;
+  ctx.save(); ctx.globalAlpha = a;
+  const cx = W / 2, top = (VERT ? 420 : 120) * S;
+  text(`${i + 1} / 3  ·  ${LABEL[p]} 사진`, cx, top, VERT ? 44 : 38, SUB, 600);
+  const bw = (VERT ? 960 : 1000) * S, bh = (VERT ? 720 : 640) * S, by = top + 50 * S;
+  const sw = ease(prog(lt, .5, .5 + Math.max(1.2, sec * 1.4)));
+  reveal(IMG[p], IMG[`${p}-u2net`], cx - bw / 2, by, bw, bh, sw);
+  // 초시계
+  const run = prog(lt, .5, .5 + Math.max(1.2, sec * 1.4)), shown = sec * run;
+  const ty = by + bh + (VERT ? 110 : 70) * S;
+  text(`⏱ ${shown.toFixed(1)}초`, cx, ty, VERT ? 90 : 72, run >= 1 ? GREEN : INK, 800, 'center', 1, F);
+  if (run >= 1) pill('배경 지움 완료', cx, ty + (VERT ? 110 : 80) * S, VERT ? 36 : 30, GREEN, prog(lt, .6 + sec * 1.4, 1 + sec * 1.4));
+  ctx.restore();
+}
+
+function sceneModels(t) {
+  const a = prog(t, T.m0, T.m0 + .4) * (1 - prog(t, T.m1 - .3, T.m1)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  text('같은 로켓 사진, 모델마다 결과가 달라요', W / 2, (VERT ? 320 : 130) * S, VERT ? 54 : 50, INK, 800);
+  const cols = VERT ? 2 : 4, tw0 = (VERT ? 470 : 420) * S, th0 = (VERT ? 340 : 310) * S, gap = 30 * S;
+  const x0 = (W - (cols * tw0 + (cols - 1) * gap)) / 2, y0 = (VERT ? 420 : 230) * S;
+  MODELS.forEach(([m, lab], i) => {
+    const p = out3(prog(t, T.m0 + .4 + i * .5, T.m0 + 1.2 + i * .5)); if (p <= 0) return;
+    const cx = x0 + (i % cols) * (tw0 + gap), cy = y0 + Math.floor(i / cols) * (th0 + 170 * S + gap);
+    box(cx, cy, tw0, th0 + 170 * S, 20 * S, '#161b22', m === 'isnet-general-use' ? GOLD : '#30363d', p, 2);
+    cutOn(IMG[`rocket-${m}`], cx + 14 * S, cy + 14 * S, tw0 - 28 * S, th0 - 28 * S, p, 'checker', 12);
+    const d = R.models[m].photos.rocket;
+    text(lab, cx + tw0 / 2, cy + th0 + 30 * S, VERT ? 32 : 28, INK, 800, 'center', p);
+    text(`${fmtSec(d.sec)} · 남긴 부분 ${d.kept_pct}%`, cx + tw0 / 2, cy + th0 + 80 * S, VERT ? 30 : 26, m === 'isnet-general-use' ? GOLD : SUB, 600, 'center', p);
+    text(m, cx + tw0 / 2, cy + th0 + 128 * S, VERT ? 26 : 22, SUB, 500, 'center', p, MONO);
+  });
+  text('로켓만 남길지, 발사대 탑까지 남길지 — 모델이 판단해요', W / 2, VERT ? y0 + 2 * (th0 + 200 * S) + 40 * S : y0 + th0 + 260 * S, VERT ? 36 : 34, GOLD, 700, 'center', prog(t, T.m0 + 3.2, T.m0 + 3.8));
+  ctx.restore();
+}
+
+function sceneUse(t) {
+  const a = prog(t, T.u0, T.u0 + .4) * (1 - prog(t, T.u1 - .3, T.u1)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  text('지운 자리에 원하는 배경을', W / 2, (VERT ? 380 : 110) * S, VERT ? 56 : 52, INK, 800);
+  const items = [['투명', 'checker'], ['흰 배경', '#ffffff'], ['새 배경', IMG.newbg]];
+  const bw = (VERT ? 760 : 540) * S, bh = (VERT ? 380 : 380) * S, gap = 40 * S;
+  items.forEach(([lab, bg], i) => {
+    const p = out3(prog(t, T.u0 + .3 + i * .6, T.u0 + 1 + i * .6)); if (p <= 0) return;
+    const x = VERT ? (W - bw) / 2 : (W - (3 * bw + 2 * gap)) / 2 + i * (bw + gap), y = VERT ? 470 * S + i * (bh + 90 * S) : 230 * S;
+    cutOn(IMG['coffee-u2net'], x, y, bw, bh, p, bg === IMG.newbg ? IMG.newbg : bg, 16);
+    text(lab, x + bw / 2, y + bh + 45 * S, VERT ? 38 : 36, GOLD, 800, 'center', p);
+  });
+  if (!VERT) text('중고거래 상품 사진 · 쇼핑몰 썸네일 · 프로필 사진', W / 2, 900 * S, 36, SUB, 600, 'center', prog(t, T.u0 + 2.2, T.u0 + 2.8));
+  ctx.restore();
+}
+
+function sceneKey(t) {
+  const a = prog(t, T.k0, T.k0 + .4) * (1 - prog(t, T.e0 - .3, T.e0)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  const lines = [['명령 한 줄', INK], ['사진 1장 약 1초', GREEN], ['무료 · 인터넷에 안 올림', GOLD]];
+  lines.forEach(([s, c], i) => text(s, W / 2, H / 2 + (i - 1) * (VERT ? 150 : 120) * S, VERT ? 84 : 76, c, 900, 'center', out3(prog(t, T.k0 + .2 + i * .5, T.k0 + .8 + i * .5))));
+  ctx.restore();
+}
+
+function sceneEnd(t) {
+  const a = prog(t, T.e0, T.e0 + .4); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  text('rembg', W / 2, H / 2 - (VERT ? 120 : 90) * S, VERT ? 130 : 120, INK, 800, 'center', 1, MONO);
+  text('사진 배경 자동으로 지우기 · 무료 오픈소스', W / 2, H / 2 + 20 * S, VERT ? 46 : 42, SUB, 600);
+  text('설치·명령어는 설명란에', W / 2, H / 2 + (VERT ? 120 : 100) * S, VERT ? 42 : 38, BLUE, 700);
+  ctx.restore();
+}
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const ia = 1 - prog(t, T.intro1 - .3, T.intro1);
+  if (ia > 0) {
+    text('사진 배경,', W / 2, H / 2 - (VERT ? 90 : 70) * S, VERT ? 96 : 88, INK, 900, 'center', ia * prog(t, 0, .4));
+    text('몇 초면 지울까?', W / 2, H / 2 + (VERT ? 50 : 50) * S, VERT ? 96 : 88, GOLD, 900, 'center', ia * prog(t, .5, .9));
+  }
+  scenePhotos(t); sceneModels(t); sceneUse(t); sceneKey(t); sceneEnd(t);
+}
+</script></body></html>

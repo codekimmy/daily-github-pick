@@ -14,7 +14,7 @@
 ## 사진·이미지·그림
 | 추천 | 저장소 | 한 줄 | 만든 곳 | 별 | 설치 | 테스트 결과 | 숏폼 훅 | 쓸모 |
 |---|---|---|---|---|---|---|---|---|
-| ⭐ | danielgatis/rembg | 사진 배경 자동 지우기 | 브라질 | 2.5만 | pip `rembg[cli]` | `-m u2net` 11.9초(모델 176MB 받기 포함), `-m u2netp` 5.6초. 기본 모델(1GB)은 시간 초과 → 모델 지정 필수 | 누끼 따기 한 줄 | ★5 |
+| ⭐ ✅ Day 5 | danielgatis/rembg | 사진 배경 자동 지우기 | 브라질 | 2.5만 | pip `rembg[cli]` | `-m u2net` 11.9초(모델 176MB 받기 포함), `-m u2netp` 5.6초. 기본 모델(1GB)은 시간 초과 → 모델 지정 필수 (11/1 재확인: 2.0.86은 `rembg[cpu,cli]`로 설치, 기본 bria-rmbg 1GB는 메모리 부족 강제 종료) | 누끼 따기 한 줄 | ★5 |
 | ⭐ | x-hw/amazing-qr | 내 사진·GIF를 배경으로 한 QR코드 | 중국 | 1.1만 | pip `amzqr` | 0.14초, 스캔 성공, 움직이는 QR도 됨 | 이 그림이 QR이라고? | ★5 |
 | ⭐ | guofei9987/blind_watermark | 눈에 안 보이는 워터마크 | 중국 | 1.5만 | pip `blind-watermark` | 1.4초, JPEG 재압축 후에도 문자 추출 | 사진 도용 잡는 투명 도장 | ★4 |
 |  | MemeCrafters/meme-generator | 밈 템플릿 300종에 글·얼굴 합성 | 중국 | 1천 | pip `meme_generator` | 0.2~0.5초, 한글 짤·쓰다듬기 GIF. 템플릿 받으려면 config의 resource_url을 raw.githubusercontent로 변경 | 내 사진으로 짤 1초 | ★4 |

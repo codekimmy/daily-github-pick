@@ -3,5 +3,9 @@
 set -e
 cast=$(mktemp --suffix .cast)
 asciinema rec -q --overwrite --cols 100 --rows 26 -c "bash $1" "$cast"
-agg --font-size 16 --speed 1.2 "$cast" "$2"
+if command -v agg >/dev/null; then
+  agg --font-size 16 --speed 1.2 "$cast" "$2"
+else  # agg를 못 받을 때: 같은 폴더의 cast2gif.py(pyte + Pillow)로 대체
+  python3 "$(dirname "$0")/cast2gif.py" "$cast" "$2" 1.2
+fi
 echo "saved $2"

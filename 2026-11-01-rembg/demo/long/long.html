@@ -1,0 +1,170 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 모든 사진·결과는 실제 테스트 결과물(../input, ../out)을 그대로 씀
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+const MODELS = [['u2netp', '가벼운 모델', '5MB'], ['silueta', '중간 모델', '44MB'], ['u2net', '기본 추천', '176MB'], ['isnet-general-use', '꼼꼼한 모델', '179MB']];
+const imgs = { coffee: '../input/coffee.png', cat: '../input/cat.png', rocket: '../input/rocket.jpg', white: '../out/coffee-white.jpg', newbg: '../out/coffee-newbg.jpg',
+  catmat: '../out/cat-u2net-matting.png', catmask: '../out/cat-u2net-mask.png', cofmask: '../out/coffee-u2net-mask.png' };
+['coffee', 'cat', 'rocket'].forEach(p => MODELS.forEach(([m]) => imgs[`${p}-${m}`] = `../out/${p}-${m}.png`));
+loadImages(imgs).then(() => document.fonts.load(`800 40px ${F}`)).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+
+function caption(c, lt) {
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
+  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
+  const s = cue[2], w = tw(s, 40, 700) + 80;
+  box(W / 2 - w / 2, 950, w, 80, 16, 'rgba(1,4,9,.88)', null, a); text(s, W / 2, 990, 40, INK, 700, 'center', a);
+}
+function tag(c, lt) {
+  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+  box(40, 34, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 62, 28, BLUE, 800, 'center', a);
+}
+function bullets(list, x, y, lt, starts, size = 38, gap = 74) {
+  list.forEach((s, i) => text(s, x, y + i * gap, size, i === list.length - 1 && list.hl ? GOLD : INK, 700, 'left', app(lt, starts[i])));
+}
+function termLines(x, y, w, h, lines, lt) {
+  term(x, y, w, h, '명령 프롬프트 (cmd)', 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * 52; if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\사진>', x + 30, yy, 26, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.6)), x + 30 + tw('C:\\사진> ', 26, 600, MONO), yy, 26, INK, 600, 'left', 1, MONO); }
+    else text(s, x + 30, yy, 26, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+}
+// 사진 일부 확대 (sx,sy,sw,sh는 원본 픽셀)
+function zoom(im, sx, sy, sw, sh, x, y, w, h, bg = 'checker', a = 1) {
+  if (a <= 0) return; ctx.save(); ctx.globalAlpha *= a; rr(x, y, w, h, 16); ctx.clip();
+  if (bg === 'checker') checker(x, y, w, h, 22); else if (bg) { ctx.fillStyle = bg; ctx.fillRect(x, y, w, h); }
+  ctx.drawImage(im, sx, sy, sw, sh, x, y, w, h); ctx.restore(); box(x, y, w, h, 16, null, '#30363d', a, 2);
+}
+
+const DRAW = {
+  title(lt) {
+    text('rembg', W / 2, 260, 150, INK, 800, 'center', app(lt, .2), MONO);
+    text('사진 배경 자동으로 지우기', W / 2, 390, 54, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★★☆', W / 2, 500, 56, GOLD, 800, 'center', app(lt, 3.8));
+    text('⭐ 약 2.5만 · MIT 무료 · 파이썬 · pip 2.0.86', W / 2, 590, 34, SUB, 600, 'center', app(lt, 4.4));
+    const cuts = ['coffee-u2net', 'cat-u2net', 'rocket-isnet-general-use'];
+    cuts.forEach((k, i) => cutOn(IMG[k], 360 + i * 420, 650, 360, 240, app(lt, 7.3 + i * .4), 'checker', 14));
+  },
+  what(lt) {
+    // ① 원본 → ② 흑백 본 → ③ 오린 결과
+    const steps = [['① 주인공 찾기', IMG.coffee, 'photo'], ['② 흑백 본(마스크)', IMG.cofmask, 'photo'], ['③ 바깥을 투명하게', IMG['coffee-u2net'], 'cut']];
+    const at = [0.3, 12.5, 18.5];
+    steps.forEach(([lab, im, kind], i) => {
+      const a = app(lt, i === 0 ? 0.3 : at[i]); const x = 160 + i * 560, y = 250;
+      if (kind === 'cut') cutOn(im, x, y, 480, 320, a, 'checker', 16); else photo(im, x, y, 480, 320, a, 16);
+      text(lab, x + 240, y + 380, 38, i === 2 ? GREEN : INK, 800, 'center', a);
+      if (i < 2) text('→', x + 520, y + 160, 60, SUB, 800, 'center', app(lt, at[i + 1] - .3));
+    });
+    if (lt > 6 && lt < 12.5) { const k = (lt - 6) % 2 / 2; box(160 + 120 + 30 * Math.sin(k * 6.28), 270, 240, 260, 20, null, GOLD, app(lt, 6), 5); text('주인공?', 400, 230, 32, GOLD, 800, 'center', app(lt, 6)); }
+    text('✂ 자동 가위', W / 2, 140, 64, GOLD, 900, 'center', app(lt, .3));
+    pill('사진은 내 컴퓨터 밖으로 안 나가요', W / 2, 760, 34, GREEN, app(lt, 24));
+  },
+  install(lt) {
+    termLines(120, 150, 1100, 640, [
+      ['$', 'pip install "rembg[cpu,cli]"', 6.8, 1.8],
+      ['out', 'Successfully installed rembg-2.0.86 onnxruntime-1.29.0 ...', 9.2],
+      ['note', ':: [cpu,cli] 를 빼면 rembg 명령이 없어요', 13.2],
+      ['$', 'rembg i -m u2net coffee.png coffee_nobg.png', 20.2, 2.2],
+      ['out', 'Downloading u2net.onnx  176MB  (처음 한 번만)', 27.2],
+      ['ok', '완료 — 약 3.5초 (프로그램 켜는 시간 포함)', 29.5]], lt);
+    const notes = [['파이썬 3.11 이상', 0.3], ['"Add python.exe to PATH" 체크', 1.5], ['i = 사진 한 장', 20.5], ['-m u2net = 모델 이름', 22.5], ['원본 → 결과 순서', 24.5]];
+    notes.forEach(([s, at], i) => { const a = app(lt, at); box(1280, 170 + i * 120, 520, 90, 16, '#161b22', i < 2 ? BLUE : GOLD, a, 2); text(s, 1540, 215 + i * 120, 32, INK, 700, 'center', a); });
+  },
+  coffee(lt) {
+    const sec = R.models.u2net.photos.coffee.sec, kept = R.models.u2net.photos.coffee.kept_pct;
+    const sw = ease(prog(lt, 5.2, 11.5));
+    const rect = reveal(IMG.coffee, IMG['coffee-u2net'], 160, 140, 1050, 700, sw);
+    const run = prog(lt, 5.2, 11.5);
+    text(`⏱ ${(sec * run).toFixed(1)}초`, 1520, 260, 80, run >= 1 ? GREEN : INK, 800, 'center');
+    const rows = [['걸린 시간', `${sec.toFixed(1)}초`, 12], ['남은 주인공', `${kept}%`, 19], ['지워진 배경', `${(100 - kept).toFixed(1)}%`, 20], ['저장 형식', '투명 PNG', 25]];
+    rows.forEach(([k, v, at], i) => { const a = app(lt, at); box(1290, 380 + i * 120, 470, 96, 16, '#161b22', '#30363d', a, 2); text(k, 1320, 428 + i * 120, 30, SUB, 600, 'left', a); text(v, 1730, 428 + i * 120, 40, i === 0 ? GREEN : GOLD, 800, 'right', a); });
+  },
+  bg(lt) {
+    const items = [['투명', 'checker', 0.3], ['흰 배경', '#ffffff', 6.5], ['새 배경', IMG.newbg, 13]];
+    items.forEach(([lab, bg, at], i) => { const a = app(lt, at), x = 130 + i * 570; cutOn(IMG['coffee-u2net'], x, 200, 520, 350, a, bg, 16); text(lab, x + 260, 600, 42, GOLD, 800, 'center', a); });
+    const cmd = 'rembg i -m u2net -bgc 255 255 255 255 coffee.png coffee_white.png';
+    box(130, 690, 1660, 90, 16, '#010409', '#30363d', app(lt, 6.5), 2); text(typed(cmd, lt, 7, 10), 160, 735, 30, INK, 600, 'left', app(lt, 6.5), MONO);
+    text('흰색 = 255 255 255 + 불투명 255', 960, 840, 30, SUB, 600, 'center', app(lt, 10.5));
+    pill('중고거래 · 쇼핑몰 썸네일 · 프로필', W / 2, 880, 32, GREEN, app(lt, 20) * (1 - app(lt, 21.5, .1)));
+  },
+  cat(lt) {
+    const a0 = app(lt, .3);
+    photo(IMG.cat, 120, 150, 540, 360, a0, 16); text('원본', 390, 550, 34, SUB, 700, 'center', a0);
+    cutOn(IMG['cat-u2net'], 690, 150, 540, 360, app(lt, 3), 'checker', 16); text('기본 (1.1초)', 960, 550, 34, INK, 700, 'center', app(lt, 3));
+    cutOn(IMG.catmat, 1260, 150, 540, 360, app(lt, 12.5), 'checker', 16); text('-a 테두리 다듬기 (2.3초)', 1530, 550, 34, GOLD, 700, 'center', app(lt, 12.5));
+    // 수염 부분 확대 (원본 좌표: 오른쪽 아래 볼 부근)
+    const z = [290, 185, 160, 105], zy = 600, za = app(lt, 6);
+    zoom(IMG.cat, ...z, 120, zy, 540, 330, null, za); zoom(IMG['cat-u2net'], ...z, 690, zy, 540, 330, 'checker', za); zoom(IMG.catmat, ...z, 1260, zy, 540, 330, 'checker', app(lt, 13));
+    text('🔍 수염 확대', 390, zy + 30, 26, INK, 800, 'center', za);
+  },
+  folder(lt) {
+    termLines(120, 150, 1000, 520, [
+      ['$', 'rembg p -m u2net input output', 6.8, 1.6],
+      ['ok', '완료 — 3장 약 6초', 13.2],
+      ['$', 'dir output', 14.5, .6],
+      ['out', 'cat.png  coffee.png  rocket.png', 15.6]], lt);
+    ['coffee', 'cat', 'rocket'].forEach((p, i) => { const a = app(lt, 13.2 + i * .5); photo(IMG[p], 1180, 160 + i * 240, 290, 200, app(lt, .5), 12); text('→', 1505, 260 + i * 240, 40, SUB, 800, 'center', a); cutOn(IMG[`${p}-u2net`], 1540, 160 + i * 240, 290, 200, a, 'checker', 12); });
+    text('input 폴더', 1325, 140, 24, SUB, 700, 'center', app(lt, .5)); text('output 폴더', 1685, 140, 24, GREEN, 700, 'center', app(lt, 13.2));
+  },
+  drag(lt) {
+    // 바탕화면 그림: 사진 아이콘이 .bat 아이콘 위로 끌려감
+    box(160, 140, 1600, 760, 24, '#0f2a44', '#30363d', 1, 2);
+    const bx = 1200, by = 380;
+    box(bx, by, 170, 200, 18, '#21262d', GOLD, 1, 3); text('⚙', bx + 85, by + 80, 70, GOLD, 800, 'center'); text('drag_remove', bx + 85, by + 230, 24, INK, 700, 'center', 1, MONO); text('_bg.bat', bx + 85, by + 262, 24, INK, 700, 'center', 1, MONO);
+    const k = ease(prog(lt, 7, 11)), px = lerp(360, bx + 20, k), py = lerp(380, by + 10, k), on = lt > 11;
+    if (!on || lt < 12.5) { photo(IMG.coffee, px, py, 200, 140, 1 - prog(lt, 12, 12.5), 10); text('coffee.png', px + 100, py + 170, 24, INK, 700, 'center', 1 - prog(lt, 12, 12.5), MONO); }
+    if (lt > 7 && lt < 12) { text('➤', px + 180, py + 130, 48, INK, 800, 'center'); }
+    const r = [['coffee_nobg.png', 'checker'], ['coffee_white.png', '#ffffff']];
+    r.forEach(([n, bg], i) => { const a = app(lt, 13.5 + i * 1.2); cutOn(IMG['coffee-u2net'], 300 + i * 340, 600, 260, 175, a, bg, 10); text(n, 430 + i * 340, 810, 24, GREEN, 700, 'center', a, MONO); });
+    pill('여러 장 한꺼번에 OK', 960, 220, 32, GREEN, app(lt, 19.5));
+  },
+  models(lt) {
+    const tw0 = 400, th0 = 280, x0 = (W - (4 * tw0 + 3 * 30)) / 2;
+    photo(IMG.rocket, W / 2 - 150, 120, 300, 200, app(lt, 6.5), 12); text('원본', W / 2 + 190, 220, 28, SUB, 700, 'left', app(lt, 6.5));
+    MODELS.forEach(([m, lab, mb], i) => {
+      const a = app(lt, 7.5 + i * .8), x = x0 + i * (tw0 + 30), y = 360, d = R.models[m].photos.rocket, gold = m === 'isnet-general-use';
+      box(x, y, tw0, th0 + 200, 18, '#161b22', gold ? GOLD : '#30363d', a, 2);
+      cutOn(IMG[`rocket-${m}`], x + 12, y + 12, tw0 - 24, th0 - 24, a, 'checker', 10);
+      text(`${lab} (${mb})`, x + tw0 / 2, y + th0 + 30, 30, INK, 800, 'center', a);
+      text(`${d.sec.toFixed(1)}초 · 남긴 부분 ${d.kept_pct}%`, x + tw0 / 2, y + th0 + 80, 28, gold ? GOLD : SUB, 700, 'center', app(lt, 20.5));
+      text(`-m ${m}`, x + tw0 / 2, y + th0 + 135, 24, BLUE, 600, 'center', a, MONO);
+    });
+  },
+  cons(lt) {
+    const cards = [['① 모델 안 적으면', '1GB 모델 → 메모리 8GB에서 강제 종료', 0.3], ['② BiRefNet 모델', '214MB인데도 메모리 부족으로 멈춤', 9], ['③ 흐릿한 경계', '수염은 회색 줄, 로켓 연기는 일부 남음', 16.5], ['④ .jpg 이름 함정', 'coffee.jpg 로 지어도 속은 PNG', 24]];
+    cards.forEach(([h, s, at], i) => { const a = app(lt, at), x = 140 + (i % 2) * 840, y = 160 + Math.floor(i / 2) * 330;
+      box(x, y, 800, 290, 20, '#1a1012', RED, a, 2); text(h, x + 40, y + 70, 44, RED, 800, 'left', a); text(s, x + 40, y + 160, 34, INK, 700, 'left', a); });
+    pill('해결: -m u2net 처럼 모델 이름을 꼭 적고, 결과는 .png로', W / 2, 870, 32, GREEN, app(lt, 31));
+  },
+  adv(lt) {
+    photo(IMG.coffee, 160, 180, 480, 320, app(lt, .3), 14); text('→', 690, 340, 60, SUB, 800, 'center', app(lt, .8));
+    photo(IMG.cofmask, 740, 180, 480, 320, app(lt, 1), 14); text('-om  흑백 본만', 980, 550, 34, GOLD, 800, 'center', app(lt, 1), F);
+    box(1300, 180, 480, 320, 18, '#161b22', BLUE, app(lt, 12), 2); text('📁 input', 1540, 260, 40, INK, 800, 'center', app(lt, 12));
+    text('새 사진 들어오면', 1540, 340, 32, SUB, 700, 'center', app(lt, 13)); text('→ 바로 오림', 1540, 400, 36, GREEN, 800, 'center', app(lt, 14));
+    box(160, 640, 1620, 90, 16, '#010409', '#30363d', app(lt, 12), 2); text(typed('rembg p -w -m u2net input output', lt, 12.5, 15), 190, 685, 32, INK, 600, 'left', app(lt, 12), MONO);
+    pill('MIT 라이선스 · 개인도 회사도 무료', W / 2, 820, 34, GREEN, app(lt, 18));
+  },
+  outro(lt) {
+    const lines = [['명령 한 줄 · 사진 1장 약 1초', INK, .3], ['모델 이름은 꼭: -m u2net', GOLD, 6], ['명령어·끌어다 놓기 파일은 설명란 링크', BLUE, 12]];
+    lines.forEach(([s, c, at], i) => text(s, W / 2, 300 + i * 130, 60, c, 800, 'center', app(lt, at)));
+    text('다음에 또 멋진 오픈소스 소개할게요!', W / 2, 760, 44, SUB, 700, 'center', app(lt, 18));
+  }
+};
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
+  const fade = prog(lt, 0, .35) * (1 - prog(lt, c.dur - .35, c.dur));
+  ctx.save(); ctx.globalAlpha = fade; DRAW[c.id](lt); tag(c, lt); ctx.restore();
+  caption(c, lt);
+}
+</script></body></html>

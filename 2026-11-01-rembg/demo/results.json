@@ -1,0 +1,106 @@
+{
+ "models": {
+  "u2netp": {
+   "load_sec": 0.09,
+   "model_mb": 4.6,
+   "photos": {
+    "cat": {
+     "sec": 0.64,
+     "kept_pct": 68.1
+    },
+    "coffee": {
+     "sec": 0.58,
+     "kept_pct": 47.6
+    },
+    "rocket": {
+     "sec": 0.59,
+     "kept_pct": 2.3
+    }
+   }
+  },
+  "silueta": {
+   "load_sec": 0.15,
+   "model_mb": 44.2,
+   "photos": {
+    "cat": {
+     "sec": 1.74,
+     "kept_pct": 62.1
+    },
+    "coffee": {
+     "sec": 1.74,
+     "kept_pct": 47.0
+    },
+    "rocket": {
+     "sec": 1.63,
+     "kept_pct": 1.1
+    }
+   }
+  },
+  "u2net": {
+   "load_sec": 0.48,
+   "model_mb": 176.0,
+   "photos": {
+    "cat": {
+     "sec": 1.13,
+     "kept_pct": 60.8
+    },
+    "coffee": {
+     "sec": 1.17,
+     "kept_pct": 47.4
+    },
+    "rocket": {
+     "sec": 1.05,
+     "kept_pct": 1.5
+    }
+   }
+  },
+  "isnet-general-use": {
+   "load_sec": 0.59,
+   "model_mb": 178.6,
+   "photos": {
+    "cat": {
+     "sec": 3.32,
+     "kept_pct": 75.2
+    },
+    "coffee": {
+     "sec": 3.3,
+     "kept_pct": 47.5
+    },
+    "rocket": {
+     "sec": 2.97,
+     "kept_pct": 10.0
+    }
+   }
+  }
+ },
+ "photos": {
+  "cat": {
+   "file": "cat.png",
+   "size": [
+    451,
+    300
+   ],
+   "bytes": 240512
+  },
+  "coffee": {
+   "file": "coffee.png",
+   "size": [
+    600,
+    400
+   ],
+   "bytes": 466706
+  },
+  "rocket": {
+   "file": "rocket.jpg",
+   "size": [
+    640,
+    427
+   ],
+   "bytes": 112525
+  }
+ },
+ "extras": {
+  "white_bg_sec": 1.2,
+  "matting_sec": 2.29
+ }
+}

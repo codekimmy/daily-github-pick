@@ -4,7 +4,7 @@
 <script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
 </head><body><canvas id="c"></canvas>
 <script>
-// 롱폼 본편(미리보기 뒤). 모든 사진·결과는 실제 테스트 결과물(../input, ../out)을 그대로 씀
+// 롱폼 본편(미리보기 뒤). 모든 사진·결과는 실제 시연 결과물(../input, ../out)을 그대로 씀
 const W = 1920, H = 1080, FPS = 30;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
 const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });

@@ -100,7 +100,7 @@ SC.install = (lt) => {
     text('방법 1 · 설치 없이', 320, 250, 36, BLUE, 800, 'left', a1);
     text('📄 password-check.html', 320, 360, 56, INK, 700, 'left', a1, F);
     text('저장소에서 파일 1개 받기 → 더블클릭 → 크롬·엣지에서 열림', 320, 460, 34, INK, 500, 'left', a1);
-    text('✔ 인터넷 연결 없이 계산 (테스트: 외부 요청 0건)', 320, 560, 34, GREEN, 700, 'left', a1 * app(lt, 6.5));
+    text('✔ 인터넷 연결 없이 계산 (시연: 외부 요청 0건)', 320, 560, 34, GREEN, 700, 'left', a1 * app(lt, 6.5));
     text('✔ 입력한 비밀번호를 어디에도 보내지 않음', 320, 630, 34, GREEN, 700, 'left', a1 * app(lt, 8)); }
   // 방법 2
   const a2 = app(lt, 13);
@@ -133,7 +133,7 @@ SC.name = async (lt, c) => { await drawClip(c, lt, '내 정보 칸에 이름 넣
 SC.words = async (lt, c) => { await drawClip(c, lt, '단어를 하나씩 이어 쓰기');
   resultRows([['tiger', 0.0211, 0, '단어 1개'], ['tiger-gimbap', 420001, 3, '단어 2개'], R('tiger-gimbap-umbrella').concat('단어 3개')], lt, 16.1, '단어가 늘수록 시간이 확 늘어요'); };
 SC.rank = (lt) => {
-  text('테스트한 비밀번호 11개 (훔친 파일 · 1초에 1만 번 기준)', W / 2, 130, 40, INK, 800, 'center', app(lt, .2));
+  text('시연에 쓴 비밀번호 11개 (훔친 파일 · 1초에 1만 번 기준)', W / 2, 130, 40, INK, 800, 'center', app(lt, .2));
   const rows = DATA.filter(d => !d.hint).sort((x, y) => x.log10 - y.log10);
   rows.forEach((d, i) => { const p = ease(app(lt, .8 + i * .35, .7)), y = 215 + i * 64;
     text(d.pw, 220, y, 30, INK, 600, 'left', p, MONO);

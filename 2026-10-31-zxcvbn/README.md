@@ -26,8 +26,8 @@
 - **인터넷에 비밀번호를 보내지 않고** 내 컴퓨터 안에서만 계산해요 (테스트: 외부 요청 0건)
 - 계산이 빨라요: 비밀번호 1개에 **0.4~3.5밀리초** (눈 깜빡임 한 번이 약 100밀리초)
 
-## 테스트 결과
-작업 공간(리눅스, CPU 2개)에서 `pip install zxcvbn`(파이썬판 4.5.0)과 `npm i zxcvbn`(원본 4.4.2)으로 설치해 테스트했어요. **두 판의 점수·시간이 12개 모두 똑같았어요.**
+## 시연 결과 (클라우드 자동 실행)
+작업 공간(리눅스, CPU 2개)에서 `pip install zxcvbn`(파이썬판 4.5.0)과 `npm i zxcvbn`(원본 4.4.2)으로 설치해 자동으로 실행한 결과예요. **두 판의 점수·시간이 12개 모두 똑같았어요.**
 시간은 "잘 보호된 사이트에서 훔친 비밀번호 파일을 1초에 1만 번씩 맞혀 볼 때" 기준이에요. 테스트에 쓴 비밀번호는 모두 시연용으로 만든 예시예요.
 
 | 비밀번호 | 설명 | 등급(5단계) | 뚫리는 시간 |
@@ -60,7 +60,7 @@
 ![한국어 계산기 화면](media/page-mid.png)
 
 - **업로드용: `media/zxcvbn-long.mp4`(롱폼 5분 37초, 12개 장, 실제 계산기 화면 녹화 포함, 자막 있음·음성 없음), `media/zxcvbn-anim-vertical.mp4`(숏폼 30초)**
-- 과정 애니메이션: `media/zxcvbn-anim.mp4`(가로 30초), `media/zxcvbn-anim-vertical.mp4`(세로 30초) — 위 표의 실제 테스트 결과(`demo/results.json`)로 그림
+- 과정 애니메이션: `media/zxcvbn-anim.mp4`(가로 30초), `media/zxcvbn-anim-vertical.mp4`(세로 30초) — 위 표의 실제 시연 결과(`demo/results.json`)로 그림
 - 계산기 화면 캡처: `media/page-weak.png`, `page-mid.png`, `page-name.png`, `page-strong.png`
 - 썸네일: `media/thumbnail.jpg`
 

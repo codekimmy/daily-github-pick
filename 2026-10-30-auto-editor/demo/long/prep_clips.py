@@ -12,7 +12,7 @@ for name, (src, ss, dur) in CLIPS.items():
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", str(ss), "-t", str(dur), "-i", str(work / src),
                     "-vn", "-ac", "2", "-ar", "44100", str(work / "clips" / f"{name}.wav")], check=True)
     # auto-editor 29.3.1의 빨리 감기(--when-silent speed:N) 결과에는 속도가 바뀌는 곳마다 검은 화면이 1장씩 낀다.
-    # 영상에서 번쩍여 보이므로 바로 앞 장면으로 바꿔 넣는다 (README '주의할 점'에 기록)
+    # 재생하면 화면이 순간 까맣게 깜빡이므로 바로 앞 장면으로 바꿔 넣는다 (README '주의할 점'에 기록)
     from PIL import Image, ImageStat
     fr = sorted(d.glob("*.png")); fixed = 0
     for i in range(1, len(fr)):

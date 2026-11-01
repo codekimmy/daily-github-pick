@@ -49,7 +49,7 @@
 ## 문서·PDF·생산성
 | 추천 | 저장소 | 한 줄 | 만든 곳 | 별 | 설치 | 테스트 결과 | 숏폼 훅 | 쓸모 |
 |---|---|---|---|---|---|---|---|---|
-| ⭐ | marp-team/marp-cli | 메모장 글로 발표 슬라이드 PDF·PPTX | 일본 | 3.9천 | npm `@marp-team/marp-cli` | 3쪽 PDF 4초, 수정 가능한 PPTX 4.6초, 한글 OK (`--no-stdin` 필수) | 텍스트 10줄이 5초 만에 PPT | ★4 |
+| ⭐ ✅ Day 6 | marp-team/marp-cli | 메모장 글로 발표 슬라이드 PDF·PPTX | 일본 | 3.9천 | npm `@marp-team/marp-cli` | 3쪽 PDF 4초, 수정 가능한 PPTX 4.6초, 한글 OK (`--no-stdin` 필수) | 텍스트 10줄이 5초 만에 PPT | ★4 |
 | ⭐ | tfeldmann/organize | 규칙대로 폴더 자동 정리 | 독일 | 3.2천 | pip `organize-tool` | 0.8초, 한글 파일명 OK, 중복도 알려 줌 | 다운로드 폴더 1초 정리 | ★4 |
 | ⭐ | qarmin/czkawka | 중복·비슷한 파일 찾아 용량 확보 | 폴란드 | 3.5만 | crates `czkawka_cli` (빌드 13분) | 0.1초에 중복 2그룹 | '최종_진짜최종' 찾기 | ★4 |
 |  | microsoft/markitdown | PDF·워드·엑셀·PPT를 텍스트로 | 미국 MS | 19만 | pip `markitdown[all]` | docx 1.9초(표·목록 유지), PDF 2.7초 | 문서를 ChatGPT용 글로 | ★4 |

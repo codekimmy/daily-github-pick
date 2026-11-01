@@ -1,0 +1,112 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 30초 과정 애니메이션: 메모장 글이 타이핑되며 슬라이드가 한 장씩 생김 → 변환 명령 + 초시계 → 파일 4종 → 테마 3종 → 핵심 → 엔딩(유의사항)
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30, TOTAL = 30 * FPS;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), VERT ? W / 1080 : W / 1920);
+let READY = false;
+const T = { intro1: 2.4, w0: 2.4, w1: 10.4, c0: 10.4, c1: 16.4, th0: 16.4, th1: 22.0, k0: 22.0, e0: 26.6 };
+const imgs = {}; [1, 2, 3, 4].forEach(i => ['default', 'gaia', 'uncover'].forEach(th => imgs[`${th}${i}`] = `../out/theme-${th}.00${i}.png`));
+loadImages(imgs).then(() => document.fonts.load(`800 40px ${F}`)).then(() => READY = true);
+const MD = R.md, NCH = MD.join('\n').length;
+// 각 장(슬라이드)이 시작되는 글자 위치: 4번째 --- 이후 제목 줄
+const starts = []; { let c = 0, n = 0; MD.forEach((l, i) => { if (l.startsWith('#')) starts.push(c + l.length); c += l.length + 1; }); }
+
+function sceneWrite(t) {
+  const a = prog(t, T.w0, T.w0 + .3) * (1 - prog(t, T.w1 - .3, T.w1)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  const typedN = Math.floor(NCH * ease(prog(t, T.w0 + .3, T.w1 - 1.6)));
+  const nSlides = starts.filter(s => typedN >= s).length;
+  if (VERT) {
+    text('메모장에 글을 쓰면…', W / 2, 250 * S, 52, INK, 800);
+    notepad(60 * S, 320 * S, W - 120 * S, 840 * S, 'trip.md - 메모장', MD, typedN, 1, 22, 25);
+    const tw0 = 470 * S, th0 = 264 * S, gap = 20 * S, x0 = (W - 2 * tw0 - gap) / 2, y0 = 1250 * S;
+    for (let i = 0; i < 4; i++) { const p = out3(prog(typedN, starts[i], starts[i] + 25)); box(x0 + (i % 2) * (tw0 + gap), y0 + Math.floor(i / 2) * (th0 + gap), tw0, th0, 10 * S, null, '#30363d', 1, 2); photo(IMG[`default${i + 1}`], x0 + (i % 2) * (tw0 + gap), y0 + Math.floor(i / 2) * (th0 + gap), tw0, th0, p, 10); }
+    pill(`슬라이드 ${nSlides}장`, W / 2, 1830 * S, 46, nSlides === 4 ? GREEN : GOLD, 1);
+  } else {
+    text('메모장에 글을 쓰면…', 490 * S, 105 * S, 46, INK, 800);
+    notepad(80 * S, 160 * S, 820 * S, 860 * S, 'trip.md - 메모장', MD, typedN, 1, 19, 25.5);
+    const tw0 = 440 * S, th0 = 248 * S, gap = 24 * S, x0 = 980 * S, y0 = 250 * S;
+    text('…슬라이드가 한 장씩', x0 + tw0 + gap / 2, 105 * S, 46, GOLD, 800);
+    for (let i = 0; i < 4; i++) { const x = x0 + (i % 2) * (tw0 + gap), y = y0 + Math.floor(i / 2) * (th0 + gap); box(x, y, tw0, th0, 10 * S, null, '#30363d', 1, 2); photo(IMG[`default${i + 1}`], x, y, tw0, th0, out3(prog(typedN, starts[i], starts[i] + 25)), 10); }
+    pill(`슬라이드 ${nSlides}장`, x0 + tw0 + gap / 2, 880 * S, 42, nSlides === 4 ? GREEN : GOLD, 1);
+    text('--- 한 줄 = 다음 장', x0 + tw0 + gap / 2, 970 * S, 32, BLUE, 700, 'center', prog(t, T.w0 + 2, T.w0 + 2.5), MONO);
+  }
+  ctx.restore();
+}
+
+function sceneConvert(t) {
+  const a = prog(t, T.c0, T.c0 + .3) * (1 - prog(t, T.c1 - .3, T.c1)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a; const lt = t - T.c0;
+  text('명령 한 줄로 변환', W / 2, (VERT ? 330 : 110) * S, VERT ? 60 : 54, INK, 800);
+  const tx = VERT ? 60 * S : 260 * S, tww = VERT ? W - 120 * S : 1400 * S, ty = (VERT ? 420 : 170) * S;
+  term(tx, ty, tww, 180 * S, '명령 프롬프트 (cmd)', 1);
+  const cmd = 'marp trip.md -o trip.pdf';
+  text(typed(cmd, lt, .3, 1.6), tx + 30 * S, ty + 112 * S, VERT ? 38 : 40, INK, 600, 'left', 1, MONO);
+  const run = prog(lt, 1.8, 3.4), sec = R.formats.pdf.sec;
+  text(`⏱ ${(sec * run).toFixed(1)}초`, W / 2, ty + (VERT ? 290 : 270) * S, VERT ? 90 : 76, run >= 1 ? GREEN : INK, 800, 'center', prog(lt, 1.7, 1.9), F);
+  const F4 = [['PDF', `${R.formats.pdf.sec.toFixed(1)}초 · ${R.formats.pdf.pages}쪽`, RED], ['PPTX', `${R.formats.pptx.sec.toFixed(1)}초 · 파워포인트`, GOLD], ['PNG', `${R.formats.png.sec.toFixed(1)}초 · 그림 4장`, GREEN], ['HTML', `${R.formats.html.sec.toFixed(1)}초 · 웹페이지`, BLUE]];
+  const cw = (VERT ? 470 : 330) * S, ch = (VERT ? 230 : 200) * S, g = 24 * S;
+  F4.forEach(([n, s, c], i) => {
+    const p = out3(prog(lt, 3.5 + i * .35, 4 + i * .35)); if (p <= 0) return;
+    const x = VERT ? (W - 2 * cw - g) / 2 + (i % 2) * (cw + g) : (W - 4 * cw - 3 * g) / 2 + i * (cw + g), y = VERT ? 980 * S + Math.floor(i / 2) * (ch + g) : 600 * S;
+    box(x, y + (1 - p) * 30 * S, cw, ch, 20 * S, '#161b22', c, p, 3);
+    text(n, x + cw / 2, y + ch * .38 + (1 - p) * 30 * S, VERT ? 64 : 60, c, 900, 'center', p, MONO);
+    text(s, x + cw / 2, y + ch * .75 + (1 - p) * 30 * S, VERT ? 34 : 30, INK, 700, 'center', p);
+  });
+  ctx.restore();
+}
+
+function sceneThemes(t) {
+  const a = prog(t, T.th0, T.th0 + .3) * (1 - prog(t, T.th1 - .3, T.th1)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a; const lt = t - T.th0;
+  text('한 단어만 바꾸면 디자인이 바뀌어요', W / 2, (VERT ? 300 : 110) * S, VERT ? 52 : 52, INK, 800);
+  const TH = [['default', '기본'], ['gaia', '따뜻한 색'], ['uncover', '가운데 정렬']];
+  const sw = (VERT ? 640 : 560) * S, sh = sw * 9 / 16;
+  TH.forEach(([th, lab], i) => {
+    const p = out3(prog(lt, .3 + i * .7, .9 + i * .7)); if (p <= 0) return;
+    const x = VERT ? (W - sw) / 2 : (W - 3 * sw - 2 * 40 * S) / 2 + i * (sw + 40 * S), y = VERT ? 400 * S + i * (sh + 120 * S) : 250 * S;
+    photo(IMG[`${th}${lt > 3.4 ? 3 : 1}`], x, y, sw, sh, p, 12); box(x, y, sw, sh, 12 * S, null, i === 1 ? GOLD : '#30363d', p, 2);
+    text(`theme: ${th}`, x + sw / 2, y + sh + 42 * S, VERT ? 38 : 34, BLUE, 700, 'center', p, MONO);
+    if (!VERT) text(lab, x + sw / 2, y + sh + 92 * S, 30, SUB, 600, 'center', p);
+  });
+  if (!VERT) text('글은 그대로, 메모 맨 위 한 줄만 바꿔요', W / 2, 860 * S, 36, GOLD, 700, 'center', prog(lt, 2.6, 3.1));
+  ctx.restore();
+}
+
+function sceneKey(t) {
+  const a = prog(t, T.k0, T.k0 + .4) * (1 - prog(t, T.e0 - .3, T.e0)); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  const lines = [[`메모장 글 ${R.md_lines}줄`, INK], [`PDF ${R.formats.pdf.sec.toFixed(1)}초 · PPTX ${R.formats.pptx.sec.toFixed(1)}초`, GREEN], ['무료 · 한글 그대로', GOLD]];
+  lines.forEach(([s, c], i) => text(s, W / 2, H / 2 + (i - 1) * (VERT ? 150 : 120) * S, VERT ? 76 : 76, c, 900, 'center', out3(prog(t, T.k0 + .2 + i * .5, T.k0 + .8 + i * .5))));
+  ctx.restore();
+}
+
+function sceneEnd(t) {
+  const a = prog(t, T.e0, T.e0 + .4); if (a <= 0) return;
+  ctx.save(); ctx.globalAlpha = a;
+  text('marp-cli', W / 2, H / 2 - (VERT ? 160 : 130) * S, VERT ? 120 : 120, INK, 800, 'center', 1, MONO);
+  text('메모장 글을 발표 자료로 · 무료 오픈소스', W / 2, H / 2 - 10 * S, VERT ? 44 : 42, SUB, 600);
+  text('일반인 쓸모 ★★★★☆', W / 2, H / 2 + (VERT ? 90 : 80) * S, VERT ? 54 : 54, GOLD, 800, 'center', prog(t, T.e0 + .4, T.e0 + .9));
+  text('설치·명령어는 설명란에', W / 2, H / 2 + (VERT ? 190 : 170) * S, VERT ? 40 : 38, BLUE, 700, 'center', prog(t, T.e0 + .6, T.e0 + 1.1));
+  const c = prog(t, T.e0 + 1, T.e0 + 1.5);
+  if (VERT) { text('정보 제공용 · 2026-11-02 클라우드 시연 결과 (운영자 직접 검증 아님)', W / 2, H - 290 * S, 24, SUB, 500, 'center', c);
+    text('발표·제출 전에 결과 파일을 꼭 열어 확인하세요', W / 2, H - 252 * S, 24, SUB, 500, 'center', c); }
+  else text('정보 제공용 · 2026-11-02 클라우드 시연 결과(운영자 직접 검증 아님) · 발표·제출 전에 결과 파일을 꼭 열어 확인하세요', W / 2, H - 70 * S, 24, SUB, 500, 'center', c);
+  ctx.restore();
+}
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const ia = 1 - prog(t, T.intro1 - .3, T.intro1);
+  if (ia > 0) {
+    text('메모장 글 몇 줄이,', W / 2, H / 2 - (VERT ? 90 : 70) * S, VERT ? 90 : 88, INK, 900, 'center', ia * prog(t, 0, .4));
+    text('발표 자료가 된다고?', W / 2, H / 2 + 50 * S, VERT ? 90 : 88, GOLD, 900, 'center', ia * prog(t, .5, .9));
+  }
+  sceneWrite(t); sceneConvert(t); sceneThemes(t); sceneKey(t); sceneEnd(t);
+}
+</script></body></html>

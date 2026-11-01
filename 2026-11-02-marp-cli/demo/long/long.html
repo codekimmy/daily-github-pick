@@ -1,0 +1,163 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 슬라이드 그림은 모두 실제 시연 결과물(../out)을 그대로 씀
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+const imgs = {}; [1, 2, 3, 4].forEach(i => { ['default', 'gaia', 'uncover'].forEach(th => imgs[`${th}${i}`] = `../out/theme-${th}.00${i}.png`); imgs[`ed${i}`] = `../out/editable-view.00${i}.png`; });
+loadImages(imgs).then(() => document.fonts.load(`800 40px ${F}`)).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const MD = R.md, NCH = MD.join('\n').length;
+
+function caption(c, lt) {
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
+  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
+  const s = cue[2], w = Math.min(tw(s, 38, 700) + 80, 1860);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.9)', null, a); text(s, W / 2, 992, tw(s, 38, 700) > 1780 ? 32 : 38, INK, 700, 'center', a);
+}
+function tag(c, lt) {
+  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+  box(40, 34, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 62, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt) {
+  term(x, y, w, h, '명령 프롬프트 (cmd)', 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * 52; if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\발표>', x + 30, yy, 26, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.6)), x + 30 + tw('C:\\발표> ', 26, 600, MONO), yy, 26, INK, 600, 'left', 1, MONO); }
+    else text(s, x + 30, yy, 26, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+}
+function slide(k, x, y, w, a = 1, stroke = '#30363d') { const h = w * 9 / 16; photo(IMG[k], x, y, w, h, a, 10); box(x, y, w, h, 10, null, stroke, a, 2); return h; }
+function card(x, y, w, h, k, v, at, lt, vc = GOLD) { const a = app(lt, at); box(x, y, w, h, 16, '#161b22', '#30363d', a, 2); text(k, x + 30, y + h / 2, 30, SUB, 600, 'left', a); text(v, x + w - 30, y + h / 2, 40, vc, 800, 'right', a); }
+const sec1 = s => s.toFixed(1) + '초';
+
+const DRAW = {
+  title(lt) {
+    text('marp-cli', W / 2, 250, 150, INK, 800, 'center', app(lt, .2), MONO);
+    text('메모장 글을 발표 자료로', W / 2, 380, 54, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★★☆', W / 2, 490, 56, GOLD, 800, 'center', app(lt, 3.8));
+    text('⭐ 약 3,900 · MIT 무료 · npm 4.5.1 · 만든 곳: marp-team (일본)', W / 2, 580, 34, SUB, 600, 'center', app(lt, 4.4));
+    ['default1', 'gaia2', 'uncover3'].forEach((k, i) => slide(k, 330 + i * 440, 650, 400, app(lt, 7.3 + i * .4)));
+  },
+  what(lt) {
+    text('🖨 발표 자료 인쇄소', W / 2, 140, 64, GOLD, 900, 'center', app(lt, .3));
+    const st = [['① 원고', '메모장 글 (.md)', 6], ['② 디자인 틀', '테마 3가지', 12.5], ['③ 인쇄 방식', 'PDF · PPTX · PNG · HTML', 18.5]];
+    st.forEach(([h, s, at], i) => {
+      const a = app(lt, at), x = 140 + i * 570, y = 250;
+      box(x, y, 500, 420, 24, '#161b22', i === 2 ? GREEN : '#30363d', a, 2);
+      text(h, x + 250, y + 60, 44, i === 2 ? GREEN : INK, 800, 'center', a); text(s, x + 250, y + 120, 30, SUB, 700, 'center', a);
+      if (i === 0) notepad(x + 30, y + 160, 440, 240, 'trip.md', MD.slice(5, 14), 999, a, 17, 22);
+      if (i === 1) ['default1', 'gaia1', 'uncover1'].forEach((k, j) => slide(k, x + 40 + j * 145, y + 230, 130, a));
+      if (i === 2) ['PDF', 'PPTX', 'PNG', 'HTML'].forEach((n, j) => pill(n, x + 140 + (j % 2) * 220, y + 230 + Math.floor(j / 2) * 100, 30, [RED, GOLD, GREEN, BLUE][j], a));
+      if (i < 2) text('→', x + 535, y + 210, 60, SUB, 800, 'center', app(lt, st[i + 1][2] - .3));
+    });
+    pill('글자 크기·위치는 인쇄소가 알아서', W / 2, 790, 34, GREEN, app(lt, 24));
+  },
+  install(lt) {
+    termLines(120, 150, 1100, 640, [
+      ['$', 'npm install -g @marp-team/marp-cli', 6.8, 1.8],
+      ['out', 'added 1 package in 14s', 9.6],
+      ['$', 'marp --version', 13.3, .8],
+      ['out', '@marp-team/marp-cli v4.5.1', 14.6],
+      ['note', ':: PDF·PPTX는 크롬/엣지를 빌려서 만들어요', 20.3]], lt);
+    const notes = [['nodejs.org → LTS 설치', 0.3, BLUE], ['설치 약 14초 (시연 기준)', 13, GOLD], ['크롬 또는 엣지 필요', 20, GOLD], ['윈도우엔 엣지 기본 포함', 27, GREEN]];
+    notes.forEach(([s, at, c], i) => { const a = app(lt, at); box(1280, 170 + i * 130, 520, 96, 16, '#161b22', c, a, 2); text(s, 1540, 218 + i * 130, 32, INK, 700, 'center', a); });
+  },
+  write(lt) {
+    notepad(100, 130, 860, 800, 'trip.md - 메모장', MD, Math.floor(NCH * prog(lt, .3, 4)), 1, 19, 23.5);
+    // 기호 설명 박스: 메모 줄 위치에 하이라이트
+    const hl = [[6.5, 13, 1, 3, PURPLE, 'marp: true = 발표 원고 표시'], [13, 20, 9, 9, BLUE, '--- = 다음 장'], [20, 27, 11, 14, GOLD, '## 제목 · - 목록']];
+    hl.forEach(([a0, a1, l0, l1, c, s]) => { const a = prog(lt, a0, a0 + .3) * (1 - prog(lt, a1 - .3, a1)); box(140, 130 + (64 + l0 * 23.5 - 13), 810, (l1 - l0 + 1) * 23.5 + 4, 6, null, c, a, 3); });
+    const k = lt < 13 ? 'default1' : lt < 20 ? 'default2' : lt < 27 ? 'default3' : 'default4';
+    slide(k, 1020, 170, 800, app(lt, 3));
+    const lab = lt < 6.5 ? '' : lt < 13 ? 'marp: true = 발표 원고 표시' : lt < 20 ? '--- 한 줄 = 다음 장' : lt < 27 ? '# 제목 · - 목록 · | 표 · **굵게**' : `31줄 → 슬라이드 4장`;
+    text(lab, 1420, 700, 38, lt < 13 ? PURPLE : lt < 20 ? BLUE : lt < 27 ? GOLD : GREEN, 800, 'center', 1, lt < 27 ? MONO : F);
+    [1, 2, 3, 4].forEach(i => slide(`default${i}`, 1020 + (i - 1) * 205, 770, 190, app(lt, 27 + i * .3)));
+  },
+  pdf(lt) {
+    termLines(120, 130, 1000, 300, [['$', 'marp trip.md -o trip.pdf', .8, 1.4], ['out', '[ INFO ] trip.md => trip.pdf', 3.6], ['ok', `완료 — ${sec1(R.formats.pdf.sec)} · ${R.formats.pdf.pages}쪽 · ${Math.round(R.formats.pdf.kb)}KB`, 6.5]], lt);
+    const run = prog(lt, 2.6, 6.5); text(`⏱ ${(R.formats.pdf.sec * run).toFixed(1)}초`, 1500, 280, 80, run >= 1 ? GREEN : INK, 800, 'center', app(lt, 2.4));
+    [1, 2, 3, 4].forEach(i => slide(`default${i}`, 130 + (i - 1) * 425, 480, 400, app(lt, 6.8 + i * .4), i === 3 && lt > 13 && lt < 20 ? GOLD : '#30363d'));
+    text('한글 · 표 · 굵은 글씨 그대로', 960, 760, 36, GOLD, 800, 'center', app(lt, 13));
+    text('쪽 번호 자동 (paginate: true)', 960, 830, 32, BLUE, 700, 'center', app(lt, 20));
+  },
+  pptx(lt) {
+    termLines(120, 130, 1000, 300, [['$', 'marp trip.md --pptx -o trip.pptx', .8, 1.6], ['out', '[ INFO ] trip.md => trip.pptx', 4.2], ['ok', `완료 — ${sec1(R.formats.pptx.sec)} · 4장 · ${Math.round(R.formats.pptx.kb)}KB`, 6.5]], lt);
+    card(1220, 140, 580, 100, '걸린 시간', sec1(R.formats.pptx.sec), 6.5, lt, GREEN);
+    card(1220, 260, 580, 100, '장 수', '4장', 8, lt, INK);
+    card(1220, 380, 580, 100, '고칠 수 있는 글자 상자', `${R.pptx_plain_textboxes}개`, 13, lt, RED);
+    // 파워포인트 창 흉내: 슬라이드 = 그림 한 장
+    const a = app(lt, 13); box(320, 500, 1280, 420, 16, '#1b1f24', '#30363d', a, 2);
+    slide('default2', 380, 540, 600, a, RED); text('🖼 장 전체가 그림 1장', 1270, 640, 40, RED, 800, 'center', a);
+    text('발표·보내기엔 충분', 1270, 730, 36, GREEN, 800, 'center', app(lt, 21));
+  },
+  png(lt) {
+    termLines(120, 130, 1000, 240, [['$', 'marp trip.md --images png', .8, 1.4], ['ok', `trip.001.png ~ trip.004.png · ${sec1(R.formats.png.sec)}`, 6.5]], lt);
+    [1, 2, 3, 4].forEach(i => slide(`default${i}`, 130 + (i - 1) * 300, 420, 280, app(lt, 6.5 + i * .3)));
+    text('카드뉴스 · SNS 올리기', 680, 620, 34, GOLD, 800, 'center', app(lt, 9));
+    box(1260, 140, 560, 520, 18, '#161b22', BLUE, app(lt, 13), 2);
+    text('🌐 trip.html', 1540, 220, 44, BLUE, 800, 'center', app(lt, 13), F);
+    text(`${sec1(R.formats.html.sec)} · ${Math.round(R.formats.html.kb)}KB`, 1540, 290, 36, GREEN, 800, 'center', app(lt, 13.5));
+    slide('default1', 1300, 340, 480, app(lt, 14));
+    text('브라우저로 열어 발표', 1540, 700, 32, INK, 700, 'center', app(lt, 19.5));
+  },
+  themes(lt) {
+    const th = lt < 13 ? 'default' : lt < 19.5 ? 'gaia' : 'uncover';
+    box(120, 130, 700, 90, 14, '#1e2329', '#30363d', 1, 2); text('theme: ', 150, 175, 40, PURPLE, 700, 'left', 1, MONO);
+    text(lt < 6.5 ? 'default' : th, 150 + tw('theme: ', 40, 700, MONO), 175, 40, GOLD, 800, 'left', 1, MONO);
+    const k = Math.floor(prog(lt, 25, 29) * 3.99) + 1;
+    slide(`${th}${lt < 25 ? 1 : Math.min(4, k)}`, 120, 270, 1100, app(lt, .3));
+    ['default', 'gaia', 'uncover'].forEach((t, i) => { const on = t === th && lt >= 6.5; const a = app(lt, [6.5, 13, 19.5][i]);
+      slide(`${t}3`, 1300, 160 + i * 270, 440, a, on ? GOLD : '#30363d'); text(t, 1520, 160 + i * 270 + 262, 26, on ? GOLD : SUB, 700, 'center', a, MONO); });
+    pill('글은 한 글자도 안 고침', 670, 900, 30, GREEN, app(lt, 25));
+  },
+  big(lt) {
+    const n = Math.floor(prog(lt, .5, 5) * 20);
+    for (let i = 0; i < 20; i++) { const a = i < n ? 1 : 0; box(150 + (i % 10) * 80, 160 + Math.floor(i / 10) * 70, 66, 50, 6, '#ffffff', null, a); text(String(i + 1), 150 + (i % 10) * 80 + 33, 185 + Math.floor(i / 10) * 70, 20, '#24292f', 700, 'center', a); }
+    text(`${n}장`, 1100, 210, 70, GOLD, 900, 'center', app(lt, .5));
+    const bars = [['4장 PDF', R.formats.pdf.sec, 6.5], ['20장 PDF', R.big.pdf_sec, 6.5], ['4장 PPTX', R.formats.pptx.sec, 13], ['20장 PPTX', R.big.pptx_sec, 13]];
+    bars.forEach(([l, s, at], i) => { const a = app(lt, at), y = 400 + i * 110, k = ease(prog(lt, at, at + 1.2));
+      text(l, 420, y, 34, INK, 700, 'right', a); box(450, y - 30, 280 * s * k, 60, 10, i % 2 ? GOLD : BLUE, null, a); text(sec1(s), 470 + 280 * s * k, y, 34, i % 2 ? GOLD : BLUE, 800, 'left', a); });
+    pill('대부분은 프로그램을 켜는 시간', W / 2, 870, 32, GREEN, app(lt, 19));
+  },
+  cons(lt) {
+    const cards = [['① 기본 PPTX = 그림', '글자 상자 0개, 글자 수정 불가', 0.3], ['② --pptx-editable', 'LibreOffice 필요 · 글자 59조각 · 숫자 줄 어긋남', 9], ['③ 자동 실행에서 멈춤', '--no-stdin 없이 20초 넘게 대기', 17], ['④ 기호를 조금 익혀야', '# 제목 · - 목록 · --- 장 나누기', 24.5]];
+    const showEd = lt > 10.5 && lt < 17;
+    cards.forEach(([h, s, at], i) => { const a = app(lt, at) * (showEd && i !== 1 ? .15 : 1), x = 140 + (i % 2) * 840, y = 150 + Math.floor(i / 2) * 330;
+      box(x, y, 800, 290, 20, '#1a1012', RED, a, 2); text(h, x + 40, y + 70, 44, RED, 800, 'left', a); text(s, x + 40, y + 160, 30, INK, 700, 'left', a); });
+    if (showEd) { const a = prog(lt, 10.5, 11) * (1 - prog(lt, 16.6, 17)); box(140, 460, 1640, 440, 20, '#0d1117', GOLD, a, 2);
+      slide('default3', 230, 485, 620, a); slide('ed3', 1070, 485, 620, a, GOLD);
+      text('기본 (그림)', 540, 868, 28, SUB, 700, 'center', a); text('--pptx-editable 을 LibreOffice로 연 화면', 1380, 868, 28, GOLD, 700, 'center', a); }
+    pill('해결: 고칠 일이 있으면 원고(.md)를 고쳐 다시 만들기', W / 2, 880, 32, GREEN, app(lt, 31));
+  },
+  adv(lt) {
+    termLines(120, 130, 1000, 360, [['$', 'marp -w trip.md -o trip.pdf', .6, 1.4], ['out', '[ INFO ] [Watch mode] Start watching...', 3], ['note', ':: 원고에 "4. 우산" 추가하고 저장', 6.5], ['ok', '[ INFO ] trip.md => trip.pdf  (자동으로 다시 만듦)', 9]], lt);
+    notepad(1200, 130, 600, 360, 'trip.md - 메모장', MD.slice(26).concat(lt > 7 ? ['4. 우산'] : []), 999, 1, 22, 30);
+    const a = app(lt, 9); box(1200, 520, 600, 320, 16, '#ffffff', GOLD, a, 2);
+    ['준비물', '1. 신분증', '2. 충전기', '3. 바람막이', '4. 우산'].forEach((s, i) => text(s, 1240, 570 + i * 54, i ? 30 : 38, i === 4 ? '#c0392b' : '#24292f', 700, 'left', a));
+    text('PDF 4쪽', 1500, 870, 26, SUB, 600, 'center', a);
+    box(120, 560, 1000, 120, 16, '#161b22', BLUE, app(lt, 12), 2); text('VS Code 확장 “Marp for VS Code”로 미리보기 (공식 문서)', 620, 620, 30, INK, 700, 'center', app(lt, 12));
+    pill('MIT 라이선스 · 개인도 회사도 무료', 620, 780, 34, GREEN, app(lt, 18));
+  },
+  outro(lt) {
+    const lines = [[`메모장 글 ${R.md_lines}줄 → PDF ${sec1(R.formats.pdf.sec)} · PPTX ${sec1(R.formats.pptx.sec)}`, INK, .3], ['--- 로 장 나누기 · theme: 로 디자인', GOLD, 6], ['설치 명령어·시연 원고는 설명란 링크', BLUE, 12]];
+    lines.forEach(([s, c, at], i) => text(s, W / 2, 260 + i * 130, 58, c, 800, 'center', app(lt, at)));
+    text('다음에 또 멋진 오픈소스 소개할게요!', W / 2, 680, 44, SUB, 700, 'center', app(lt, 18));
+    text('정보 제공용 · 2026-11-02 클라우드 시연 결과(운영자 직접 검증 아님) · 발표·제출 전에 결과 파일을 꼭 열어 확인하세요', W / 2, 880, 24, SUB, 500, 'center', app(lt, 1));
+  }
+};
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
+  const fade = c.id === 'outro' ? prog(lt, 0, .35) : prog(lt, 0, .35) * (1 - prog(lt, c.dur - .35, c.dur));
+  ctx.save(); ctx.globalAlpha = fade; DRAW[c.id](lt); tag(c, lt); ctx.restore();
+  caption(c, lt);
+}
+</script></body></html>

@@ -1,4 +1,4 @@
-"""이미 만든 영상의 엔딩 화면에 면책 문구(작은 글씨)를 얹는다 (GUIDE 6-1장). 소리는 그대로 복사.
+"""이미 만든 영상의 엔딩 화면에 유의사항 문구(작은 글씨)를 얹는다 (GUIDE 6-1장). 소리는 그대로 복사.
 사용: python3 tools/end_disclaimer.py <입력.mp4> <출력.mp4> <시작초(음수면 끝에서)> <y위치> "<1줄>" ["<2줄>"]"""
 import os, subprocess, sys, tempfile
 src, out, start, y, lines = sys.argv[1], sys.argv[2], float(sys.argv[3]), int(sys.argv[4]), sys.argv[5:]

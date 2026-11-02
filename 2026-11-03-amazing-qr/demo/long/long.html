@@ -1,0 +1,191 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). QR 그림은 모두 실제 시연 결과물(../out), 원본 그림은 시연용으로 그린 가상 그림(../assets)
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+const imgs = { cafe: '../assets/cafe.png', sunsetSrc: '../assets/sunset.png', night0: '../assets/night.png', wide: '../assets/wide.png' };
+['plain', 'cafe_bw', 'cafe_color', 'sunset_color', 'night_color', 'night_bright', 'cafe_v1', 'cafe_v10', 'cafe_L', 'wifi', 'wide_color'].forEach(k => imgs[k] = `../out/${k}.png`);
+for (let i = 0; i < 12; i++) { imgs['w' + i] = `../out/frames/waveqr${String(i).padStart(2, '0')}.png`; imgs['s' + i] = `../out/frames/wavesrc${String(i).padStart(2, '0')}.png`; }
+loadImages(imgs).then(() => document.fonts.load(`800 40px ${F}`)).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const TS = R.tests, tv = n => TS[n], sec = n => fmtSec(TS[n].sec);
+const PICS = Object.values(TS).filter(x => x.frames && x.name !== 'plain.png');
+
+function caption(c, lt) {
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
+  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
+  const s = cue[2], big = tw(s, 38, 700) > 1780, w = Math.min(tw(s, big ? 32 : 38, 700) + 80, 1880);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.9)', null, a); text(s, W / 2, 992, big ? 32 : 38, INK, 700, 'center', a);
+}
+function tag(c, lt) {
+  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+  box(40, 34, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 62, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26) {
+  term(x, y, w, h, '명령 프롬프트 (cmd)', 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 2); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.6)), x + 30 + tw('C:\\> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(s, x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+}
+function card(x, y, w, h, k, v, at, lt, vc = GOLD) { const a = app(lt, at); box(x, y, w, h, 16, '#161b22', '#30363d', a, 2); text(k, x + 30, y + h / 2, 30, SUB, 600, 'left', a); text(v, x + w - 30, y + h / 2, 38, vc, 800, 'right', a); }
+const URLS = 'https://github.com/codekimmy/daily-github-pick';
+// 확대 그림: im 의 (sx,sy,sw) 부분을 (x,y,w) 에 픽셀 그대로
+function zoom(im, sx, sy, sw, x, y, w, a, stroke = GOLD) { if (a <= 0) return; box(x - 8, y - 8, w + 16, w + 16, 14, '#fff', stroke, a, 4); ctx.save(); ctx.globalAlpha *= a; ctx.imageSmoothingEnabled = false; ctx.drawImage(im, sx, sy, sw, sw, x, y, w, w); ctx.restore(); }
+
+const DRAW = {
+  title(lt) {
+    text('amazing-qr', W / 2, 220, 140, INK, 800, 'center', app(lt, .2), MONO);
+    text('내 그림으로 만드는 QR코드', W / 2, 345, 54, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★★☆', W / 2, 445, 56, GOLD, 800, 'center', app(lt, 3.8));
+    text('⭐ 약 1.1만 · GPL-3.0 무료 · pip amzqr 0.1.0 · 만든 사람: x-hw (개인 계정)', W / 2, 525, 32, SUB, 600, 'center', app(lt, 4.4));
+    ['cafe_color', 'sunset_color', 'wifi', 'night_bright'].forEach((k, i) => qr(IMG[k], 300 + i * 360, 610, 290, app(lt, 7.3 + i * .35)));
+  },
+  what(lt) {
+    text('바둑판 화가', W / 2, 140, 60, GOLD, 900, 'center', app(lt, .3));
+    // 같은 자리(가로세로 7칸)를 크게: 왼쪽 보통 QR, 오른쪽 그림 QR. 칸 크기 9px, 칸 가운데 = 9i+4.5
+    const Z = 560, SX = 153, SW = 63, dots = (x0, y0, a, c) => { ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = c; ctx.lineWidth = 4;
+      for (let i = 0; i < 7; i++) for (let j = 0; j < 7; j++) { ctx.beginPath(); ctx.arc(x0 + (9 * i + 4.5) / SW * Z, y0 + (9 * j + 4.5) / SW * Z, 13, 0, 7); ctx.stroke(); } ctx.restore(); };
+    zoom(IMG.plain, SX, SX, SW, 180, 230, Z, app(lt, .5), '#30363d');
+    text('보통 QR (7×7칸 확대)', 460, 190, 32, SUB, 700, 'center', app(lt, .5));
+    if (lt > 3) { dots(180, 230, app(lt, 3), RED); text('휴대폰은 칸마다 가운데(○)만 봐요', 460, 845, 32, RED, 800, 'center', app(lt, 3)); }
+    text('→', W / 2, 510, 90, BLUE, 900, 'center', app(lt, 6.5));
+    zoom(IMG.cafe_color, SX, SX, SW, 1180, 230, Z, app(lt, 6.8));
+    text('그림 QR (같은 자리 확대)', 1460, 190, 32, SUB, 700, 'center', app(lt, 6.8));
+    if (lt > 13) { dots(1180, 230, app(lt, 13) * (lt < 17 ? 1 : 1 - app(lt, 17)), RED); text('가운데 점 = QR · 나머지 = 그림', 1460, 845, 32, GOLD, 800, 'center', app(lt, 13)); }
+    if (lt > 20) { const a = app(lt, 20); box(0, 110, W, 830, 0, 'rgba(13,17,23,.95)', null, a); qr(IMG.cafe_color, W / 2 - 320, 160, 640, a);
+      ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = GOLD; ctx.lineWidth = 6; const k = 640 / 441;
+      [[36, 36], [441 - 36 - 63, 36], [36, 441 - 36 - 63]].forEach(([x, y]) => ctx.strokeRect(W / 2 - 320 + x * k - 6, 160 + y * k - 6, 63 * k + 12, 63 * k + 12)); ctx.restore();
+      if (lt > 26) pill('그림이 들어가도 읽힘 ✔', W / 2, 880, 32, GREEN, app(lt, 26)); }
+  },
+  install(lt) {
+    termLines(80, 150, 1060, 520, [['$', 'pip install amzqr', 7.2, 1.4], ['dim', 'Successfully installed amzqr-0.1.0 pillow-11.3.0', 9.5], ['note', '→ 약 3.2초 (시연 환경)', 14.2], ['$', 'amzqr -V', 21.2, .8], ['ok', 'amzqr 0.1.0', 22.5]], lt, 28);
+    box(1200, 150, 640, 520, 20, '#161b22', '#30363d', app(lt, .3), 2);
+    text('준비물', 1520, 210, 40, INK, 800, 'center', app(lt, .3));
+    text('① 파이썬 (python.org)', 1240, 300, 32, INK, 700, 'left', app(lt, .6));
+    text("   설치 첫 화면에서", 1240, 350, 28, SUB, 600, 'left', app(lt, 1.2));
+    text("   'Add python.exe to PATH' 체크", 1240, 395, 28, GOLD, 700, 'left', app(lt, 1.2));
+    text('② 명령 한 줄', 1240, 475, 32, INK, 700, 'left', app(lt, 7));
+    text('③ amzqr -V 로 확인', 1240, 545, 32, INK, 700, 'left', app(lt, 21));
+    if (lt > 27.5) { const a = app(lt, 27.5); pill('프로그램 이름: amazing-qr', 640, 790, 34, SUB, a); pill('명령 이름: amzqr', 1300, 790, 34, GREEN, a); }
+  },
+  basic(lt) {
+    termLines(80, 150, 1000, 380, [['$', 'amzqr ' + URLS + ' -n plain.png', .5, 3.0], ['ok', 'Succeed!', 4.2], ['note', '→ ' + sec('plain.png') + ' · 441×441', 6.8]], lt, 22);
+    qr(IMG.plain, 1260, 170, 520, app(lt, 4.2));
+    if (lt > 13) pill('-n 이름.png = 저장할 파일 이름', 580, 640, 32, BLUE, app(lt, 13));
+    if (lt > 19.5) { badge(true, 1400, 800, 30, app(lt, 19.5)); text('OpenCV', 1400, 860, 26, SUB, 600, 'center', app(lt, 19.5)); badge(true, 1660, 800, 30, app(lt, 19.8)); text('zxing', 1660, 860, 26, SUB, 600, 'center', app(lt, 19.8)); }
+  },
+  picture(lt) {
+    termLines(80, 140, 1100, 200, [['$', 'amzqr 주소 -p cafe.png -n cafe_bw.png', .5, 2.4]], lt, 28);
+    photo(IMG.cafe, 160, 420, 420, 420, app(lt, 7), 18); text('시연용 가상 그림', 370, 885, 28, SUB, 700, 'center', app(lt, 7));
+    text('→', 760, 630, 90, BLUE, 900, 'center', app(lt, 14));
+    sweepQR(IMG.plain, IMG.cafe_bw, 940, 400, 460, ease(prog(lt, 14.2, 16.5)), app(lt, 14));
+    if (lt > 14) text('⏱ ' + sec('cafe_bw.png'), 1170, 360, 44, GOLD, 900, 'center', app(lt, 16.5));
+    if (lt > 22) { badge(true, 1640, 520, 32, app(lt, 22)); text('zxing', 1640, 585, 28, SUB, 600, 'center', app(lt, 22)); badge(false, 1640, 700, 32, app(lt, 23)); text('OpenCV', 1640, 765, 28, SUB, 600, 'center', app(lt, 23)); }
+  },
+  color(lt) {
+    if (lt < 14) {
+      termLines(80, 140, 1100, 200, [['$', 'amzqr 주소 -p cafe.png -c -n cafe_color.png', .5, 2.4]], lt, 28);
+      sweepQR(IMG.cafe_bw, IMG.cafe_color, 300, 390, 480, ease(prog(lt, 3, 5.5)), 1);
+      if (lt > 7) { stat(1100, 420, 340, 200, '만든 시간', sec('cafe_color.png'), app(lt, 7)); stat(1480, 420, 340, 200, '파일 크기', tv('cafe_color.png').kb + 'KB', app(lt, 7.4), BLUE); }
+    } else if (lt < 21) {
+      const a = app(lt, 14); photo(IMG.sunsetSrc, 260, 200, 520, 520, a, 18); text('원본 그림', 520, 770, 30, SUB, 700, 'center', a);
+      text('→', 960, 460, 90, BLUE, 900, 'center', a); qr(IMG.sunset_color, 1140, 200, 520, app(lt, 14.5)); text('⏱ ' + sec('sunset_color.png'), 1400, 790, 40, GOLD, 900, 'center', app(lt, 15));
+    } else {
+      const a = app(lt, 21); photo(IMG.wide, 120, 300, 820, 820 * 400 / 900, a, 14); text('가로로 긴 그림 (900×400)', 530, 720, 30, SUB, 700, 'center', a);
+      ctx.save(); ctx.globalAlpha = a; ctx.strokeStyle = RED; ctx.setLineDash([14, 10]); ctx.lineWidth = 5; ctx.strokeRect(120 + (820 - 820 * 400 / 900) / 2, 300, 820 * 400 / 900, 820 * 400 / 900); ctx.restore();
+      text('→', 1060, 480, 90, BLUE, 900, 'center', a); qr(IMG.wide_color, 1200, 230, 500, app(lt, 21.5)); text('가운데만 정사각형으로', 1450, 790, 32, RED, 800, 'center', app(lt, 22));
+    }
+  },
+  gif(lt) {
+    const f = Math.floor(lt * 10) % 12;
+    termLines(80, 140, 1300, 200, [['$', 'amzqr 주소 -p wave.gif -c -n wave_qr.gif', .5, 2.4]], lt, 28);
+    photo(IMG['s' + f], 200, 420, 400, 400, app(lt, 1), 18); text('원본 GIF (가상 그림)', 400, 870, 28, SUB, 700, 'center', app(lt, 1));
+    text('→', 760, 620, 90, BLUE, 900, 'center', app(lt, 7));
+    qr(IMG['w' + f], 920, 420, 400, app(lt, 7)); text('⏱ ' + sec('wave.gif') + ' · 12장', 1120, 370, 36, GOLD, 900, 'center', app(lt, 7.5));
+    if (lt > 14) { const n = Math.min(12, Math.floor((lt - 14) * 2.2) + 1);
+      for (let i = 0; i < 12; i++) { const x = 1450 + (i % 4) * 105, y = 440 + Math.floor(i / 4) * 130, a = i < n ? 1 : .25; photo(IMG['w' + i], x, y, 90, 90, a, 4, true); if (i < n) text('✔', x + 45, y + 110, 24, GREEN, 900, 'center'); }
+      text(`${Math.min(n, tv('wave.gif').zx_full)}/12장 읽힘`, 1650, 860, 36, GREEN, 900, 'center', app(lt, 14)); }
+    if (lt > 21) pill('저장 이름도 .gif · 파일 ' + tv('wave.gif').kb + 'KB', 760, 900 - 10, 28, BLUE, app(lt, 21));
+  },
+  wifi(lt) {
+    termLines(80, 140, 1300, 200, [['$', 'amzqr "WIFI:T:WPA;S:KongKong_Guest;P:coffee1234;;" -p cafe.png -c', .5, 3]], lt, 24);
+    if (lt > 7) { const a = app(lt, 7); box(120, 400, 900, 380, 20, '#161b22', '#30363d', a, 2);
+      [['WIFI:', '와이파이 정보라는 표시', SUB], ['T:WPA;', '암호 방식 (대부분 WPA)', SUB], ['S:KongKong_Guest;', '와이파이 이름 (가상)', BLUE], ['P:coffee1234;;', '비밀번호 (가상)', GOLD]].forEach(([k, v, c], i) => {
+        text(k, 160, 460 + i * 80, 30, c, 700, 'left', app(lt, 7.3 + i * .6), MONO); text(v, 990, 460 + i * 80, 28, INK, 600, 'right', app(lt, 7.3 + i * .6)); }); }
+    qr(IMG.wifi, 1260, 400, 440, app(lt, 3.5));
+    if (lt > 14.5) { pill('✔ 판독 결과: WIFI:T:WPA;S:KongKong_Guest;P:coffee1234;;', W / 2, 870, 26, GREEN, app(lt, 14.5)); }
+  },
+  options(lt) {
+    if (lt < 21) {
+      qr(IMG.night_color, 200, 220, 500, app(lt, .3)); text('어두운 그림 그대로', 450, 790, 32, SUB, 700, 'center', app(lt, .3));
+      text('→', 960, 470, 90, BLUE, 900, 'center', app(lt, 7));
+      qr(IMG.night_bright, 1220, 220, 500, app(lt, 7)); text('-bri 2.5 -con 1.2', 1470, 790, 32, GOLD, 800, 'center', app(lt, 7), MONO);
+      if (lt > 14) { text(`작게 줄인 시험 ${tv('night_color.png').stress}/6`, 450, 860, 34, INK, 800, 'center', app(lt, 14)); text(`${tv('night_bright.png').stress}/6`, 1470, 860, 40, GREEN, 900, 'center', app(lt, 14.5)); }
+    } else {
+      const items = [['cafe_v1', '-v 1 (짧은 글 "hi")', tv('cafe_v1.png')], ['cafe_color', '기본 (주소)', tv('cafe_color.png')], ['cafe_v10', '-v 10 (칸이 촘촘)', tv('cafe_v10.png')], ['cafe_L', '-l L (복구 낮음)', tv('cafe_L.png')]];
+      items.forEach(([k, l, r], i) => { const a = app(lt, 21 + i * .4), x = 150 + i * 430; qr(IMG[k], x, 260, 360, a); text(l, x + 180, 690, 28, INK, 700, 'center', a); text(`${r.size[0]}px · 작게 줄인 시험 ${r.stress}/6`, x + 180, 740, 26, SUB, 600, 'center', a); });
+      text('-v 1~40: 판 크기(칸 수) · -l L/M/Q/H: 오류 복구 수준(기본 H)', W / 2, 150, 34, GOLD, 800, 'center', app(lt, 21));
+    }
+  },
+  scan(lt) {
+    const zx = PICS.filter(x => x.zx_full === x.frames).length, cvn = PICS.filter(x => x.cv_full > 0).length;
+    if (lt < 14.5) {
+      text('판독 프로그램 2개로 확인', W / 2, 160, 50, INK, 900, 'center', app(lt, .3));
+      text('(컴퓨터용 판독 프로그램 · 휴대폰 카메라 앱으로 찍어 본 것은 아님)', W / 2, 225, 28, SUB, 600, 'center', app(lt, .8));
+      stat(300, 320, 580, 300, 'zxing (zxing-cpp)', `${zx}/${PICS.length} 읽힘`, app(lt, 7.5), GREEN, 34, 80);
+      stat(1040, 320, 580, 300, 'OpenCV', `${cvn}/${PICS.length} 읽힘`, app(lt, 8.5), RED, 34, 80);
+      text('그림 QR 11개 기준 (보통 QR은 둘 다 읽음)', W / 2, 700, 30, SUB, 600, 'center', app(lt, 9));
+    } else {
+      text('작게 줄이고(200·150·120px) 살짝 흐리게 → 6가지 중 몇 번 읽히나 (zxing)', W / 2, 150, 34, INK, 800, 'center', app(lt, 14.5));
+      const rows = [['plain', '보통 QR'], ['cafe_v1', '그림 · -v 1'], ['sunset_color', '노을'], ['night_bright', '밤 + 밝기'], ['cafe_color', '카페 컬러'], ['wifi', '와이파이'], ['cafe_bw', '카페 흑백'], ['cafe_v10', '카페 -v 10']];
+      rows.forEach(([k, l], i) => { const r = tv(k + '.png'), a = app(lt, 15 + i * .3), y = 220 + i * 82;
+        qr(IMG[k], 360, y, 56, a); text(l, 470, y + 28, 30, INK, 700, 'left', a);
+        box(760, y + 6, 720, 44, 10, '#161b22', null, a); box(760, y + 6, 720 * r.stress / 6, 44, 10, r.stress === 6 ? GREEN : r.stress >= 3 ? GOLD : RED, null, a);
+        text(`${r.stress}/6`, 1530, y + 28, 32, r.stress === 6 ? GREEN : INK, 900, 'left', a); });
+      if (lt > 22 && lt < 29) pill('그림 QR은 보통 QR보다 읽히는 여유가 적어요', W / 2, 905, 30, GOLD, app(lt, 22));
+      if (lt > 29) pill('인쇄·배포 전에 여러 휴대폰으로 꼭 스캔!', W / 2, 905, 30, GOLD, app(lt, 29));
+    }
+  },
+  cons(lt) {
+    const items = [['① 한글 글자 ✖', '"안녕하세요" → Wrong words! 오류', 0.3], ['② 판독 프로그램마다 달라요', 'OpenCV 0/11 · zxing 11/11', 8], ['③ 결과 그림이 작아요', '441×441px · 크게 인쇄하면 흐려질 수 있음', 15.5], ['④ 명령어로 쓰는 프로그램', '창이 뜨지 않아요', 23]];
+    items.forEach(([h, s, at], i) => { const a = app(lt, at), x = 120 + (i % 2) * 860, y = 150 + Math.floor(i / 2) * 330;
+      box(x, y, 820, 290, 22, 'rgba(255,123,114,.08)', RED, a, 2); text(h, x + 410, y + 100, 44, RED, 900, 'center', a); text(s, x + 410, y + 190, 30, INK, 700, 'center', a); });
+    if (lt > 30) pill('→ 명령어가 어렵다면 끌어다 놓기 파일(drag_to_qr.bat)', W / 2, 880, 32, GREEN, app(lt, 30));
+  },
+  adv(lt) {
+    if (lt < 13.5) {
+      box(160, 200, 560, 560, 26, '#161b22', '#30363d', 1, 2); text('📄 drag_to_qr.bat', 440, 260, 34, INK, 800, 'center');
+      const k = ease(prog(lt, 1, 4)); photo(IMG.cafe, lerp(900, 340, k), lerp(520, 400, k), 200, 200, 1, 14);
+      if (lt > 4.5) text('그림을 끌어다 놓기', 440, 700, 30, GOLD, 800, 'center', app(lt, 4.5));
+      termLines(900, 200, 900, 420, [['dim', 'QR에 넣을 주소를 붙여넣고 Enter:', 7], ['ok', URLS, 8.2], ['note', '→ cafe_qr.png 저장', 10]], lt, 22);
+      if (lt > 10.5) qr(IMG.cafe_color, 1500, 650 - 20, 200, app(lt, 10.5));
+    } else {
+      termLines(160, 180, 1600, 400, [['dim', 'from amzqr import amzqr', 13.6], ['dim', 'amzqr.run("주소", picture="cafe.png", colorized=True,', 14.4], ['dim', '          save_name="cafe_qr.png")', 15.2]], lt, 30);
+      if (lt > 20) { pill('GPL-3.0 · 무료', 700, 760, 38, GREEN, app(lt, 20)); pill('고쳐서 배포하면 소스 공개 의무', 1250, 760, 32, GOLD, app(lt, 20.5)); }
+    }
+  },
+  outro(lt) {
+    text('정리', W / 2, 150, 60, INK, 900, 'center', app(lt, .2));
+    const l = [['내 그림 + 주소 → 그림 QR', '⏱ ' + sec('cafe_color.png'), .3], ['-p 그림 · -c 컬러 · GIF면 움직이는 QR', '', 6], ['인쇄 전에 여러 휴대폰으로 스캔 확인', '', 12]];
+    l.forEach(([s, v, at], i) => { const a = app(lt, at); box(260, 240 + i * 140, 1400, 110, 18, '#161b22', '#30363d', a, 2); text(s, 310, 295 + i * 140, 40, INK, 800, 'left', a); if (v) text(v, 1620, 295 + i * 140, 44, GOLD, 900, 'right', a); });
+    text('정보 제공용 · 2026-11-03 클라우드 시연 결과(운영자 직접 검증 아님) · 인쇄·배포 전 스캔 확인 · 남의 로고·사진은 허락 받고 사용', W / 2, 900, 22, SUB, 500, 'center', app(lt, 1));
+  }
+};
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
+  const fade = c.id === 'outro' ? prog(lt, 0, .35) : prog(lt, 0, .35) * (1 - prog(lt, c.dur - .35, c.dur));
+  ctx.save(); ctx.globalAlpha = fade; DRAW[c.id](lt); tag(c, lt); ctx.restore();
+  caption(c, lt);
+}
+</script></body></html>

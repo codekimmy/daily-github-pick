@@ -11,3 +11,4 @@
 | 4 | 2026-10-31 | [dropbox/zxcvbn](https://github.com/dropbox/zxcvbn) | 내 비밀번호가 몇 초면 뚫릴지 재 주는 무료 계산기 | 보안·개인정보 | ★★★★☆ | 약 1.6만 | [바로가기](2026-10-31-zxcvbn/) |
 | 5 | 2026-11-01 | [danielgatis/rembg](https://github.com/danielgatis/rembg) | 사진 배경을 자동으로 지워 주는 무료 '자동 가위' | 사진·이미지 | ★★★★☆ | 약 2.5만 | [바로가기](2026-11-01-rembg/) |
 | 6 | 2026-11-02 | [marp-team/marp-cli](https://github.com/marp-team/marp-cli) | 메모장에 쓴 글을 PDF·파워포인트 발표 자료로 바꿔 주는 무료 '인쇄소' | 문서·생산성 | ★★★★☆ | 약 3,900 | [바로가기](2026-11-02-marp-cli/) |
+| 7 | 2026-11-03 | [x-hw/amazing-qr](https://github.com/x-hw/amazing-qr) | 내 그림·사진을 배경으로 QR코드를 만들어 주는 무료 '바둑판 화가' | 사진·이미지·디자인 | ★★★★☆ | 약 1.1만 | [바로가기](2026-11-03-amazing-qr/) |

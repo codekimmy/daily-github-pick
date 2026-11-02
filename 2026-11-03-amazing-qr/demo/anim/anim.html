@@ -1,0 +1,138 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 30초 과정 애니메이션: 훅(이 그림이 QR?) → 그림+보통 QR → 흑백 → 컬러 → 명령+초시계+스캔 → 갤러리 → 핵심 → 엔딩(유의사항)
+// 그림은 모두 실제 시연 결과물(../out)과 시연용으로 그린 가상 그림(../assets)
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30, TOTAL = 30 * FPS;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+let READY = false;
+const T = { i1: 2.4, p0: 2.4, p1: 10.4, c0: 10.4, c1: 16.4, g0: 16.4, g1: 22.0, k0: 22.0, e0: 26.6 };
+const imgs = { cafe: '../assets/cafe.png', plain: '../out/plain.png', bw: '../out/cafe_bw.png', color: '../out/cafe_color.png',
+  sunset: '../out/sunset_color.png', wifi: '../out/wifi.png', night: '../out/night_bright.png' };
+for (let i = 0; i < 12; i++) imgs['w' + i] = `../out/frames/waveqr${String(i).padStart(2, '0')}.png`;
+loadImages(imgs).then(() => document.fonts.load(`800 40px ${F}`)).then(() => READY = true);
+const TS = R.tests, SEC = TS['cafe_color.png'].sec, WAVE = TS['wave.gif'];
+const fade = (t, a, b, d = .3) => prog(t, a, a + d) * (1 - prog(t, b - d, b));
+
+function sceneIntro(t) {
+  const a = 1 - prog(t, T.i1 - .3, T.i1); if (a <= 0) return;
+  const w = VERT ? 760 : 560, x = (W - w) / 2, y = VERT ? 640 : 330;
+  text('이 그림이', W / 2, VERT ? 330 : 120, VERT ? 80 : 64, INK, 900, 'center', a * prog(t, 0, .3));
+  text('QR코드라고?', W / 2, VERT ? 450 : 210, VERT ? 104 : 80, GOLD, 900, 'center', a * prog(t, .3, .6));
+  qr(IMG.color, x, y, w, a);
+  scanFrame(x, y, w, t, t > 1.7, a);
+  if (t > 1.7) pill('✔ 읽힘', W / 2, y + w + (VERT ? 140 : 90), VERT ? 52 : 40, GREEN, a * prog(t, 1.7, 1.9));
+}
+
+function sceneProcess(t) {
+  const a = fade(t, T.p0, T.p1); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const s1 = ease(prog(t, 4.0, 5.8)), s2 = ease(prog(t, 6.4, 8.0));
+  const step = t < 4.0 ? '① 내 그림 + 보통 QR(주소)' : t < 6.2 ? '② 칸마다 가운데 점만 남기고 그림을 흑백으로' : '③ -c 를 붙이면 그림 색 그대로';
+  if (VERT) {
+    text(step, W / 2, 230, step.length > 18 ? 44 : 52, t < 4 ? INK : t < 6.2 ? BLUE : GOLD, 800);
+    const sw = 380; photo(IMG.cafe, 120, 330, sw, sw, prog(t, 2.6, 3.0), 18); text('내 그림', 120 + sw / 2, 750, 34, SUB, 700, 'center', prog(t, 2.6, 3));
+    qr(IMG.plain, W - 120 - sw, 330, sw, prog(t, 3.0, 3.4)); text('보통 QR', W - 120 - sw / 2, 750, 34, SUB, 700, 'center', prog(t, 3, 3.4));
+    text('+', W / 2, 330 + sw / 2, 80, SUB, 800, 'center', prog(t, 2.9, 3.2));
+    text('↓', W / 2, 840, 70, BLUE, 900, 'center', prog(t, 3.6, 3.9));
+    const bw = 780, bx = (W - bw) / 2, by = 940;
+    if (t < 6.2) sweepQR(IMG.plain, IMG.bw, bx, by, bw, s1, prog(t, 3.6, 4.0)); else sweepQR(IMG.bw, IMG.color, bx, by, bw, s2);
+    if (t > 8.4) { const z = prog(t, 8.4, 8.8); zoomInset(bx + bw - 330, by + bw - 330, 360, z); }
+  } else {
+    text(step, W / 2, 110, 54, t < 4 ? INK : t < 6.2 ? BLUE : GOLD, 800);
+    const sw = 330; photo(IMG.cafe, 130, 230, sw, sw, prog(t, 2.6, 3.0), 18); text('내 그림', 130 + sw / 2, 600, 32, SUB, 700, 'center', prog(t, 2.6, 3));
+    qr(IMG.plain, 130, 680, sw * .9, prog(t, 3.0, 3.4)); text('보통 QR (주소)', 130 + sw * .45, 1010, 30, SUB, 700, 'center', prog(t, 3, 3.4));
+    text('→', 640, 590, 90, BLUE, 900, 'center', prog(t, 3.6, 3.9));
+    const bw = 720, bx = 760, by = 210;
+    if (t < 6.2) sweepQR(IMG.plain, IMG.bw, bx, by, bw, s1, prog(t, 3.6, 4.0)); else sweepQR(IMG.bw, IMG.color, bx, by, bw, s2);
+    if (t > 8.4) { const z = prog(t, 8.4, 8.8); zoomInset(1530, 300, 340, z); }
+  }
+  ctx.restore();
+}
+// 결과 일부를 크게: 칸마다 가운데 점(검정·흰색)만 남아 있는 모습
+function zoomInset(x, y, w, a) {
+  if (a <= 0) return; const im = IMG.color, sx = 150, sy = 150, sw = 60;
+  box(x - 10, y - 10, w + 20, w + 70, 16, '#0d1117', GOLD, a, 4);
+  ctx.save(); ctx.globalAlpha *= a; ctx.imageSmoothingEnabled = false; ctx.drawImage(im, sx, sy, sw, sw, x, y, w, w); ctx.restore();
+  text('확대: 칸 가운데 점이 QR', x + w / 2, y + w + 32, 26, GOLD, 800, 'center', a);
+}
+
+function sceneCmd(t) {
+  const a = fade(t, T.c0, T.c1); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const cmd1 = 'amzqr 주소 -p cafe.png -c', lt = t - T.c0, ran = prog(lt, 1.8, 2.4), done = lt > 2.4;
+  const tx = VERT ? 60 : 80, ty = VERT ? 200 : 200, tw0 = VERT ? W - 120 : 900, th = VERT ? 330 : 420;
+  text('명령 한 줄이면 끝', VERT ? W / 2 : tx + tw0 / 2, VERT ? 120 : 120, VERT ? 60 : 56, INK, 900, 'center', prog(lt, 0, .3));
+  term(tx, ty, tw0, th, '명령 프롬프트 (cmd)');
+  text('C:\\>', tx + 30, ty + 100, VERT ? 34 : 36, GREEN, 600, 'left', 1, MONO);
+  text(typed(cmd1, lt, .2, 1.6), tx + 30 + tw('C:\\> ', VERT ? 34 : 36, 600, MONO), ty + 100, VERT ? 34 : 36, INK, 600, 'left', 1, MONO);
+  if (lt > 1.8) text('Succeed!', tx + 30, ty + 170, 34, GREEN, 700, 'left', prog(lt, 2.4, 2.6), MONO);
+  // 초시계
+  const sec = done ? SEC : SEC * ran;
+  text('⏱ ' + fmtSec(sec), tx + tw0 / 2, ty + th - (VERT ? 70 : 90), VERT ? 90 : 100, GOLD, 900, 'center', prog(lt, 1.7, 1.9));
+  const w = VERT ? 700 : 600, x = VERT ? (W - w) / 2 : 1160, y = VERT ? 700 : 200;
+  qr(IMG.color, x, y, w, prog(lt, 2.4, 2.8));
+  scanFrame(x, y, w, lt, lt > 4.0, prog(lt, 2.8, 3.0));
+  if (lt > 4.0) {
+    const s = '✔ 읽힘 → github.com/codekimmy/daily-github-pick';
+    pill(s, VERT ? W / 2 : x + w / 2, y + w + (VERT ? 110 : 90), VERT ? 32 : 30, GREEN, prog(lt, 4.0, 4.3));
+    text('QR 판독 프로그램(zxing)으로 확인', VERT ? W / 2 : x + w / 2, y + w + (VERT ? 190 : 155), 28, SUB, 600, 'center', prog(lt, 4.2, 4.5));
+  }
+  ctx.restore();
+}
+
+function sceneGallery(t) {
+  const a = fade(t, T.g0, T.g1); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const lt = t - T.g0, wf = Math.floor(lt * 10) % 12;
+  const items = [['sunset', '노을 그림', INK], ['w' + wf, `움직이는 QR · ${WAVE.zx_full}/${WAVE.frames}장 읽힘`, GOLD], ['wifi', '와이파이 QR', BLUE], ['night', '어두운 그림 + 밝기', PURPLE]];
+  text('그림만 바꾸면 이런 QR도', W / 2, VERT ? 250 : 120, VERT ? 64 : 60, INK, 900, 'center', prog(lt, 0, .4));
+  items.forEach(([k, label, c], i) => {
+    const ap = prog(lt, .4 + i * .5, .8 + i * .5);
+    let x, y, w;
+    if (VERT) { w = 420; x = i % 2 ? W / 2 + 40 : W / 2 - 40 - w; y = 420 + Math.floor(i / 2) * 620; }
+    else { w = 380; x = 110 + i * 440; y = 300; }
+    qr(IMG[k], x, y, w, ap); text(label, x + w / 2, y + w + (VERT ? 70 : 70), VERT ? 32 : 30, c, 800, 'center', ap);
+  });
+  ctx.restore();
+}
+
+function sceneKey(t) {
+  const a = fade(t, T.k0, T.e0); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const lt = t - T.k0;
+  const pt = TS, pics = Object.values(pt).filter(x => x.frames && x.name !== 'plain.png'), zxOK = pics.filter(x => x.zx_full === x.frames).length, cvOK = pics.filter(x => x.cv_full > 0).length;
+  const cards = [['만드는 시간', fmtSec(SEC), GOLD], ['그림 QR 판독 · zxing', `${zxOK}/${pics.length} 읽힘`, GREEN], ['그림 QR 판독 · OpenCV', `${cvOK}/${pics.length} 읽힘`, RED]];
+  if (VERT) {
+    text('알아 둘 숫자', W / 2, 260, 64, INK, 900, 'center', prog(lt, 0, .3));
+    cards.forEach(([k, v, c], i) => stat(120, 360 + i * 270, W - 240, 230, k, v, prog(lt, .3 + i * .4, .6 + i * .4), c, 34, 76));
+    pill('판독 프로그램마다 달라요 → 여러 휴대폰으로 꼭 확인', W / 2, 1280, 30, GOLD, prog(lt, 1.8, 2.1));
+    pill('한글 글자는 못 넣어요 (주소·영문만)', W / 2, 1390, 30, RED, prog(lt, 2.4, 2.7));
+  } else {
+    text('알아 둘 숫자', W / 2, 140, 60, INK, 900, 'center', prog(lt, 0, .3));
+    cards.forEach(([k, v, c], i) => stat(150 + i * 560, 260, 500, 300, k, v, prog(lt, .3 + i * .4, .6 + i * .4), c, 32, 84));
+    pill('판독 프로그램마다 달라요 → 인쇄 전에 여러 휴대폰으로 꼭 확인', W / 2, 700, 38, GOLD, prog(lt, 1.8, 2.1));
+    pill('한글 글자는 못 넣어요 (주소·영문만)', W / 2, 820, 38, RED, prog(lt, 2.4, 2.7));
+  }
+  ctx.restore();
+}
+
+function sceneEnd(t) {
+  const a = prog(t, T.e0, T.e0 + .4); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const cy = VERT ? 560 : 300;
+  qr(IMG.color, W / 2 - (VERT ? 200 : 150), cy - (VERT ? 330 : 260), VERT ? 400 : 300, 1);
+  text('amazing-qr', W / 2, cy + (VERT ? 190 : 120), VERT ? 110 : 100, INK, 900, 'center', 1, MONO);
+  text('내 그림으로 만드는 무료 QR코드', W / 2, cy + (VERT ? 300 : 215), VERT ? 50 : 46, SUB, 700);
+  text('일반인 쓸모 ★★★★☆', W / 2, cy + (VERT ? 410 : 305), VERT ? 60 : 54, GOLD, 900);
+  pill('pip install amzqr · 명령어는 설명란에', W / 2, cy + (VERT ? 540 : 410), VERT ? 36 : 34, GREEN);
+  const d1 = '정보 제공용 · 2026-11-03 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '인쇄·배포 전에 여러 휴대폰으로 스캔 확인 · 남의 로고·사진은 허락 받고 사용';
+  if (VERT) { text(d1, W / 2, 1290, 26, SUB, 500); text(d2, W / 2, 1332, 26, SUB, 500); }
+  else { text(d1 + ' · ' + d2, W / 2, H - 50, 22, SUB, 500); }
+  ctx.restore();
+}
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneProcess(t); sceneCmd(t); sceneGallery(t); sceneKey(t); sceneEnd(t);
+}
+</script></body></html>

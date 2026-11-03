@@ -1,0 +1,192 @@
+{
+ "version": "organize v3.3.0",
+ "before_count": 27,
+ "sim": {
+  "sec": 0.39,
+  "files_after_sim": 27,
+  "unchanged": true
+ },
+ "run": {
+  "secs": [
+   0.39,
+   0.39,
+   0.42
+  ],
+  "median": 0.39,
+  "moved": 26,
+  "left_in_root": [
+   "KakaoTalk_Setup.exe"
+  ],
+  "by_rule": {
+   "1. 빈 파일은 '빈파일' 폴더로": 2,
+   "2. 똑같은 파일(중복)은 '중복' 폴더로 (먼저 받은 것만 남김)": 2,
+   "3. 내용에 '영수증'이 들어 있는 PDF는 '영수증/연도' 폴더로": 3,
+   "4. 사진은 '사진/연도-월' 폴더로": 6,
+   "5. 문서는 '문서' 폴더로": 7,
+   "6. 영상·음악은 '영상음악' 폴더로": 3,
+   "7. 30일 넘은 설치·압축 파일은 '정리대상' 폴더로": 3
+  }
+ },
+ "moves": [
+  {
+   "file": "download.crdownload",
+   "to": "빈파일/download.crdownload",
+   "rule": 0
+  },
+  {
+   "file": "새 텍스트 문서.txt",
+   "to": "빈파일/새 텍스트 문서.txt",
+   "rule": 0
+  },
+  {
+   "file": "IMG_2034 (1).jpg",
+   "to": "중복/IMG_2034 (1).jpg",
+   "rule": 1
+  },
+  {
+   "file": "KakaoTalk_Photo_01 - 복사본.jpg",
+   "to": "중복/KakaoTalk_Photo_01 - 복사본.jpg",
+   "rule": 1
+  },
+  {
+   "file": "download (3).pdf",
+   "to": "영수증/2026/download (3).pdf",
+   "rule": 2
+  },
+  {
+   "file": "KakaoTalk_file_0901.pdf",
+   "to": "영수증/2025/KakaoTalk_file_0901.pdf",
+   "rule": 2
+  },
+  {
+   "file": "scan_0412.pdf",
+   "to": "영수증/2026/scan_0412.pdf",
+   "rule": 2
+  },
+  {
+   "file": "bg_wallpaper.png",
+   "to": "사진/2025-12/bg_wallpaper.png",
+   "rule": 3
+  },
+  {
+   "file": "IMG_2034.jpg",
+   "to": "사진/2026-07/IMG_2034.jpg",
+   "rule": 3
+  },
+  {
+   "file": "IMG_2035.jpg",
+   "to": "사진/2026-07/IMG_2035.jpg",
+   "rule": 3
+  },
+  {
+   "file": "IMG_2101.jpg",
+   "to": "사진/2026-08/IMG_2101.jpg",
+   "rule": 3
+  },
+  {
+   "file": "KakaoTalk_Photo_01.jpg",
+   "to": "사진/2026-10/KakaoTalk_Photo_01.jpg",
+   "rule": 3
+  },
+  {
+   "file": "Screenshot_20261021.png",
+   "to": "사진/2026-10/Screenshot_20261021.png",
+   "rule": 3
+  },
+  {
+   "file": "가계부_2026.xlsx",
+   "to": "문서/가계부_2026.xlsx",
+   "rule": 4
+  },
+  {
+   "file": "메모.txt",
+   "to": "문서/메모.txt",
+   "rule": 4
+  },
+  {
+   "file": "발표자료.pptx",
+   "to": "문서/발표자료.pptx",
+   "rule": 4
+  },
+  {
+   "file": "여행일정표.pdf",
+   "to": "문서/여행일정표.pdf",
+   "rule": 4
+  },
+  {
+   "file": "자기소개서_최종.docx",
+   "to": "문서/자기소개서_최종.docx",
+   "rule": 4
+  },
+  {
+   "file": "자기소개서_최종_진짜최종.docx",
+   "to": "문서/자기소개서_최종_진짜최종.docx",
+   "rule": 4
+  },
+  {
+   "file": "회의록_10월.pdf",
+   "to": "문서/회의록_10월.pdf",
+   "rule": 4
+  },
+  {
+   "file": "bgm.mp3",
+   "to": "영상음악/bgm.mp3",
+   "rule": 5
+  },
+  {
+   "file": "가족여행.mp4",
+   "to": "영상음악/가족여행.mp4",
+   "rule": 5
+  },
+  {
+   "file": "녹음_0315.m4a",
+   "to": "영상음악/녹음_0315.m4a",
+   "rule": 5
+  },
+  {
+   "file": "ChromeSetup.exe",
+   "to": "정리대상/ChromeSetup.exe",
+   "rule": 6
+  },
+  {
+   "file": "사진모음.zip",
+   "to": "정리대상/사진모음.zip",
+   "rule": 6
+  },
+  {
+   "file": "폰트.zip",
+   "to": "정리대상/폰트.zip",
+   "rule": 6
+  }
+ ],
+ "rerun": {
+  "sec": 0.35,
+  "moved": 0
+ },
+ "newfiles": {
+  "sec": 0.34,
+  "moves": [
+   "영수증/2026/새영수증.pdf",
+   "사진/2026-11/IMG_3001.jpg"
+  ]
+ },
+ "conflict": {
+  "moves": [
+   "문서/메모 2.txt"
+  ],
+  "files": [
+   "메모 2.txt",
+   "메모.txt"
+  ]
+ },
+ "big": {
+  "files": 1000,
+  "sec": 1.58,
+  "moved": 875,
+  "left": 125
+ },
+ "scan_pdf": {
+  "글자영수증.pdf": "영수증/2026/글자영수증.pdf",
+  "스캔영수증.pdf": "문서/스캔영수증.pdf"
+ }
+}

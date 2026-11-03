@@ -1,0 +1,58 @@
+# organize 규칙 파일 (시연용) — 위에서부터 차례로 실행됩니다
+# 폴더 위치(.)는 실행할 때 -W 로 정한 폴더(다운로드 폴더)를 뜻합니다
+rules:
+  - name: "1. 빈 파일은 '빈파일' 폴더로"
+    locations: .
+    filters:
+      - empty
+    actions:
+      - move: "빈파일/"
+
+  - name: "2. 똑같은 파일(중복)은 '중복' 폴더로 (먼저 받은 것만 남김)"
+    locations: .
+    filters:
+      - duplicate:
+          detect_original_by: created
+    actions:
+      - move: "중복/"
+
+  - name: "3. 내용에 '영수증'이 들어 있는 PDF는 '영수증/연도' 폴더로"
+    locations: .
+    filters:
+      - extension: pdf
+      - filecontent: "(?s).*영수증.*"
+      - lastmodified
+    actions:
+      - move: "영수증/{lastmodified.year}/"
+
+  - name: "4. 사진은 '사진/연도-월' 폴더로"
+    locations: .
+    filters:
+      - extension: [jpg, jpeg, png, heic, gif]
+      - lastmodified
+    actions:
+      - move: "사진/{lastmodified.strftime('%Y-%m')}/"
+
+  - name: "5. 문서는 '문서' 폴더로"
+    locations: .
+    filters:
+      - extension: [pdf, docx, hwp, xlsx, pptx, txt]
+    actions:
+      - move: "문서/"
+
+  - name: "6. 영상·음악은 '영상음악' 폴더로"
+    locations: .
+    filters:
+      - extension: [mp4, mov, m4a, mp3, wav]
+    actions:
+      - move: "영상음악/"
+
+  - name: "7. 30일 넘은 설치·압축 파일은 '정리대상' 폴더로"
+    locations: .
+    filters:
+      - extension: [exe, msi, zip]
+      - lastmodified:
+          days: 30
+          mode: older
+    actions:
+      - move: "정리대상/"

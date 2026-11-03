@@ -1,0 +1,135 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 30초 과정 애니메이션: 훅(뒤죽박죽 다운로드 폴더) → 규칙대로 파일이 폴더로 날아감(카운터·초시계) → 정리 후 나무 목록 → 핵심 숫자 → 엔딩(유의사항)
+// 파일 이름·이동 위치는 모두 실제 시연 결과(../results.json, ../out/trees.json). 파일은 시연용 가상 파일
+const q = new URLSearchParams(location.search);
+const W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30, TOTAL = 30 * FPS;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+let READY = false;
+document.fonts.load(`800 40px ${F}`).then(() => READY = true);
+const T = { i1: 2.6, p0: 2.6, m0: 3.6, step: .34, p1: 14.2, r0: 14.2, r1: 19.6, k0: 19.6, e0: 26.6 };
+const BEFORE = R.trees.before, MOVES = R.moves, SEC = R.run.median;
+const FOLDERS = [['영수증', RED], ['사진', GREEN], ['문서', BLUE], ['영상음악', PURPLE], ['정리대상', GOLD], ['중복', '#ffa657'], ['빈파일', SUB]];
+const RULES = ['① 빈 파일 → 빈파일', '② 똑같은 파일 → 중복', "③ 내용에 '영수증' 글자 → 영수증/연도", '④ 사진 → 사진/연도-월', '⑤ 문서 → 문서', '⑥ 영상·음악 → 영상음악', '⑦ 30일 넘은 설치·압축 파일 → 정리대상'];
+const fade = (t, a, b, d = .3) => prog(t, a, a + d) * (1 - prog(t, b - d, b));
+const top1 = p => p.split('/')[0];
+// 이동 순서 = 실제 실행 순서. 각 파일의 출발 시각
+const MV = MOVES.map((m, i) => ({ ...m, folder: top1(m.to), t: T.m0 + i * T.step }));
+const mvOf = n => MV.find(m => m.file === n);
+
+// 자리 배치
+function pileSlot(i) {
+  if (VERT) { const cw = 316, ch = 50, gx = 14, gy = 12, x0 = (W - 3 * cw - 2 * gx) / 2, y0 = 300; return [x0 + (i % 3) * (cw + gx), y0 + Math.floor(i / 3) * (ch + gy), cw, ch]; }
+  const cw = 262, ch = 52, gx = 14, gy = 14, x0 = 70, y0 = 250; return [x0 + (i % 3) * (cw + gx), y0 + Math.floor(i / 3) * (ch + gy), cw, ch];
+}
+function folderSlot(k) {
+  if (VERT) { const fw = 470, fh = 140, gx = 40, gy = 50, x0 = (W - 2 * fw - gx) / 2, y0 = 1000; return [x0 + (k % 2) * (fw + gx), y0 + Math.floor(k / 2) * (fh + gy), fw, fh]; }
+  const fw = 400, fh = 140, gx = 40, gy = 54, x0 = 1030, y0 = 250; return [x0 + (k % 2) * (fw + gx), y0 + Math.floor(k / 2) * (fh + gy), fw, fh];
+}
+
+function sceneIntro(t) {
+  const a = 1 - prog(t, T.i1 - .3, T.i1); if (a <= 0) return;
+  text('다운로드 폴더,', W / 2, VERT ? 95 : 70, VERT ? 60 : 50, INK, 900, 'center', a * prog(t, 0, .3));
+  text('이대로 괜찮습니까?', W / 2, VERT ? 180 : 140, VERT ? 76 : 64, GOLD, 900, 'center', a * prog(t, .3, .6));
+}
+
+// 파일 더미 + 폴더 + 날아가는 파일 (훅부터 정리 장면까지 이어서)
+function sceneProcess(t) {
+  const a = 1 - prog(t, T.p1 - .4, T.p1); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const fa = prog(t, T.p0, T.p0 + .5);
+  // 왼쪽(위) 제목
+  if (VERT) text(`다운로드 (뒤죽박죽 ${BEFORE.length}개)`, W / 2, 268, 34, SUB, 700, 'center', prog(t, 0, .4));
+  else text(`다운로드 폴더 · 파일 ${BEFORE.length}개`, 70 + 410, 205, 30, SUB, 700, 'center', prog(t, 0, .4));
+  // 규칙 자막
+  const cur = MV.filter(m => t >= m.t).pop(); const rule = cur ? RULES[cur.rule] : '규칙 7개를 위에서부터 차례로';
+  if (t > T.p0) pill(rule, W / 2, VERT ? 140 : 90, VERT ? 40 : 38, cur ? FOLDERS.find(f => f[0] === cur.folder)[1] : INK, fa * (VERT ? 1 : 1));
+  if (VERT && t > T.p0) text('organize run', W / 2, 220, 30, SUB, 600, 'center', fa, MONO);
+  // 폴더
+  FOLDERS.forEach(([n, c], k) => {
+    const [x, y, w, h] = folderSlot(k), arrived = MV.filter(m => m.folder === n && t >= m.t + .55), last = arrived[arrived.length - 1];
+    const pulse = last ? Math.max(0, 1 - (t - last.t - .55) / .35) : 0;
+    folder(n, x, y, w, h, arrived.length, c, fa * prog(t, T.p0 + k * .06, T.p0 + .4 + k * .06), pulse);
+    if (last) text(cut(last.to.split('/').slice(1).join('/') || last.file, 22, w - 48), x + 24, y + h * .74, 22, SUB, 500, 'left', fa);
+  });
+  // 파일 칩
+  BEFORE.forEach((n, i) => {
+    const [x0, y0, w0, h0] = pileSlot(i), m = mvOf(n);
+    const wob = t < T.p0 ? Math.sin(t * 6 + i) * 4 : 0, ap = prog(t, i * .03, .3 + i * .03);
+    if (!m || t < m.t) { chip(n, x0 + wob, y0, w0, h0, ap, m && t > m.t - .25 ? 1 : 0); return; }
+    const k = FOLDERS.findIndex(f => f[0] === m.folder), [fx, fy, fw, fh] = folderSlot(k), p = ease(prog(t, m.t, m.t + .55));
+    if (p >= 1) return;
+    const tx = fx + fw / 2 - w0 * .3, ty = fy + fh / 2 - h0 * .3, s = lerp(1, .6, p);
+    const x = lerp(x0, tx, p), y = lerp(y0, ty, p) - Math.sin(p * Math.PI) * (VERT ? 120 : 90);
+    chip(n, x, y, w0 * s, h0 * s, 1 - prog(p, .85, 1), 1);
+  });
+  // 남은 파일 표시 + 카운터·초시계
+  const done = MV.filter(m => t >= m.t + .55).length, endT = MV[MV.length - 1].t + .55;
+  if (t > T.m0 - .3) {
+    const cx = VERT ? W / 2 : 70 + 410, cy = VERT ? 1820 : 940;
+    text(`정리됨 ${done} / ${MV.length}`, cx, cy, VERT ? 56 : 52, done === MV.length ? GREEN : INK, 900, 'center', prog(t, T.m0 - .3, T.m0));
+    const real = t >= endT ? SEC : SEC * prog(t, T.m0, endT);
+    text('⏱ 실제 걸린 시간 ' + fmtSec(real), cx, cy + (VERT ? -80 : 70), VERT ? 36 : 32, GOLD, 800, 'center', prog(t, T.m0 - .3, T.m0));
+    if (!VERT && t > endT) text('(화면은 천천히 보여 드린 것)', cx, cy + 115, 22, SUB, 500, 'center', prog(t, endT, endT + .3));
+  }
+  ctx.restore();
+}
+
+// 정리 후 모습: 실제 결과 목록을 나무 모양으로
+function sceneResult(t) {
+  const a = fade(t, T.r0, T.r1); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; const lt = t - T.r0;
+  const after = R.trees.after, groups = {};
+  after.forEach(p => { const s = p.split('/'); const g = s.length > 1 ? s[0] : '(그대로 남음)'; (groups[g] = groups[g] || []).push(s.slice(1).join('/') || p); });
+  text('정리 후 다운로드 폴더', W / 2, VERT ? 150 : 100, VERT ? 64 : 60, INK, 900, 'center', prog(lt, 0, .3));
+  const order = [...FOLDERS.map(f => f[0]), '(그대로 남음)'];
+  const cols = VERT ? 2 : 4, cw = VERT ? 480 : 455, x0 = VERT ? (W - cols * cw) / 2 + 10 : 60, y0 = VERT ? 260 : 200, lh = VERT ? 40 : 44;
+  const colY = new Array(cols).fill(y0); const fs = VERT ? 27 : 30;
+  order.forEach((g, i) => {
+    const items = groups[g]; if (!items) return; const col = colY.indexOf(Math.min(...colY)), x = x0 + col * cw; let y = colY[col];
+    const c = (FOLDERS.find(f => f[0] === g) || [0, SUB])[1], ap = prog(lt, .3 + i * .22, .6 + i * .22);
+    text(g === '(그대로 남음)' ? '그대로 남음 (최근 설치 파일)' : `📁 ${g}/  (${items.length})`, x, y, fs + 4, c, 900, 'left', ap); y += lh + 6;
+    items.forEach(s => { text('  ' + cut(s, fs, cw - 40, 500), x, y, fs, INK, 500, 'left', ap, F); y += lh; });
+    colY[col] = y + 26;
+  });
+  ctx.restore();
+}
+
+function sceneKey(t) {
+  const a = fade(t, T.k0, T.e0); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; const lt = t - T.k0;
+  const cards = [['파일 27개 정리', fmtSec(SEC), GOLD], ['가짜 파일 1,000개', fmtSec(R.big.sec), GREEN], ['한 번 더 실행하면', `이동 ${R.rerun.moved}개`, BLUE]];
+  if (VERT) {
+    text('알아 둘 숫자', W / 2, 260, 64, INK, 900, 'center', prog(lt, 0, .3));
+    cards.forEach(([k, v, c], i) => stat(120, 360 + i * 270, W - 240, 230, k, v, prog(lt, .3 + i * .4, .6 + i * .4), c, 34, 76));
+    pill('sim 으로 먼저 미리보기 → 그다음 run', W / 2, 1280, 34, GOLD, prog(lt, 1.8, 2.1));
+    pill('중복 찾기는 같은 폴더 안 파일끼리만 비교', W / 2, 1400, 32, RED, prog(lt, 2.6, 2.9));
+  } else {
+    text('알아 둘 숫자', W / 2, 140, 60, INK, 900, 'center', prog(lt, 0, .3));
+    cards.forEach(([k, v, c], i) => stat(150 + i * 560, 260, 500, 300, k, v, prog(lt, .3 + i * .4, .6 + i * .4), c, 32, 84));
+    pill('sim 으로 먼저 미리보기 → 그다음 run (파일이 실제로 옮겨집니다)', W / 2, 700, 38, GOLD, prog(lt, 1.8, 2.1));
+    pill('중복 찾기는 같은 폴더 안 파일끼리만 비교 (설정 기본값)', W / 2, 820, 38, RED, prog(lt, 2.6, 2.9));
+  }
+  ctx.restore();
+}
+
+function sceneEnd(t) {
+  const a = prog(t, T.e0, T.e0 + .4); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const cy = VERT ? 700 : 300;
+  FOLDERS.slice(0, 4).forEach(([n, c], k) => { const fw = VERT ? 200 : 170; folder(n, W / 2 - 2 * (fw + 20) + 10 + k * (fw + 20), cy - (VERT ? 250 : 190), fw, VERT ? 110 : 90, '', c, 1); });
+  text('organize', W / 2, cy + (VERT ? 0 : 0), VERT ? 120 : 110, INK, 900, 'center', 1, MONO);
+  text('규칙대로 폴더를 정리해 주는 무료 도구', W / 2, cy + (VERT ? 120 : 105), VERT ? 48 : 46, SUB, 700);
+  text('일반인 쓸모 ★★★★☆', W / 2, cy + (VERT ? 230 : 195), VERT ? 60 : 54, GOLD, 900);
+  pill('pip install organize-tool · 규칙 파일은 설명란에', W / 2, cy + (VERT ? 360 : 300), VERT ? 36 : 34, GREEN);
+  const d1 = '정보 제공용 · 2026-11-04 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '파일이 실제로 옮겨집니다 · 먼저 sim으로 확인하고 중요한 폴더는 백업 후 사용';
+  if (VERT) { text(d1, W / 2, 1480, 26, SUB, 500); text(d2, W / 2, 1522, 26, SUB, 500); }
+  else { text(d1 + ' · ' + d2, W / 2, H - 50, 22, SUB, 500); }
+  ctx.restore();
+}
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneProcess(t); sceneResult(t); sceneKey(t); sceneEnd(t);
+}
+</script></body></html>

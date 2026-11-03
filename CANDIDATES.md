@@ -50,7 +50,7 @@
 | 추천 | 저장소 | 한 줄 | 만든 곳 | 별 | 설치 | 테스트 결과 | 숏폼 훅 | 쓸모 |
 |---|---|---|---|---|---|---|---|---|
 | ⭐ ✅ Day 6 | marp-team/marp-cli | 메모장 글로 발표 슬라이드 PDF·PPTX | 일본 | 3.9천 | npm `@marp-team/marp-cli` | 3쪽 PDF 4초, 수정 가능한 PPTX 4.6초, 한글 OK (`--no-stdin` 필수) | 텍스트 10줄이 5초 만에 PPT | ★4 |
-| ⭐ | tfeldmann/organize | 규칙대로 폴더 자동 정리 | 독일 | 3.2천 | pip `organize-tool` | 0.8초, 한글 파일명 OK, 중복도 알려 줌 | 다운로드 폴더 1초 정리 | ★4 |
+| ⭐ ✅ Day 8 | tfeldmann/organize | 규칙대로 폴더 자동 정리 | 독일 | 3.2천 | pip `organize-tool` | 0.8초, 한글 파일명 OK, 중복도 알려 줌 (11/4 재확인: 3.3.0, 27개 0.39초, 내용으로 영수증 PDF 찾기 OK, 스캔 PDF·하위 폴더 중복은 못 잡음) | 다운로드 폴더 1초 정리 | ★4 |
 | ⭐ | qarmin/czkawka | 중복·비슷한 파일 찾아 용량 확보 | 폴란드 | 3.5만 | crates `czkawka_cli` (빌드 13분) | 0.1초에 중복 2그룹 | '최종_진짜최종' 찾기 | ★4 |
 |  | microsoft/markitdown | PDF·워드·엑셀·PPT를 텍스트로 | 미국 MS | 19만 | pip `markitdown[all]` | docx 1.9초(표·목록 유지), PDF 2.7초 | 문서를 ChatGPT용 글로 | ★4 |
 |  | ocrmypdf/OCRmyPDF | 스캔 PDF를 검색되는 PDF로 | 미국 | 3.5만 | pip `ocrmypdf` (venv 권장) | 한글 영수증 7.4초, 일부 글자 깨짐 | 영수증 PDF가 Ctrl+F로 검색 | ★4 |
@@ -92,3 +92,4 @@
 - **시스템 라이브러리가 필요한데 apt가 막힘**: manim, silicon, tplay, trianglify
 - **GUI 설치형이거나 클론해서 빌드해야 함**: Stirling-PDF, PhotoCraft, Concat, Umi-OCR, VoiceStudio, ComfyUI
 - **기타**: pixelsort(Pillow 11과 호환 안 됨), @squoosh/cli(Node 22에서 크래시), pdfly(OpenSSL 인식 실패), pdf2docx(한글 띄어쓰기 사라짐), PyBoy(게임 ROM 없음)
+- **설치가 보안 확인에서 거부됨 (11/4)**: xevrion/hatchzip (crates, 10월 22일 등록된 새 패키지라 `cargo install` 거부), 같은 날 venv 안 `pip install`도 한 번 거부됨 → 전역 `pip install --break-system-packages`로는 설치됨

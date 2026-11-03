@@ -1,0 +1,189 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 파일 이름·숫자는 모두 실제 시연 결과(../results.json, ../out/trees.json). 파일은 시연용 가상 파일
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+document.fonts.load(`800 40px ${F}`).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const BEFORE = R.trees.before, AFTER = R.trees.after, MOVES = R.moves;
+const FC = { 영수증: RED, 사진: GREEN, 문서: BLUE, 영상음악: PURPLE, 정리대상: GOLD, 중복: '#ffa657', 빈파일: SUB };
+const DLP = 'C:\\Users\\나\\Downloads';
+
+function caption(c, lt) {
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
+  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
+  const s = cue[2], big = tw(s, 38, 700) > 1780, w = Math.min(tw(s, big ? 32 : 38, 700) + 80, 1880);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.9)', null, a); text(s, W / 2, 992, big ? 32 : 38, INK, 700, 'center', a);
+}
+function tag(c, lt) {
+  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+  box(40, 34, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 62, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)') {
+  term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.9); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.6)), x + 30 + tw('C:\\> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(s, x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : kind === 'key' ? BLUE : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+}
+// 파일 칩 목록 (세로 줄)
+function chipList(names, x, y, w, h, gap, at, lt, hi = []) { names.forEach((n, i) => chip(n, x, y + i * (h + gap), w, h, app(lt, at + i * .08, .3), hi.includes(n) ? 1 : 0)); }
+// 폴더 + 그 안 파일들
+function folderWith(name, files, x, y, w, at, lt, sub = true) {
+  const a = app(lt, at), c = FC[name] || SUB; folder(name, x, y, w, 110, files.length, c, a);
+  files.forEach((f, i) => text((sub ? '└ ' : '') + cut(f, 26, w - 40, 500), x + 24, y + 150 + i * 40, 26, INK, 500, 'left', app(lt, at + .3 + i * .15)));
+}
+const inFolder = (top) => AFTER.filter(p => p.split('/')[0] === top).map(p => p.split('/').slice(1).join('/'));
+
+const DRAW = {
+  title(lt) {
+    text('organize', W / 2, 220, 150, INK, 800, 'center', app(lt, .2), MONO);
+    text('규칙대로 폴더를 정리해 주는 무료 도구', W / 2, 350, 54, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★★☆', W / 2, 450, 56, GOLD, 800, 'center', app(lt, 3.8));
+    text('⭐ 약 3,200 · MIT 무료 · pip organize-tool 3.3.0 · 만든 사람: tfeldmann (독일, 개인)', W / 2, 530, 32, SUB, 600, 'center', app(lt, 4.4));
+    Object.keys(FC).forEach((n, i) => folder(n, 120 + (i % 4) * 430, 640 + Math.floor(i / 4) * 150, 390, 100, inFolder(n).length, FC[n], app(lt, 7.3 + i * .25)));
+  },
+  what(lt) {
+    // 분류원 비유: 왼쪽 편지 더미(파일), 가운데 규칙표, 오른쪽 칸(폴더)
+    text('우체국 분류원', W / 2, 140, 60, GOLD, 900, 'center', app(lt, .3));
+    const pile = BEFORE.slice(0, 8); chipList(pile, 120, 240, 380, 56, 14, 1, lt);
+    text('편지 = 파일', 310, 835, 34, INK, 800, 'center', app(lt, 14));
+    box(660, 240, 600, 560, 20, '#161b22', GOLD, app(lt, 7), 3); text('📋 규칙표 (config.yaml)', 960, 290, 34, GOLD, 900, 'center', app(lt, 7));
+    ['① 빈 파일 → 빈파일', '② 똑같은 파일 → 중복', "③ '영수증' 글자 → 영수증", '④ 사진 → 사진/연도-월', '⑤ 문서 → 문서', '⑥ 영상·음악 → 영상음악', '⑦ 오래된 설치 파일 → 정리대상'].forEach((s, i) => {
+      const hi = lt > 20.5 && lt < 26.5 && Math.floor((lt - 20.5) * 1.3) === i; text(s, 700, 360 + i * 60, 30, hi ? GOLD : INK, hi ? 900 : 600, 'left', app(lt, 7.3 + i * .2)); });
+    text('규칙표 = 설정 파일', 960, 835, 34, INK, 800, 'center', app(lt, 14));
+    ['영수증', '사진', '문서', '영상음악'].forEach((n, i) => folder(n, 1400, 250 + i * 140, 400, 100, '', FC[n], app(lt, 9 + i * .2)));
+    text('칸 = 폴더', 1600, 835, 34, INK, 800, 'center', app(lt, 14));
+    if (lt > 26.5) pill('한 번 써 두면 → 다음부턴 organize run 한 줄', W / 2, 905, 32, GREEN, app(lt, 26.5));
+  },
+  install(lt) {
+    termLines(80, 150, 1060, 560, [['$', 'pip install organize-tool', 7.2, 1.6], ['dim', 'Successfully installed organize-tool-3.3.0 ...', 9.8], ['dim', '  (+ 같이 설치되는 도구 13개)', 27.2], ['$', 'organize --version', 21.2, 1], ['ok', 'organize v3.3.0', 22.8]], lt, 28);
+    box(1200, 150, 640, 560, 20, '#161b22', '#30363d', app(lt, .3), 2);
+    text('준비물', 1520, 210, 40, INK, 800, 'center', app(lt, .3));
+    text('① 파이썬 (python.org)', 1240, 300, 32, INK, 700, 'left', app(lt, .6));
+    text('   설치 첫 화면에서', 1240, 350, 28, SUB, 600, 'left', app(lt, 1.2));
+    text("   'Add python.exe to PATH' 체크", 1240, 395, 28, GOLD, 700, 'left', app(lt, 1.2));
+    text('② 설치 명령 한 줄', 1240, 475, 32, INK, 700, 'left', app(lt, 7));
+    text('③ --version 으로 확인', 1240, 545, 32, INK, 700, 'left', app(lt, 21));
+    if (lt > 14) { const a = app(lt, 14); pill('설치 이름: organize-tool', 560, 800, 34, SUB, a); pill('명령 이름: organize', 1300, 800, 34, GREEN, a); }
+  },
+  config(lt) {
+    const L = [['key', '- name: "4. 사진은 \'사진/연도-월\' 폴더로"', .3], ['dim', '  locations: .', .3], ['key', '  filters:', 7], ['ok', '    - extension: [jpg, jpeg, png, heic, gif]', 7.3], ['ok', '    - lastmodified', 7.6], ['key', '  actions:', 14], ['note', '    - move: "사진/{lastmodified.strftime(\'%Y-%m\')}/"', 14.3]];
+    termLines(80, 140, 1150, 560, L, lt, 26, '메모장 — config.yaml');
+    const tags = [['name', '규칙 이름 (아무 말이나)', INK, .5], ['locations', '어디서 (. = 정리할 폴더)', SUB, 3], ['filters', '무엇을 (조건)', GREEN, 7], ['actions', '어떻게 (할 일)', GOLD, 14]];
+    tags.forEach(([k, v, c, at], i) => { const a = app(lt, at); box(1290, 150 + i * 135, 550, 110, 16, '#161b22', c, a, 2); text(k, 1320, 190 + i * 135, 30, c, 800, 'left', a, MONO); text(v, 1320, 232 + i * 135, 26, INK, 600, 'left', a); });
+    if (lt > 21) { const a = app(lt, 21); box(80, 730, 1760, 120, 16, 'rgba(1,4,9,.92)', BLUE, a, 2);
+      [['① 빈파일', '빈파일'], ['② 중복', '중복'], ['③ 영수증', '영수증'], ['④ 사진', '사진'], ['⑤ 문서', '문서'], ['⑥ 영상음악', '영상음악'], ['⑦ 정리대상', '정리대상']].forEach(([l, n], i) => text(l, 130 + i * 250, 790, 30, FC[n], 800, 'left', app(lt, 21 + i * .2))); }
+    if (lt > 28.5) pill('메모장 → 다른 이름으로 저장 → 인코딩 UTF-8', W / 2, 905, 30, GOLD, app(lt, 28.5));
+  },
+  sim(lt) {
+    termLines(80, 140, 1100, 640, [['$', 'organize sim config.yaml -W "%USERPROFILE%\\Downloads"', .5, 2.8], ['dim', '╭── SIMULATION ──╮', 3.6], ['key', "⚙ Rule #0: 1. 빈 파일은 '빈파일' 폴더로", 4], ['dim', '  ./download.crdownload', 4.3], ['note', '    - (move) Move to 빈파일/download.crdownload', 4.6], ['dim', '  ./새 텍스트 문서.txt', 4.9], ['note', '    - (move) Move to 빈파일/새 텍스트 문서.txt', 5.2], ['dim', '  ...', 5.5]], lt, 24);
+    // 쪽지만 붙은 파일들
+    const ex = MOVES.slice(0, 6); ex.forEach((m, i) => { const a = app(lt, 7 + i * .3), y = 170 + i * 100; chip(m.file, 1260, y, 400, 56, a); if (lt > 7.6 + i * .3) { box(1600, y - 14, 260, 40, 8, '#f2c14e', null, a); text('→ ' + cut(m.to.split('/')[0], 20, 220, 800), 1615, y + 6, 22, '#0d1117', 800, 'left', a); } });
+    if (lt > 14) { stat(1260, 780, 290, 130, '미리보기 시간', fmtSec(R.sim.sec), app(lt, 14), GOLD, 24, 44); stat(1570, 780, 290, 130, '미리보기 뒤 파일', `${R.sim.files_after_sim}개 그대로`, app(lt, 14.4), GREEN, 24, 38); }
+    if (lt > 21) pill('처음엔 꼭 sim → 확인 → run', 630, 860, 34, GOLD, app(lt, 21));
+  },
+  run(lt) {
+    if (lt < 14) {
+      termLines(80, 140, 1100, 300, [['$', 'organize run config.yaml -W "%USERPROFILE%\\Downloads"', .5, 2.8], ['ok', `success ${R.run.moved} / fail 0`, 4]], lt, 24);
+      chipList(BEFORE.slice(0, 13), 120, 480, 330, 30, 4, 0, lt); chipList(BEFORE.slice(13), 470, 480, 330, 30, 4, 0, lt);
+      if (lt > 7) { stat(1260, 160, 580, 230, '파일 27개 중 이동', `${R.run.moved}개`, app(lt, 7), GREEN, 32, 80); stat(1260, 420, 580, 230, '걸린 시간 (3번 중 가운데)', fmtSec(R.run.median), app(lt, 7.4), GOLD, 32, 80); text(`3번: ${R.run.secs.map(fmtSec).join(' · ')}`, 1550, 690, 26, SUB, 600, 'center', app(lt, 7.8)); }
+    } else {
+      const order = ['영수증', '사진', '문서', '영상음악', '정리대상', '중복', '빈파일'];
+      order.forEach((n, i) => { const x = 80 + (i % 4) * 450, y = 140 + Math.floor(i / 4) * 330; folder(n, x, y, 420, 90, inFolder(n).length, FC[n], app(lt, 14 + i * .25)); });
+      if (lt > 22) { const a = app(lt, 22); chip(R.run.left_in_root[0], 1430, 520, 410, 60, a, 1); text('그대로 남음: 받은 지 30일 안 됨', 1635, 620, 26, GOLD, 800, 'center', a); }
+    }
+  },
+  receipt(lt) {
+    const rc = MOVES.filter(m => m.rule === 2);
+    text('파일 이름만 봐서는 영수증인지 모름', 520, 160, 36, SUB, 800, 'center', app(lt, .3));
+    rc.forEach((m, i) => chip(m.file, 160, 230 + i * 90, 620, 64, app(lt, .5 + i * .3), lt > 7 ? 1 : 0));
+    if (lt > 7) { const a = app(lt, 7); box(160, 520, 620, 300, 16, '#ffffff', RED, a, 3); ['영수증', '콩콩 카페 (가상)', '아메리카노 2잔  9,000원'].forEach((s, i) => text(s, 200, 580 + i * 60, i ? 30 : 40, '#111', i ? 600 : 900, 'left', a)); text('scan_0412.pdf 속 글자', 470, 850, 26, SUB, 700, 'center', a);
+      if (lt > 7.6) { ctx.save(); ctx.globalAlpha = app(lt, 7.6); ctx.strokeStyle = RED; ctx.lineWidth = 5; ctx.strokeRect(192, 555, 128, 50); ctx.restore(); } }
+    text('→', 900, 450, 90, BLUE, 900, 'center', app(lt, 13));
+    if (lt > 14) { folderWith('영수증', inFolder('영수증'), 1040, 220, 780, 14, lt); }
+    if (lt > 22) { const a = app(lt, 22); box(1040, 600, 780, 220, 16, 'rgba(255,123,114,.08)', RED, a, 2); text('글자 없이 그림으로만 된 스캔 PDF', 1430, 650, 30, RED, 800, 'center', a); text(`스캔영수증.pdf → ${R.scan_pdf['스캔영수증.pdf'].split('/')[0]}/ 로 감 (영수증 규칙에 안 걸림)`, 1430, 720, 26, INK, 600, 'center', a); text('스캔 PDF는 글자 인식(OCR)부터 필요', 1430, 775, 26, SUB, 600, 'center', a); }
+  },
+  photos(lt) {
+    const ph = MOVES.filter(m => m.rule === 3);
+    ph.forEach((m, i) => chip(m.file, 100, 180 + i * 90, 520, 64, app(lt, .3 + i * .2)));
+    ph.forEach((m, i) => { if (lt > 3 + i * .5) text('날짜 → ' + m.to.split('/')[1], 650, 212 + i * 90, 28, GOLD, 800, 'left', app(lt, 3 + i * .5)); });
+    const groups = {}; inFolder('사진').forEach(p => { const [d, f] = p.split('/'); (groups[d] = groups[d] || []).push(f); });
+    if (lt > 7) Object.entries(groups).forEach(([d, fs], i) => { const x = 1060 + (i % 2) * 420, y = 180 + Math.floor(i / 2) * 330; folder(d, x, y, 390, 90, fs.length, GREEN, app(lt, 7 + i * .4)); fs.forEach((f, j) => text(cut(f, 26, 360, 500), x + 24, y + 130 + j * 40, 26, INK, 500, 'left', app(lt, 7.3 + i * .4))); });
+    if (lt > 14 && lt < 20) pill('폴더가 없으면 알아서 만듭니다', 560, 800, 32, GREEN, app(lt, 14));
+    if (lt > 20) pill('촬영 날짜(EXIF) 필터: exif', 560, 800, 32, BLUE, app(lt, 20));
+  },
+  dup(lt) {
+    const dp = MOVES.filter(m => m.rule === 1).map(m => m.file);
+    const pairs = [['IMG_2034.jpg', dp[0]], ['KakaoTalk_Photo_01.jpg', dp[1]]];
+    pairs.forEach(([o, d], i) => { const y = 200 + i * 220; chip(o, 100, y, 560, 64, app(lt, .3)); chip(d, 100, y + 84, 560, 64, app(lt, .5), lt > 7 ? 1 : 0); text('=', 700, y + 74, 60, GREEN, 900, 'center', app(lt, 3)); text('내용 똑같음', 820, y + 74, 30, GREEN, 800, 'center', app(lt, 3)); });
+    if (lt > 7) folderWith('중복', inFolder('중복'), 1100, 210, 720, 7, lt);
+    if (lt > 14) { const a = app(lt, 14), y = 680; chip('자기소개서_최종.docx', 100, y, 560, 60, a); chip('자기소개서_최종_진짜최종.docx', 100, y + 76, 560, 60, a); text('≠', 700, y + 66, 60, RED, 900, 'center', a); text('내용이 다름 → 둘 다 문서/', 900, y + 66, 30, RED, 800, 'center', a); }
+    if (lt > 22) pill('지우지 않고 옮겨 둠 → 확인 후 직접 삭제', 1460, 600, 30, GOLD, app(lt, 22));
+  },
+  again(lt) {
+    if (lt < 7.5) {
+      termLines(80, 160, 1300, 300, [['$', 'organize run config.yaml -W "%USERPROFILE%\\Downloads"', .5, 2.5], ['ok', `success ${R.rerun.moved} / fail 0`, 3.5]], lt, 26);
+      stat(1440, 200, 400, 220, '한 번 더 실행', `이동 ${R.rerun.moved}개`, app(lt, 3.5), BLUE, 30, 66);
+    } else if (lt < 28.5) {
+      chip('IMG_3001.jpg (새로 받음)', 100, 220, 560, 64, app(lt, 7.5)); chip('새영수증.pdf (새로 받음)', 100, 310, 560, 64, app(lt, 7.8));
+      text('→', 720, 300, 70, BLUE, 900, 'center', app(lt, 9));
+      R.newfiles.moves.slice().reverse().forEach((p, i) => text(p, 800, 255 + i * 90, 32, GREEN, 800, 'left', app(lt, 9.5 + i * .3), MONO));
+      if (lt > 15) { const a = app(lt, 15); box(100, 480, 1720, 330, 20, 'rgba(255,123,114,.08)', RED, a, 2);
+        text('IMG_3001.jpg 는 사진/2026-07/IMG_2035.jpg 의 복사본인데…', 960, 550, 34, INK, 800, 'center', a);
+        text('중복 규칙은 다운로드 폴더 바로 아래 파일끼리만 비교 → 못 잡음', 960, 630, 34, RED, 800, 'center', a);
+        if (lt > 23) text('(필터 설정을 바꾸면 하위 폴더까지 비교할 수 있지만, 시연 규칙은 기본값)', 960, 720, 28, SUB, 600, 'center', app(lt, 23)); }
+    } else {
+      chip('메모.txt (새로 들어온, 내용이 다른 파일)', 100, 260, 700, 64, app(lt, 28.5)); text('→', 880, 292, 70, BLUE, 900, 'center', app(lt, 29));
+      folderWith('문서', R.conflict.files, 980, 240, 600, 29.2, lt);
+      if (lt > 30) pill(`같은 이름이 있으면 → ${R.conflict.moves[0].split('/')[1]} 로 이름을 바꿔 넣음 (덮어쓰지 않음)`, W / 2, 800, 32, GREEN, app(lt, 30));
+    }
+  },
+  big(lt) {
+    const n = Math.floor(1000 * ease(prog(lt, .5, 6)));
+    text(`가짜 파일 ${n.toLocaleString()}개`, W / 2, 180, 70, INK, 900, 'center', app(lt, .3));
+    const ex = ['jpg', 'png', 'pdf', 'docx', 'mp3', 'mp4', 'zip', 'txt'];
+    for (let i = 0; i < 200; i++) { const x = 160 + (i % 25) * 64, y = 280 + Math.floor(i / 25) * 44, a = i < n / 5 ? 1 : .08; box(x, y, 54, 34, 6, '#161b22', EXT_COLOR[ex[i % 8]], a * app(lt, .3), 2); }
+    if (lt > 7) { stat(260, 680, 440, 200, '걸린 시간', fmtSec(R.big.sec), app(lt, 7), GOLD, 30, 64); stat(740, 680, 440, 200, '이동', `${R.big.moved}개`, app(lt, 7.4), GREEN, 30, 64); }
+    if (lt > 14) stat(1220, 680, 440, 200, '남음 (새 압축 파일)', `${R.big.left}개`, app(lt, 14), SUB, 30, 64);
+  },
+  cons(lt) {
+    const items = [['① 규칙을 글(YAML)로 써야 함', '창(버튼) 화면이 없음 · 설명란 규칙 파일을 고쳐 쓰기', 0.3], ['② 되돌리기 버튼 없음', '먼저 sim · 중요한 폴더는 백업', 8], ['③ 띄어쓰기 하나에도 오류', 'organize check config.yaml 로 검사', 15.5], ['④ 마지막 새 버전 2024-11', '3.3.0 · 저장소 수정은 계속 (2026-11-02)', 23]];
+    items.forEach(([h, s, at], i) => { const a = app(lt, at), x = 120 + (i % 2) * 860, y = 150 + Math.floor(i / 2) * 330;
+      box(x, y, 820, 290, 22, 'rgba(255,123,114,.08)', RED, a, 2); text(h, x + 410, y + 100, 42, RED, 900, 'center', a); text(s, x + 410, y + 190, 28, INK, 700, 'center', a); });
+    if (lt > 30) pill('시연은 리눅스 클라우드 결과 · Windows 명령은 설명란 참고', W / 2, 880, 30, GOLD, app(lt, 30));
+  },
+  adv(lt) {
+    if (lt < 14) {
+      termLines(80, 160, 1760, 380, [['dim', ':: 매일 저녁 9시에 다운로드 폴더 정리 (작업 이름: 다운로드정리)', 1], ['$', 'schtasks /create /tn 다운로드정리 /sc daily /st 21:00 /tr "organize run C:\\정리\\config.yaml -W %USERPROFILE%\\Downloads"', 7.2, 3.5]], lt, 20);
+      pill('Windows 작업 스케줄러에 등록 → 매일 자동', W / 2, 650, 34, GREEN, app(lt, 2));
+    } else {
+      [['move', '옮기기'], ['copy', '복사'], ['rename', '이름 바꾸기'], ['trash', '휴지통으로'], ['delete', '완전 삭제 (주의)'], ['echo', '화면에 알림만']].forEach(([k, v], i) => { const a = app(lt, 14 + i * .3), x = 160 + (i % 3) * 540, y = 180 + Math.floor(i / 3) * 200;
+        box(x, y, 500, 160, 18, '#161b22', k === 'delete' ? RED : '#30363d', a, 2); text(k, x + 250, y + 60, 40, k === 'delete' ? RED : GOLD, 800, 'center', a, MONO); text(v, x + 250, y + 115, 30, INK, 700, 'center', a); });
+      if (lt > 21) { pill('MIT · 무료', 700, 760, 38, GREEN, app(lt, 21)); pill('상업적으로 써도 됨', 1200, 760, 34, GOLD, app(lt, 21.5)); }
+    }
+  },
+  outro(lt) {
+    text('정리', W / 2, 150, 60, INK, 900, 'center', app(lt, .2));
+    const l = [['규칙표 한 번 + 명령 한 줄 → 폴더 정리', '⏱ ' + fmtSec(R.run.median), .3], ['내용으로 영수증 · 사진 연도-월 · 중복 골라내기', '', 6], ['꼭 sim 으로 먼저 확인, 중요한 폴더는 백업', '', 12]];
+    l.forEach(([s, v, at], i) => { const a = app(lt, at); box(260, 240 + i * 140, 1400, 110, 18, '#161b22', '#30363d', a, 2); text(s, 310, 295 + i * 140, 40, INK, 800, 'left', a); if (v) text(v, 1620, 295 + i * 140, 44, GOLD, 900, 'right', a); });
+    text('정보 제공용 · 2026-11-04 클라우드 시연 결과(운영자 직접 검증 아님) · 파일이 실제로 옮겨집니다 · 먼저 sim으로 확인하고 중요한 폴더는 백업 후 사용', W / 2, 900, 22, SUB, 500, 'center', app(lt, 1));
+  }
+};
+
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
+  const fade = c.id === 'outro' ? prog(lt, 0, .35) : prog(lt, 0, .35) * (1 - prog(lt, c.dur - .35, c.dur));
+  ctx.save(); ctx.globalAlpha = fade; DRAW[c.id](lt); tag(c, lt); ctx.restore();
+  caption(c, lt);
+}
+</script></body></html>

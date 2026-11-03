@@ -12,3 +12,4 @@
 | 5 | 2026-11-01 | [danielgatis/rembg](https://github.com/danielgatis/rembg) | 사진 배경을 자동으로 지워 주는 무료 '자동 가위' | 사진·이미지 | ★★★★☆ | 약 2.5만 | [바로가기](2026-11-01-rembg/) |
 | 6 | 2026-11-02 | [marp-team/marp-cli](https://github.com/marp-team/marp-cli) | 메모장에 쓴 글을 PDF·파워포인트 발표 자료로 바꿔 주는 무료 '인쇄소' | 문서·생산성 | ★★★★☆ | 약 3,900 | [바로가기](2026-11-02-marp-cli/) |
 | 7 | 2026-11-03 | [x-hw/amazing-qr](https://github.com/x-hw/amazing-qr) | 내 그림·사진을 배경으로 QR코드를 만들어 주는 무료 '바둑판 화가' | 사진·이미지·디자인 | ★★★★☆ | 약 1.1만 | [바로가기](2026-11-03-amazing-qr/) |
+| 8 | 2026-11-04 | [tfeldmann/organize](https://github.com/tfeldmann/organize) | 정해 둔 규칙대로 폴더 속 파일을 자동으로 나눠 담아 주는 무료 '우체국 분류원' | 파일정리·생산성 | ★★★★☆ | 약 3,200 | [바로가기](2026-11-04-organize/) |

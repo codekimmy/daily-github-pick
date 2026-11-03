@@ -59,7 +59,7 @@
 
 ![한국어 계산기 화면](media/page-mid.png)
 
-- **업로드용: `media/zxcvbn-long.mp4`(롱폼 5분 37초, 12개 장, 실제 계산기 화면 녹화 포함, 자막 있음·음성 없음), `media/zxcvbn-anim-vertical.mp4`(숏폼 30초)**
+- **업로드용: `media/zxcvbn-long-voice.mp4`(롱폼 5분 37초, 자막 + 음성), 음성 없는 원본 `media/zxcvbn-long.mp4`(12개 장, 실제 계산기 화면 녹화 포함), `media/zxcvbn-anim-vertical.mp4`(숏폼 30초)**
 - 과정 애니메이션: `media/zxcvbn-anim.mp4`(가로 30초), `media/zxcvbn-anim-vertical.mp4`(세로 30초) — 위 표의 실제 시연 결과(`demo/results.json`)로 그림
 - 계산기 화면 캡처: `media/page-weak.png`, `page-mid.png`, `page-name.png`, `page-strong.png`
 - 썸네일: `media/thumbnail.jpg`

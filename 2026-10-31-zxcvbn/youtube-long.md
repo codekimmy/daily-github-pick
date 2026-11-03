@@ -1,6 +1,7 @@
 # 롱폼: 내 비밀번호 몇 초면 뚫릴까? — 무료 비밀번호 강도 계산기 zxcvbn (5분 37초)
 
-**업로드할 영상: `media/zxcvbn-long.mp4`** (1920×1080, 5:37, 자막 포함 · 음성 없음 → `narration-long-text.txt`로 음성을 만들어 입히면 됨)
+**업로드할 영상: `media/zxcvbn-long-voice.mp4`** (1920×1080, 5:37, 자막 + 음성 포함 — 운영자가 만든 음성을 `demo/voice/align.py`로 문장마다 구간 시간에 맞춰 입힘)
+- 음성 없는 원본: `media/zxcvbn-long.mp4`
 
 ## ✅ 업로드용 (이 부분만 복사해서 쓰면 됨)
 
@@ -46,7 +47,7 @@
 zxcvbn, 비밀번호, 비밀번호강도, 비밀번호만들기, 개인정보보호, 보안, 해킹예방, 드롭박스, 오픈소스
 ```
 
-**썸네일**: `media/thumbnail.jpg` · **영상**: `media/zxcvbn-long.mp4`
+**썸네일**: `media/thumbnail.jpg` · **영상**: `media/zxcvbn-long-voice.mp4` (음성 포함)
 
 ---
 아래는 참고용 원본 메모입니다.

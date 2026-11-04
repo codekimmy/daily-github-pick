@@ -1,0 +1,25 @@
+{
+ "src_size": [
+  640,
+  1135
+ ],
+ "src_frames": 152,
+ "src_ms": 80,
+ "src_mb": 14.0,
+ "secs": [
+  11.61,
+  11.23,
+  10.96
+ ],
+ "sec": 11.23,
+ "out_size": [
+  441,
+  441
+ ],
+ "frames": 152,
+ "out_mb": 5.2,
+ "zx_full": 152,
+ "text": "https://github.com/codekimmy/daily-github-pick",
+ "cv_full": 0,
+ "zx_200px": 152
+}

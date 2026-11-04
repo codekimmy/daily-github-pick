@@ -1,0 +1,119 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 30초 과정 애니메이션. 숫자·자막 시각·소리 파형은 모두 실제 시연 결과(../results.json, ../work/*.srt, ../work/voice.wav). 영상은 시연용 가상 영상
+const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const T = { p0: 2.5, c0: 10, r0: 17, k0: 23, e0: 27, end: 30 }, TOTAL = T.end * FPS;
+let READY = false; document.fonts.load(`800 40px ${F}`).then(() => READY = true);
+const C = R.cases, LATE = C[0], LONG = R.long, OFF = -LATE.offset;   // 2.5초
+const LATE_S = SUBS['늦은자막'], FIX_S = SUBS['늦은자막_고침'];
+const fade = (t, a, b) => prog(t, a, a + .4) * (1 - prog(t, b - .4, b));
+// 배치
+const M = VERT ? 60 : 120, FW = W - 2 * M;
+const L = VERT ? { title: 230, scr: 330, scrH: 420, film: 900, filmH: 130, gap: 190, cmd: 1360, card: 1300 }
+               : { title: 110, scr: 180, scrH: 300, film: 560, filmH: 110, gap: 160, cmd: 880, card: 560 };
+const WIN = [0, 20];
+
+function screen(play, subs, shift, ok, a) {
+  // 가상 영상 화면: 지금 들리는 말 vs 화면 자막
+  box(M, L.scr, FW, L.scrH, 22, '#010409', '#30363d', a, 2); if (a <= 0) return;
+  text('🎬 시연용 가상 영상 · 라면 끓이는 법', M + 30, L.scr + 40, VERT ? 28 : 26, SUB, 600, 'left', a);
+  text(`▶ ${play.toFixed(1)}초`, M + FW - 30, L.scr + 40, VERT ? 30 : 28, INK, 800, 'right', a, MONO);
+  const say = sayAt(play), sub = subAt(play, subs, shift), sz = VERT ? 31 : 38, mw = VERT ? FW - 60 : FW - 280;
+  const ty = VERT ? [.27, .41, .66, .80] : [.42, .42, .75, .75], tx = VERT ? M + 30 : M + 250;
+  text('🔊 들리는 말', M + 30, L.scr + L.scrH * ty[0], VERT ? 30 : sz * .8, BLUE, 800, 'left', a);
+  text(cut(say || '(조용함)', sz, mw), tx, L.scr + L.scrH * ty[1], sz, say ? INK : SUB, 700, 'left', a);
+  text('💬 화면 자막', M + 30, L.scr + L.scrH * ty[2], VERT ? 30 : sz * .8, ok ? GREEN : RED, 800, 'left', a);
+  text(cut(sub || '(자막 없음)', sz, mw), tx, L.scr + L.scrH * ty[3], sz, sub ? (ok ? GREEN : RED) : SUB, 700, 'left', a);
+}
+function films(subs, shift, color, play, a, scan = -1) {
+  const y1 = L.film, y2 = L.film + L.gap;
+  text('🔊 소리 필름 (말하는 구간)', M, y1 - 26, VERT ? 30 : 26, BLUE, 800, 'left', a);
+  soundFilm(M, y1, FW, L.filmH, WIN[0], WIN[1], a);
+  text('💬 자막 필름 (자막이 뜨는 구간)', M, y2 - 26, VERT ? 30 : 26, color, 800, 'left', a);
+  subFilm(M, y2, FW, L.filmH, WIN[0], WIN[1], subs, shift, color, a);
+  ruler(M, y2 + L.filmH + 22, FW, WIN[0], WIN[1], a, 5, VERT ? 22 : 20);
+  if (play !== null) { playhead(M, y1 - 6, FW, L.gap + L.filmH + 12, WIN[0], WIN[1], play, a); }
+  if (scan >= 0 && scan <= 1) { const xx = M + FW * scan; ctx.save(); ctx.globalAlpha = a * .35; ctx.fillStyle = GOLD; ctx.fillRect(M, y1, xx - M, L.filmH); ctx.restore(); box(xx - 3, y1 - 10, 6, L.filmH + 20, 3, GOLD, null, a); }
+}
+
+function sceneIntro(t) {
+  const a = fade(t, 0, T.p0); if (a <= 0) return;
+  text('자막이 말보다', W / 2, H / 2 - (VERT ? 130 : 90), VERT ? 84 : 92, INK, 900, 'center', a);
+  text('2.5초 늦게 나옵니까?', W / 2, H / 2 + (VERT ? 0 : 30), VERT ? 96 : 104, RED, 900, 'center', a * prog(t, .5, .9));
+  text('ffsubsync', W / 2, H / 2 + (VERT ? 160 : 160), VERT ? 56 : 56, SUB, 800, 'center', a * prog(t, 1.1, 1.5), MONO);
+}
+function sceneProblem(t) {
+  const a = fade(t, T.p0, T.c0); if (a <= 0) return; const play = 4 + (t - T.p0) * 1.0;
+  text('문제: 자막 필름이 소리보다 오른쪽(늦게)에 있습니다', W / 2, L.title, VERT ? 40 : 44, INK, 900, 'center', a);
+  screen(play, LATE_S, 0, false, a); films(LATE_S, 0, RED, play, a);
+  const ca = a * prog(t, T.p0 + 3, T.p0 + 3.5);
+  if (VERT) stat(W / 2 - 230, L.cmd + 40, 460, 170, '자막 어긋남', '+' + LATE.before.mean.toFixed(2) + '초', ca, RED, 32, 64);
+  else pill(`자막 어긋남 +${LATE.before.mean.toFixed(2)}초 (10문장 모두)`, W / 2, L.cmd + 60, 40, RED, ca);
+}
+function sceneProcess(t) {
+  const a = fade(t, T.c0, T.r0); if (a <= 0) return;
+  text('ffsubsync: 소리를 듣고 자막 필름을 밀어 맞춥니다', W / 2, L.title, VERT ? 38 : 44, INK, 900, 'center', a);
+  // 명령 창
+  const cmd = 'ffsubsync 라면영상.mp4 -i 늦은자막.srt -o 고친자막.srt', cx = M, cy = L.scr, ch = VERT ? 300 : 260;
+  term(cx, cy, FW, ch, '명령 프롬프트 (cmd)', a);
+  const fs = VERT ? 26 : 30; text('C:\\>', cx + 30, cy + 100, fs, GREEN, 600, 'left', a, MONO);
+  text(typed(cmd, t, T.c0 + .3, T.c0 + 2), cx + 30 + tw('C:\\> ', fs, 600, MONO), cy + 100, fs, INK, 600, 'left', a, MONO);
+  if (t > T.c0 + 2.3) text('🔊 영상 소리에서 말하는 구간 찾는 중…', cx + 30, cy + 160, fs * .9, GOLD, 700, 'left', a * prog(t, T.c0 + 2.3, T.c0 + 2.6));
+  if (t > T.c0 + 4.2) text(`offset seconds: ${LATE.offset.toFixed(3)}  → 자막을 ${OFF.toFixed(2)}초 앞으로`, cx + 30, cy + 215, fs * .9, GREEN, 700, 'left', a * prog(t, T.c0 + 4.2, T.c0 + 4.5), MONO);
+  const k = ease(prog(t, T.c0 + 4.4, T.c0 + 6.2)); // 자막 필름이 왼쪽으로 미끄러짐
+  const scan = t < T.c0 + 2.3 ? -1 : prog(t, T.c0 + 2.3, T.c0 + 4.2);
+  films(LATE_S, -OFF * k, k > .99 ? GREEN : lerp(0, 1, k) > .5 ? GOLD : RED, null, a, scan < 1 ? scan : -1);
+  const err = lerp(LATE.before.mean, LATE.after.mean, k);
+  if (VERT) { stat(M, L.cmd + 40, 460, 170, '어긋남', (err > .05 ? '+' : '') + err.toFixed(2) + '초', a, k > .99 ? GREEN : GOLD, 32, 64);
+    stat(W - M - 460, L.cmd + 40, 460, 170, '걸린 시간', LATE.sec.toFixed(2) + '초', a * prog(t, T.c0 + 6.2, T.c0 + 6.5), GREEN, 32, 64); }
+  else { pill(`어긋남 ${err > .05 ? '+' : ''}${err.toFixed(2)}초`, W / 2 - 300, L.cmd + 60, 40, k > .99 ? GREEN : GOLD, a);
+    pill(`✔ ${LATE.sec.toFixed(2)}초 만에 완료`, W / 2 + 300, L.cmd + 60, 40, GREEN, a * prog(t, T.c0 + 6.2, T.c0 + 6.5)); }
+}
+function sceneResult(t) {
+  const a = fade(t, T.r0, T.k0); if (a <= 0) return; const play = 1.5 + (t - T.r0) * 1.4;
+  text('결과: 들리는 말과 자막이 같이 나옵니다', W / 2, L.title, VERT ? 40 : 44, INK, 900, 'center', a);
+  screen(play, FIX_S, 0, true, a); films(FIX_S, 0, GREEN, play, a);
+  const ca = a * prog(t, T.r0 + 1, T.r0 + 1.4);
+  if (VERT) { stat(M, L.cmd + 40, 460, 170, '고치기 전', '+' + LATE.before.mean.toFixed(2) + '초', ca, RED, 32, 60); stat(W - M - 460, L.cmd + 40, 460, 170, '고친 뒤 (평균)', LATE.after.mean.toFixed(2) + '초', ca, GREEN, 32, 60); }
+  else pill(`어긋남 ${LATE.before.mean.toFixed(2)}초 → ${LATE.after.mean.toFixed(2)}초 (평균)`, W / 2, L.cmd + 60, 40, GREEN, ca);
+}
+function sceneKey(t) {
+  const a = fade(t, T.k0, T.e0); if (a <= 0) return;
+  text('다른 어긋남도 시연했습니다', W / 2, VERT ? 260 : 140, VERT ? 52 : 56, INK, 900, 'center', a);
+  const rows = [['전체가 늦음', C[0]], ['전체가 빠름', C[1]], ['뒤로 갈수록 밀림', C[2]]];
+  rows.forEach(([k, c], i) => {
+    const aa = a * prog(t, T.k0 + .3 + i * .5, T.k0 + .7 + i * .5);
+    const x = VERT ? M : M + i * (FW / 3), y = VERT ? 380 + i * 270 : 280, w = VERT ? FW : FW / 3 - 30, h = VERT ? 240 : 330;
+    box(x, y, w, h, 20, '#161b22', '#30363d', aa, 2);
+    text(k, x + w / 2, y + (VERT ? 55 : 60), VERT ? 40 : 40, INK, 800, 'center', aa);
+    text(`${c.before.mean.toFixed(2)}초`, x + w / 2 - (VERT ? 220 : 150), y + h * (VERT ? .65 : .55), VERT ? 60 : 50, RED, 900, 'center', aa);
+    text('→', x + w / 2, y + h * (VERT ? .65 : .55), 50, SUB, 900, 'center', aa);
+    text(`${c.after.mean.toFixed(c.after.mean < .01 ? 3 : 2)}초`, x + w / 2 + (VERT ? 220 : 150), y + h * (VERT ? .65 : .55), VERT ? 60 : 50, GREEN, 900, 'center', aa);
+    if (!VERT) text('평균 어긋남', x + w / 2, y + h * .82, 26, SUB, 600, 'center', aa);
+  });
+  const la = a * prog(t, T.k0 + 2, T.k0 + 2.4);
+  if (VERT) { stat(M, 1240, FW, 200, `${Math.round(LONG.video_sec / 60)}분 영상 · 자막 ${LONG.lines}줄`, `${LONG.sec.toFixed(2)}초`, la, GOLD, 34, 80); text('(평균 어긋남 = 문장 10개 시작 시각 차이의 평균)', W / 2, 1490, 28, SUB, 500, 'center', la); }
+  else { pill(`약 ${Math.round(LONG.video_sec / 60)}분 영상 · 자막 ${LONG.lines}줄도 ${LONG.sec.toFixed(2)}초`, W / 2, 720, 44, GOLD, la); text('평균 어긋남 = 문장 10개 시작 시각이 정답과 다른 정도의 평균', W / 2, 820, 28, SUB, 500, 'center', la); }
+}
+function sceneEnd(t) {
+  const a = prog(t, T.e0, T.e0 + .4); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const cy = VERT ? 700 : 330;
+  text('ffsubsync', W / 2, cy, VERT ? 120 : 120, INK, 900, 'center', 1, MONO);
+  text('어긋난 자막을 소리에 맞춰 당겨 주는 무료 도구', W / 2, cy + (VERT ? 130 : 120), VERT ? 44 : 48, SUB, 700);
+  text('일반인 쓸모 ★★★★☆', W / 2, cy + (VERT ? 240 : 210), VERT ? 60 : 56, GOLD, 900);
+  pill('pip install ffsubsync · 명령은 설명란에', W / 2, cy + (VERT ? 370 : 320), VERT ? 36 : 36, GREEN);
+  const d1 = '정보 제공용 · 2026-11-05 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '원본 자막은 따로 보관 · 고친 자막은 직접 재생해 확인 · 소리 없는 영상은 못 맞춤';
+  if (VERT) { text(d1, W / 2, 1480, 28, SUB, 500); text(d2, W / 2, 1524, 28, SUB, 500); }
+  else { text(d1, W / 2, H - 92, 26, SUB, 500); text(d2, W / 2, H - 52, 26, SUB, 500); }
+  ctx.restore();
+}
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneProblem(t); sceneProcess(t); sceneResult(t); sceneKey(t); sceneEnd(t);
+}
+</script></body></html>

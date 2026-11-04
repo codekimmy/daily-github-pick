@@ -26,7 +26,7 @@ P@ssw0rd는 1초, 단어 3개는 100년? #shorts
 한국어 계산기 파일(더블클릭, 인터넷 없이 동작)은 전체 영상 설명란 링크에 있어요. 파이썬이 있다면 cmd에서 pip install zxcvbn. 시간은 '훔친 비밀번호 파일을 1초에 1만 번 맞혀 볼 때' 기준 어림값이에요.
 ```
 
-**영상**: `media/zxcvbn-anim-vertical.mp4` (30초, 자막 포함 · 음성은 `narration-shorts-text.txt`로 만들어 입히기)
+**영상**: `media/zxcvbn-shorts-voice.mp4` (30초, 자막 + 음성, 업로드용) · 음성 없는 원본: `media/zxcvbn-anim-vertical.mp4`
 
 ---
 아래는 참고용 원본 메모입니다.

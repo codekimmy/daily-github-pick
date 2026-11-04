@@ -1,12 +1,13 @@
 """음성 파일(대본 전체를 이어 읽은 것)을 문장별로 잘라, 롱폼 영상의 구간 시간(cues.json)에 맞춰 놓는다.
-사용: python3 align.py <음성.mp3> <영상.mp4> <출력.mp4>
+사용: python3 align.py <음성.mp3> <영상.mp4> <출력.mp4> [long|shorts]  (기본 long)
 문장 경계: 무음 구간 후보 중에서, 문장 글자 수에 비례한 예상 길이와 가장 잘 맞는 조합을 동적 계획법으로 고름."""
 import json, re, subprocess, sys
 from pathlib import Path
 
 mp3, video, out = sys.argv[1:4]
 here = Path(__file__).parent
-cues = json.load(open(here.parent / "narration/cues.json", encoding="utf-8"))["long"]
+KIND = sys.argv[4] if len(sys.argv) > 4 else "long"
+cues = json.load(open(here.parent / "narration/cues.json", encoding="utf-8"))[KIND]
 n = len(cues)
 vdur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", video]))
 dur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", mp3]))
@@ -46,7 +47,7 @@ segs.reverse()
 report = []
 for (s, e), (a, b, t), ch in zip(segs, cues, chars):
     report.append({"cue": [a, b], "text": t, "audio": [round(s, 2), round(e, 2)], "len": round(e - s, 2), "expect": round(ch * rate, 2), "fits": e - s <= b - a + 0.05})
-json.dump(report, open(here / "segments.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+json.dump(report, open(here / ("segments.json" if KIND == "long" else f"segments-{KIND}.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 # 소리 이어 붙이기: 문장마다 구간 시작 시각에 놓음 (앞뒤 0.05초 여유)
 parts, labels = [], []
 for i, ((s, e), (a, b, t)) in enumerate(zip(segs, cues)):

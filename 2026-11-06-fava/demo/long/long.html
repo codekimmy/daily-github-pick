@@ -1,0 +1,155 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 숫자는 실제 시연 결과(../results.json), 화면은 실제 Fava 캡처(../../media/shots). 가계부는 시연용 가상 자료
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false; Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadShots('../../media/shots')]).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const M = 120, FW = W - 240, MON = R.monthly, LG = R.ledger;
+function caption(c, lt) {
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
+  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
+  const s = cue[2], big = tw(s, 38, 700) > 1780, w = Math.min(tw(s, big ? 32 : 38, 700) + 80, 1880);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a); text(s, W / 2, 992, big ? 32 : 38, INK, 700, 'center', a);
+}
+function tag(c, lt) {
+  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+  box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)') {
+  term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.8); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\가계부>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\가계부> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(s, x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : kind === 'key' ? BLUE : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+}
+// 화면 캡처 한 장 + 확대 이동(keys: [[시각, [sx,sy,sw,sh]], ...]) + 강조 상자(hls: [[t0, t1, [x,y,w,h], 색, 글]])
+const SX = 230, SY = 108, SWD = 1460, SHT = SWD * 9 / 16;
+function scr(name, lt, keys = [[0, [0, 0, 1920, 1080]]], hls = [], a = 1) {
+  let src = keys[0][1];
+  for (let i = 1; i < keys.length; i++) if (lt > keys[i][0] - 1.2) src = zoom(keys[i - 1][1], keys[i][1], ease(prog(lt, keys[i][0] - 1.2, keys[i][0])));
+  shot(name, SX, SY, SWD, SHT, a * app(lt, 0, .4), src);
+  hls.forEach(([t0, t1, r, c, l]) => { if (lt > t0 && lt < t1) hl(SX, SY, SWD, SHT, src, r, c, prog(lt, t0, t0 + .3) * (1 - prog(lt, t1 - .3, t1)), l); });
+}
+const FULL = [0, 0, 1920, 1080];
+const DRAW = {
+  title(lt) {
+    text('fava', W / 2, 230, 160, INK, 800, 'center', app(lt, .2), MONO);
+    text('메모장 가계부를 차트 대시보드로 보여 주는 무료 프로그램', W / 2, 370, 52, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 470, 56, GOLD, 800, 'center', app(lt, 4));
+    text('⭐ 약 2,600 · MIT 무료 · pip fava 1.30.16 · 만든 곳: beancount 커뮤니티 (2015년 시작)', W / 2, 550, 32, SUB, 600, 'center', app(lt, 4.5));
+    shot('02_expense_tree', 560, 610, 800, 450 * 0.7, app(lt, 8), [216, 137, 1704, 669]);
+  },
+  what(lt) {
+    text('가계부의 자동차 계기판', W / 2, 150, 64, GOLD, 900, 'center', app(lt, .3));
+    // 왼쪽: 엔진(장부 글자) → 오른쪽: 계기판(차트)
+    text('🔧 엔진 = 메모장 장부 글자', 500, 260, 36, INK, 800, 'center', app(lt, 7));
+    notepad(120, 300, 760, 560, LED, Math.min(LED.length, 12 + Math.max(0, lt - 7) * 2), app(lt, 7), 24);
+    text('→', 960, 580, 90, GOLD, 900, 'center', app(lt, 14));
+    text('📊 계기판 = fava 화면', 1420, 260, 36, INK, 800, 'center', app(lt, 14));
+    shot('01_income', 1040, 300, 760, 428, app(lt, 14));
+    if (lt > 22) pill('장부 = beancount(글자 파일) · 화면 = fava', W / 2, 820, 36, GREEN, app(lt, 22));
+  },
+  format(lt) {
+    const L1 = ['2026-02-05 * "편의점" "도시락"', '  Expenses:Food-식비  7300 KRW', '  Liabilities:Card-카드'];
+    box(160, 180, 1600, 400, 18, '#fbfbfb', '#30363d', app(lt, .2), 2);
+    L1.forEach((s, i) => { const on = lt > [0.3, 8, 16][i]; text(s, 220, 270 + i * 100, 52, i === 0 ? '#0b5cad' : '#222', 700, 'left', on ? app(lt, [0.3, 8, 16][i]) : 0, MONO); });
+    const notes = [['날짜 · * (확인됨) · 가게 · 메모', 270, BLUE, .3], ['어디에 썼나(계정) + 금액', 370, GOLD, 8], ['돈이 나간 곳 · 금액 비우면 -7300 자동', 470, PURPLE, 16]];
+    notes.forEach(([s, y, c, at]) => { if (lt > at) pill(s, 1440, y, 28, c, app(lt, at + .4)); });
+    if (lt > 24) { pill('합계: +7,300 (식비) − 7,300 (카드) = 0 ✔', W / 2, 660, 40, GREEN, app(lt, 24)); }
+    if (lt > 32) { pill("Expenses:식비 ✘ 오류 (Invalid account name)", W / 2 - 380, 780, 32, RED, app(lt, 32)); pill('Expenses:Food-식비 ✔', W / 2 + 420, 780, 32, GREEN, app(lt, 32.5)); }
+  },
+  install(lt) {
+    termLines(80, 140, 1060, 640, [['$', 'pip install fava', 8.2, 1.2], ['dim', 'Successfully installed beancount-3.2.3 fava-1.30.16 ...', 9.8], ['note', '  (시연: 새 환경 5.9초 · 묶음 34개)', 16.2], ['$', 'fava --version', 23.2, 1], ['ok', 'fava, version 1.30.16', 24.8]], lt, 26);
+    box(1200, 140, 640, 640, 20, '#161b22', '#30363d', app(lt, .3), 2);
+    text('준비물', 1520, 200, 40, INK, 800, 'center', app(lt, .3));
+    text('① 파이썬 (python.org)', 1240, 290, 32, INK, 700, 'left', app(lt, .6));
+    text("   'Add python.exe to PATH' 체크", 1240, 340, 28, GOLD, 700, 'left', app(lt, 1.2));
+    text('② fava (pip 한 줄)', 1240, 430, 32, INK, 700, 'left', app(lt, 8));
+    text('   장부 프로그램 beancount 포함', 1240, 480, 28, SUB, 600, 'left', app(lt, 8.4));
+    text('③ 메모장 (Windows 기본)', 1240, 570, 32, INK, 700, 'left', app(lt, 16));
+    text('   장부는 UTF-8로 저장', 1240, 620, 28, SUB, 600, 'left', app(lt, 16.4));
+  },
+  run(lt) {
+    termLines(120, 150, 1000, 360, [['$', 'fava 가계부.beancount', .5, 1.4], ['ok', 'Starting Fava on http://127.0.0.1:5000', 2.4], ['note', `  (시연: 응답까지 ${R.start9}초)`, 16]], lt, 28);
+    shot('01_income', 1160, 150, 660, 371, app(lt, 8));
+    box(1160, 110, 660, 36, 8, '#e8eaed', null, app(lt, 8)); text('🌐 http://127.0.0.1:5000', 1180, 128, 20, '#333', 600, 'left', app(lt, 8), MONO);
+    if (lt > 16) pill('인터넷에 올리지 않음 · 내 컴퓨터 안에서만 동작 · 끄려면 cmd 창에서 Ctrl+C', W / 2, 640, 34, GREEN, app(lt, 16));
+  },
+  income(lt) {
+    scr('01_income', lt, [[0, FULL], [9, [380, 100, 1400, 788]], [17, [180, 440, 1740, 979]]],
+      [[9, 16, [440, 140, 1280, 140], BLUE, '수입'], [9, 16, [440, 280, 1280, 130], RED, '지출'], [18, 24, [1063, 520, 850, 40], GOLD, `지출 ${R.total.expense.toLocaleString()}원`], [18, 24, [205, 520, 845, 40], BLUE, `수입 ${R.total.income.toLocaleString()}원`]]);
+  },
+  tree(lt) {
+    scr('02_expense_tree', lt, [[0, FULL], [9, [216, 120, 1704, 958]]], [[0.5, 7.8, [1340, 440, 180, 36], GOLD, '여기 클릭'], [8, 16, [216, 137, 900, 482], GOLD, '월세 585만 원'], [16, 28, [1116, 137, 464, 482], GOLD, '식비 299만 9,400원']]);
+  },
+  monthly(lt) {
+    scr('03_expense_monthly', lt, [[0, FULL], [8, [380, 100, 1400, 788]]], [[0.5, 7.8, [1015, 440, 180, 36], GOLD, '여기 클릭'], [8, 16, [990, 140, 110, 280], GOLD, '5월 138만 4,400원'], [16, 24, [1215, 160, 110, 260], GREEN, '7월 107만 700원']]);
+  },
+  budget(lt) {
+    if (lt < 8) { box(260, 260, 1400, 220, 18, '#fbfbfb', '#30363d', app(lt, .2), 2);
+      text('2026-02-01 custom "budget" Expenses:Food-식비 "monthly" 400000 KRW', 300, 370, 34, '#222', 700, 'left', app(lt, .5), MONO);
+      pill('식비 예산: 한 달 40만 원', W / 2, 600, 40, GOLD, app(lt, 2)); return; }
+    scr('06_food', lt - 8, [[0, FULL], [1.5, [216, 400, 1704, 958]]],
+      [[1.5, 9, [216, 540, 1704, 90], BLUE, '달마다 쓴 돈 (예산까지 남은 돈)'], [9, 18, [1740, 545, 175, 80], RED, '4월 -22,000'], [9, 18, [440, 545, 220, 80], RED, '10월 -700'], [18, 26, [1245, 545, 175, 80], GREEN, '7월 +161,700']]);
+  },
+  balance(lt) {
+    scr('04_balance', lt, [[0, FULL], [8, [180, 440, 1740, 979]]], [[8, 16, [205, 525, 845, 80], GREEN, '통장 1,382만 · 적금 270만'], [16, 24, [1063, 525, 850, 40], RED, '카드값 53만 6,600원']]);
+  },
+  journal(lt) {
+    scr('05_journal', lt, [[0, FULL]], [[8, 15, [216, 168, 1680, 30], GREEN, '잔액 확인 통과'], [15, 22, [1665, 12, 245, 50], GOLD, '가게·계정 거르기']]);
+  },
+  query(lt) {
+    scr('07_query', lt, [[0, FULL], [16, [180, 80, 1740, 979]]], [[8, 16, [216, 100, 1690, 42], BLUE, '질문 한 줄'], [16, 23, [216, 260, 270, 330], GREEN, '월별 식비 9줄'], [23, 30, [1690, 180, 200, 44], GOLD, 'CSV 받기']]);
+  },
+  check(lt) {
+    if (lt < 34) {
+      const rows = [['$', 'bean-check 가계부.beancount', .5, 1.2], ['ok', `(아무 말 없음 = 통과 · ${R.check9.sec}초)`, 2.2]];
+      if (lt > 8) rows.push(['$', 'bean-check 틀린장부1.beancount', 8.2, 1.2], ['err', '1844: Transaction does not balance: (9000 KRW)', 9.8]);
+      if (lt > 17) rows.push(['$', 'bean-check 틀린장부2.beancount', 17.2, 1.2], ['err', "1844: Invalid reference to unknown account 'Expenses:Fod-식비'", 18.8]);
+      if (lt > 26) rows.push(['$', 'bean-check 틀린장부3.beancount', 26.2, 1.2], ['err', "Balance failed for 'Assets:Bank-통장': ... (10000 too little)", 27.8]);
+      termLines(120, 120, 1680, 780, rows, lt, 28, '명령 프롬프트 (cmd) · 틀린장부1~3 = 일부러 틀리게 만든 시연용 장부');
+    } else scr('10_error_badge', lt - 34, [[0, FULL], [1.5, [0, 300, 900, 506]]], [[1.5, 8, [5, 508, 185, 38], RED, '오류 1']]);
+  },
+  reload(lt) {
+    if (lt < 17) {
+      notepad(120, 140, 820, 560, ['2026-10-31 * "빵집" "식빵"', '  Expenses:Cafe-카페  3800 KRW', '  Liabilities:Card-카드', '', '2026-10-31 * "편의점" "시연용 추가 한 줄"', '  Expenses:Food-식비  3000 KRW', '  Liabilities:Card-카드'], Math.min(7, 3 + Math.max(0, lt - 1) * 1.2), app(lt, .2), 26);
+      text('Ctrl+S 저장', 530, 760, 36, GOLD, 800, 'center', app(lt, 6));
+      text('→', 1000, 420, 90, GOLD, 900, 'center', app(lt, 9));
+      shot('05_journal', 1060, 200, 760, 428, app(lt, 9), [180, 60, 1740, 979]);
+      if (lt > 9) pill(`새로고침 → ${R.reload.seen_sec}초 만에 보임`, 1440, 700, 32, GREEN, app(lt, 9.5));
+    } else scr('08_editor', lt - 17, [[0, FULL]], [[.5, 9, [270, 70, 160, 40], GOLD, '편집기 · 저장 버튼']]);
+  },
+  big(lt) {
+    if (lt < 8) { [['가상 10년치 가계부', `${R.check10.tx.toLocaleString()}건`, GOLD], ['줄 수', R.check10.lines.toLocaleString() + '줄', BLUE], ['파일 크기', R.check10.kb + 'KB', GREEN]].forEach(([k, v, c], i) => stat(M + i * (FW / 3) + 15, 300, FW / 3 - 30, 260, k, v, app(lt, .3 + i * .5), c, 36, 84)); return; }
+    if (lt < 16) { [['장부 검사', R.check10.sec + '초', GREEN], ['켜기', R.start10 + '초', BLUE], ['손익계산서 화면', R.page10 + '초', GOLD]].forEach(([k, v, c], i) => stat(M + i * (FW / 3) + 15, 300, FW / 3 - 30, 260, k, v, app(lt, 8.3 + i * .5), c, 36, 84));
+      text('비교: 9개월치(453건) 검사 ' + R.check9.sec + '초 · 켜기 ' + R.start9 + '초', W / 2, 680, 34, SUB, 600, 'center', app(lt, 10)); return; }
+    scr('12_tenyears', lt - 16, [[0, FULL]], [[.5, 8, [1770, 90, 90, 40], GOLD, '연도별']]);
+  },
+  cons(lt) {
+    const items = ['① 장부 쓰는 규칙(복식부기)을 익혀야 함 — 거래마다 계정 두 개', "② 계정 이름 첫 글자는 영어 대문자 ('Expenses:식비'는 오류)", '③ 은행·카드 내역 자동 연결 없음 (가져오기는 따로 설정 · 시연 안 함)', '④ 기본 설정은 수입이 마이너스(-)로 표시 → 옵션 한 줄로 뒤집기', '⑤ 휴대폰 앱이 아니라 내 컴퓨터에서 켜는 웹 화면'];
+    text('아쉬운 점 (시연에서 확인)', W / 2, 160, 54, RED, 900, 'center', app(lt, .2));
+    items.forEach((s, i) => { const at = [0.3, 8, 15, 23, 30][i]; box(180, 240 + i * 130, 1560, 105, 16, '#161b22', '#30363d', app(lt, at), 2); text(s, 220, 292 + i * 130, 36, i === 2 || i === 4 ? GOLD : INK, 700, 'left', app(lt, at)); });
+  },
+  summary(lt) {
+    const cy = 300; text('fava', W / 2, cy - 80, 120, INK, 900, 'center', app(lt, .2), MONO);
+    [['거래', LG.tx + '건', GOLD], ['검사', R.check9.sec + '초', GREEN], ['켜기', R.start9 + '초', BLUE], ['10년치 화면', R.page10 + '초', PURPLE]].forEach(([k, v, c], i) => stat(M + i * (FW / 4) + 12, cy + 30, FW / 4 - 24, 190, k, v, app(lt, .5 + i * .3), c, 30, 64));
+    text('일반인 쓸모 ★★★☆☆ · pip install fava · 명령은 설명란에', W / 2, 600, 40, GOLD, 800, 'center', app(lt, 8));
+    const d1 = '정보 제공용 · 2026-11-06 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '시연용 가상 가계부 · 은행 자동 연결 없음 · 장부 파일은 꼭 백업 · 실제 금액은 직접 확인';
+    text(d1, W / 2, 820, 26, SUB, 500, 'center', app(lt, 16)); text(d2, W / 2, 860, 26, SUB, 500, 'center', app(lt, 16));
+  }
+};
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
+  const a = prog(lt, 0, .3) * (1 - prog(lt, c.dur - .3, c.dur)); ctx.save(); ctx.globalAlpha = c === CH[CH.length - 1] ? prog(lt, 0, .3) : a;
+  DRAW[c.id](lt); tag(c, lt); ctx.restore(); caption(c, lt);
+}
+</script></body></html>

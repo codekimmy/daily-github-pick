@@ -1,0 +1,188 @@
+{
+ "version": "fava, version 1.30.16",
+ "beancount": "Beancount 3.2.3",
+ "ledger": {
+  "tx": 453,
+  "lines": 1842,
+  "kb": 47.4,
+  "bank": 13826900
+ },
+ "check9": {
+  "sec": 0.13,
+  "secs": [
+   0.13,
+   0.15,
+   0.13
+  ],
+  "rc": 0,
+  "err": ""
+ },
+ "monthly": [
+  {
+   "m": 2,
+   "income": 2800000,
+   "expense": 1133400,
+   "food": 290700
+  },
+  {
+   "m": 3,
+   "income": 2825000,
+   "expense": 1151200,
+   "food": 285000
+  },
+  {
+   "m": 4,
+   "income": 2800000,
+   "expense": 1297300,
+   "food": 422000
+  },
+  {
+   "m": 5,
+   "income": 2800000,
+   "expense": 1384400,
+   "food": 396200
+  },
+  {
+   "m": 6,
+   "income": 2870000,
+   "expense": 1126900,
+   "food": 326600
+  },
+  {
+   "m": 7,
+   "income": 2800000,
+   "expense": 1070700,
+   "food": 238300
+  },
+  {
+   "m": 8,
+   "income": 2800000,
+   "expense": 1183000,
+   "food": 324200
+  },
+  {
+   "m": 9,
+   "income": 2852000,
+   "expense": 1268200,
+   "food": 315700
+  },
+  {
+   "m": 10,
+   "income": 2800000,
+   "expense": 1241600,
+   "food": 400700
+  }
+ ],
+ "by_account": [
+  [
+   "Rent-월세",
+   5850000
+  ],
+  [
+   "Food-식비",
+   2999400
+  ],
+  [
+   "Phone-통신",
+   495000
+  ],
+  [
+   "Transport-교통",
+   417600
+  ],
+  [
+   "Shopping-쇼핑",
+   369000
+  ],
+  [
+   "Cafe-카페",
+   366800
+  ],
+  [
+   "Gift-경조사",
+   200000
+  ],
+  [
+   "Subscription-구독",
+   121500
+  ],
+  [
+   "Health-병원",
+   37400
+  ]
+ ],
+ "total": {
+  "income": 25347000,
+  "expense": 10856700
+ },
+ "food_budget": 400000,
+ "food_over": [
+  4,
+  10
+ ],
+ "errors": [
+  {
+   "name": "합이 안 맞는 거래",
+   "file": "틀린장부1.beancount",
+   "rc": 1,
+   "msg": [
+    "/home/claude/daily-github-pick/2026-11-06-fava/demo/work/틀린장부1.beancount:1844: Transaction does not balance: (9000 KRW)",
+    "   2026-10-31 * \"동네마트\" \"장보기\"",
+    "     Expenses:Food-식비      32000 KRW"
+   ]
+  },
+  {
+   "name": "없는 계정 이름(오타)",
+   "file": "틀린장부2.beancount",
+   "rc": 1,
+   "msg": [
+    "/home/claude/daily-github-pick/2026-11-06-fava/demo/work/틀린장부2.beancount:1844: Invalid reference to unknown account 'Expenses:Fod-식비'",
+    "   2026-10-31 * \"동네마트\" \"장보기\"",
+    "     Expenses:Fod-식비       32000 KRW"
+   ]
+  },
+  {
+   "name": "통장 잔액이 다름",
+   "file": "틀린장부3.beancount",
+   "rc": 1,
+   "msg": [
+    "/home/claude/daily-github-pick/2026-11-06-fava/demo/work/틀린장부3.beancount:1844: Balance failed for 'Assets:Bank-통장': expected 13836900 KRW != accumulated 13826900 KRW (10000 too little)",
+    "   2026-11-02 balance Assets:Bank-통장                                  13836900 KRW"
+   ]
+  }
+ ],
+ "check10": {
+  "sec": 0.52,
+  "secs": [
+   0.49,
+   0.53,
+   0.52
+  ],
+  "rc": 0,
+  "tx": 6475,
+  "lines": 25923,
+  "kb": 661
+ },
+ "start9": 0.43,
+ "pages": {
+  "손익계산서": 0.6,
+  "재무상태표": 0.58,
+  "거래기록": 0.76,
+  "식비 계정": 0.67,
+  "쿼리": 0.59
+ },
+ "reload": {
+  "seen_sec": 1.84
+ },
+ "csv": {
+  "ok": true,
+  "rows": 9,
+  "head": [
+   "month,sum(position) (KRW)",
+   "2,290700.0",
+   "3,285000.0"
+  ]
+ },
+ "start10": 0.82,
+ "page10": 0.69
+}

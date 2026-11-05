@@ -1,0 +1,1846 @@
+option "title" "우리집 가계부 (시연용 가상 자료)"
+option "operating_currency" "KRW"
+
+2026-01-01 custom "fava-option" "language" "ko"
+2026-01-01 custom "fava-option" "locale" "ko_KR"
+2026-01-01 custom "fava-option" "invert-income-liabilities-equity" "true"
+
+2026-01-31 open Assets:Bank-통장 KRW
+2026-01-31 open Assets:Savings-적금 KRW
+2026-01-31 open Liabilities:Card-카드 KRW
+2026-01-31 open Income:Salary-월급 KRW
+2026-01-31 open Income:Side-부수입 KRW
+2026-01-31 open Expenses:Rent-월세 KRW
+2026-01-31 open Expenses:Food-식비 KRW
+2026-01-31 open Expenses:Cafe-카페 KRW
+2026-01-31 open Expenses:Transport-교통 KRW
+2026-01-31 open Expenses:Phone-통신 KRW
+2026-01-31 open Expenses:Subscription-구독 KRW
+2026-01-31 open Expenses:Shopping-쇼핑 KRW
+2026-01-31 open Expenses:Health-병원 KRW
+2026-01-31 open Expenses:Gift-경조사 KRW
+2026-01-31 open Equity:Opening-시작잔액 KRW
+
+2026-01-31 * "시작 잔액"
+  Assets:Bank-통장  1500000 KRW
+  Equity:Opening-시작잔액
+
+2026-02-01 custom "budget" Expenses:Food-식비 "monthly" 400000 KRW
+2026-02-01 custom "budget" Expenses:Cafe-카페 "monthly" 60000 KRW
+2026-02-01 custom "budget" Expenses:Shopping-쇼핑 "monthly" 150000 KRW
+2026-02-01 custom "budget" Expenses:Transport-교통 "monthly" 80000 KRW
+
+2026-02-25 * "회사" "2월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-02-01 * "집주인" "2월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-02-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-02-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-02-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-02-02 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  23100 KRW
+  Liabilities:Card-카드
+
+2026-02-02 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-03 * "편의점" "도시락"
+  Expenses:Food-식비  6800 KRW
+  Liabilities:Card-카드
+
+2026-02-03 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4900 KRW
+  Liabilities:Card-카드
+
+2026-02-03 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-04 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-05 * "편의점" "도시락"
+  Expenses:Food-식비  7300 KRW
+  Liabilities:Card-카드
+
+2026-02-05 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-05 * "온라인쇼핑" "생활용품"
+  Expenses:Shopping-쇼핑  21000 KRW
+  Liabilities:Card-카드
+
+2026-02-06 * "빵집" "식빵"
+  Expenses:Cafe-카페  5000 KRW
+  Liabilities:Card-카드
+
+2026-02-06 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-07 * "동네마트" "장보기"
+  Expenses:Food-식비  51400 KRW
+  Liabilities:Card-카드
+
+2026-02-08 * "편의점" "도시락"
+  Expenses:Food-식비  7100 KRW
+  Liabilities:Card-카드
+
+2026-02-08 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5300 KRW
+  Liabilities:Card-카드
+
+2026-02-09 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4200 KRW
+  Liabilities:Card-카드
+
+2026-02-09 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-10 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5200 KRW
+  Liabilities:Card-카드
+
+2026-02-10 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-11 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-12 * "정육점" "삼겹살"
+  Expenses:Food-식비  28300 KRW
+  Liabilities:Card-카드
+
+2026-02-12 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4600 KRW
+  Liabilities:Card-카드
+
+2026-02-12 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-13 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-14 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  21700 KRW
+  Liabilities:Card-카드
+
+2026-02-14 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4800 KRW
+  Liabilities:Card-카드
+
+2026-02-15 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  8800 KRW
+  Liabilities:Card-카드
+
+2026-02-17 * "빵집" "식빵"
+  Expenses:Cafe-카페  6600 KRW
+  Liabilities:Card-카드
+
+2026-02-17 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-18 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  19400 KRW
+  Liabilities:Card-카드
+
+2026-02-18 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-19 * "편의점" "도시락"
+  Expenses:Food-식비  8000 KRW
+  Liabilities:Card-카드
+
+2026-02-20 * "동네마트" "장보기"
+  Expenses:Food-식비  40400 KRW
+  Liabilities:Card-카드
+
+2026-02-20 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-21 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  28400 KRW
+  Liabilities:Card-카드
+
+2026-02-21 * "빵집" "식빵"
+  Expenses:Cafe-카페  6700 KRW
+  Liabilities:Card-카드
+
+2026-02-22 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  11700 KRW
+  Liabilities:Card-카드
+
+2026-02-23 * "정육점" "삼겹살"
+  Expenses:Food-식비  28300 KRW
+  Liabilities:Card-카드
+
+2026-02-23 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4800 KRW
+  Liabilities:Card-카드
+
+2026-02-23 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-25 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-26 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-02-28 * "빵집" "식빵"
+  Expenses:Cafe-카페  4700 KRW
+  Liabilities:Card-카드
+
+2026-03-25 * "회사" "3월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-03-01 * "집주인" "3월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-03-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-03-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-03-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  428400 KRW
+  Assets:Bank-통장
+
+2026-03-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-03-12 * "동네의원" "감기 진료"
+  Expenses:Health-병원  12600 KRW
+  Liabilities:Card-카드
+
+2026-03-21 * "중고거래" "안 쓰는 물건 판매"
+  Assets:Bank-통장  25000 KRW
+  Income:Side-부수입
+
+2026-03-02 * "빵집" "식빵"
+  Expenses:Cafe-카페  6800 KRW
+  Liabilities:Card-카드
+
+2026-03-02 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-03 * "빵집" "식빵"
+  Expenses:Cafe-카페  4200 KRW
+  Liabilities:Card-카드
+
+2026-03-03 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-04 * "정육점" "삼겹살"
+  Expenses:Food-식비  25400 KRW
+  Liabilities:Card-카드
+
+2026-03-05 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  18200 KRW
+  Liabilities:Card-카드
+
+2026-03-05 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-06 * "편의점" "도시락"
+  Expenses:Food-식비  8500 KRW
+  Liabilities:Card-카드
+
+2026-03-06 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-07 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  8500 KRW
+  Liabilities:Card-카드
+
+2026-03-09 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  18100 KRW
+  Liabilities:Card-카드
+
+2026-03-09 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-10 * "편의점" "도시락"
+  Expenses:Food-식비  8300 KRW
+  Liabilities:Card-카드
+
+2026-03-10 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-10 * "서점" "책"
+  Expenses:Shopping-쇼핑  16000 KRW
+  Liabilities:Card-카드
+
+2026-03-11 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  10100 KRW
+  Liabilities:Card-카드
+
+2026-03-11 * "빵집" "식빵"
+  Expenses:Cafe-카페  5800 KRW
+  Liabilities:Card-카드
+
+2026-03-11 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-12 * "동네마트" "장보기"
+  Expenses:Food-식비  46400 KRW
+  Liabilities:Card-카드
+
+2026-03-13 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-14 * "정육점" "삼겹살"
+  Expenses:Food-식비  15400 KRW
+  Liabilities:Card-카드
+
+2026-03-15 * "빵집" "식빵"
+  Expenses:Cafe-카페  3800 KRW
+  Liabilities:Card-카드
+
+2026-03-16 * "빵집" "식빵"
+  Expenses:Cafe-카페  6000 KRW
+  Liabilities:Card-카드
+
+2026-03-16 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-17 * "빵집" "식빵"
+  Expenses:Cafe-카페  4500 KRW
+  Liabilities:Card-카드
+
+2026-03-17 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-18 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  6500 KRW
+  Liabilities:Card-카드
+
+2026-03-18 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-19 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  28000 KRW
+  Liabilities:Card-카드
+
+2026-03-19 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-20 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  24700 KRW
+  Liabilities:Card-카드
+
+2026-03-20 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-21 * "편의점" "도시락"
+  Expenses:Food-식비  4700 KRW
+  Liabilities:Card-카드
+
+2026-03-23 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-23 * "온라인쇼핑" "생활용품"
+  Expenses:Shopping-쇼핑  19000 KRW
+  Liabilities:Card-카드
+
+2026-03-24 * "편의점" "도시락"
+  Expenses:Food-식비  4800 KRW
+  Liabilities:Card-카드
+
+2026-03-24 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-25 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5000 KRW
+  Liabilities:Card-카드
+
+2026-03-25 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-26 * "편의점" "도시락"
+  Expenses:Food-식비  7600 KRW
+  Liabilities:Card-카드
+
+2026-03-26 * "빵집" "식빵"
+  Expenses:Cafe-카페  6400 KRW
+  Liabilities:Card-카드
+
+2026-03-27 * "편의점" "도시락"
+  Expenses:Food-식비  8200 KRW
+  Liabilities:Card-카드
+
+2026-03-27 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-29 * "빵집" "식빵"
+  Expenses:Cafe-카페  5400 KRW
+  Liabilities:Card-카드
+
+2026-03-30 * "동네마트" "장보기"
+  Expenses:Food-식비  35600 KRW
+  Liabilities:Card-카드
+
+2026-03-30 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-03-31 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  6000 KRW
+  Liabilities:Card-카드
+
+2026-04-25 * "회사" "4월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-04-01 * "집주인" "4월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-04-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-04-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-04-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  446200 KRW
+  Assets:Bank-통장
+
+2026-04-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-04-01 * "정육점" "삼겹살"
+  Expenses:Food-식비  27100 KRW
+  Liabilities:Card-카드
+
+2026-04-01 * "빵집" "식빵"
+  Expenses:Cafe-카페  4800 KRW
+  Liabilities:Card-카드
+
+2026-04-01 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-01 * "온라인쇼핑" "생활용품"
+  Expenses:Shopping-쇼핑  44000 KRW
+  Liabilities:Card-카드
+
+2026-04-02 * "동네마트" "장보기"
+  Expenses:Food-식비  38400 KRW
+  Liabilities:Card-카드
+
+2026-04-02 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-03 * "편의점" "도시락"
+  Expenses:Food-식비  4800 KRW
+  Liabilities:Card-카드
+
+2026-04-03 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-04 * "편의점" "도시락"
+  Expenses:Food-식비  5300 KRW
+  Liabilities:Card-카드
+
+2026-04-04 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4500 KRW
+  Liabilities:Card-카드
+
+2026-04-05 * "정육점" "삼겹살"
+  Expenses:Food-식비  29900 KRW
+  Liabilities:Card-카드
+
+2026-04-06 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  3800 KRW
+  Liabilities:Card-카드
+
+2026-04-07 * "빵집" "식빵"
+  Expenses:Cafe-카페  3900 KRW
+  Liabilities:Card-카드
+
+2026-04-07 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-09 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  30800 KRW
+  Liabilities:Card-카드
+
+2026-04-09 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-09 * "서점" "책"
+  Expenses:Shopping-쇼핑  19000 KRW
+  Liabilities:Card-카드
+
+2026-04-10 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  10200 KRW
+  Liabilities:Card-카드
+
+2026-04-10 * "빵집" "식빵"
+  Expenses:Cafe-카페  5100 KRW
+  Liabilities:Card-카드
+
+2026-04-10 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-11 * "동네마트" "장보기"
+  Expenses:Food-식비  44800 KRW
+  Liabilities:Card-카드
+
+2026-04-11 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4100 KRW
+  Liabilities:Card-카드
+
+2026-04-12 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4600 KRW
+  Liabilities:Card-카드
+
+2026-04-13 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-14 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-15 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  11500 KRW
+  Liabilities:Card-카드
+
+2026-04-15 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-16 * "동네마트" "장보기"
+  Expenses:Food-식비  42400 KRW
+  Liabilities:Card-카드
+
+2026-04-16 * "빵집" "식빵"
+  Expenses:Cafe-카페  4600 KRW
+  Liabilities:Card-카드
+
+2026-04-17 * "편의점" "도시락"
+  Expenses:Food-식비  7300 KRW
+  Liabilities:Card-카드
+
+2026-04-17 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-18 * "정육점" "삼겹살"
+  Expenses:Food-식비  27000 KRW
+  Liabilities:Card-카드
+
+2026-04-18 * "빵집" "식빵"
+  Expenses:Cafe-카페  5900 KRW
+  Liabilities:Card-카드
+
+2026-04-20 * "정육점" "삼겹살"
+  Expenses:Food-식비  29200 KRW
+  Liabilities:Card-카드
+
+2026-04-21 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5200 KRW
+  Liabilities:Card-카드
+
+2026-04-21 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-22 * "동네마트" "장보기"
+  Expenses:Food-식비  37400 KRW
+  Liabilities:Card-카드
+
+2026-04-23 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  3800 KRW
+  Liabilities:Card-카드
+
+2026-04-25 * "동네마트" "장보기"
+  Expenses:Food-식비  36700 KRW
+  Liabilities:Card-카드
+
+2026-04-26 * "편의점" "도시락"
+  Expenses:Food-식비  8500 KRW
+  Liabilities:Card-카드
+
+2026-04-27 * "편의점" "도시락"
+  Expenses:Food-식비  5400 KRW
+  Liabilities:Card-카드
+
+2026-04-27 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-28 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  20800 KRW
+  Liabilities:Card-카드
+
+2026-04-28 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-29 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-04-30 * "편의점" "도시락"
+  Expenses:Food-식비  4500 KRW
+  Liabilities:Card-카드
+
+2026-04-30 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-25 * "회사" "5월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-05-01 * "집주인" "5월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-05-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-05-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-05-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  592300 KRW
+  Assets:Bank-통장
+
+2026-05-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-05-18 * "지인" "결혼식 축의금"
+  Expenses:Gift-경조사  100000 KRW
+  Assets:Bank-통장
+
+2026-05-01 * "빵집" "식빵"
+  Expenses:Cafe-카페  5100 KRW
+  Liabilities:Card-카드
+
+2026-05-01 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-02 * "동네마트" "장보기"
+  Expenses:Food-식비  34600 KRW
+  Liabilities:Card-카드
+
+2026-05-03 * "서점" "책"
+  Expenses:Shopping-쇼핑  16000 KRW
+  Liabilities:Card-카드
+
+2026-05-04 * "동네마트" "장보기"
+  Expenses:Food-식비  60900 KRW
+  Liabilities:Card-카드
+
+2026-05-05 * "동네마트" "장보기"
+  Expenses:Food-식비  59900 KRW
+  Liabilities:Card-카드
+
+2026-05-05 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-05 * "서점" "책"
+  Expenses:Shopping-쇼핑  20000 KRW
+  Liabilities:Card-카드
+
+2026-05-06 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  18100 KRW
+  Liabilities:Card-카드
+
+2026-05-06 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-07 * "편의점" "도시락"
+  Expenses:Food-식비  7000 KRW
+  Liabilities:Card-카드
+
+2026-05-07 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-08 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-09 * "편의점" "도시락"
+  Expenses:Food-식비  5900 KRW
+  Liabilities:Card-카드
+
+2026-05-10 * "정육점" "삼겹살"
+  Expenses:Food-식비  26400 KRW
+  Liabilities:Card-카드
+
+2026-05-10 * "서점" "책"
+  Expenses:Shopping-쇼핑  17000 KRW
+  Liabilities:Card-카드
+
+2026-05-11 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-12 * "편의점" "도시락"
+  Expenses:Food-식비  7800 KRW
+  Liabilities:Card-카드
+
+2026-05-12 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-13 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5100 KRW
+  Liabilities:Card-카드
+
+2026-05-14 * "빵집" "식빵"
+  Expenses:Cafe-카페  5500 KRW
+  Liabilities:Card-카드
+
+2026-05-14 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-15 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  27600 KRW
+  Liabilities:Card-카드
+
+2026-05-15 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-16 * "동네마트" "장보기"
+  Expenses:Food-식비  25900 KRW
+  Liabilities:Card-카드
+
+2026-05-16 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4500 KRW
+  Liabilities:Card-카드
+
+2026-05-18 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  9500 KRW
+  Liabilities:Card-카드
+
+2026-05-19 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-20 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-21 * "편의점" "도시락"
+  Expenses:Food-식비  8000 KRW
+  Liabilities:Card-카드
+
+2026-05-21 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-21 * "서점" "책"
+  Expenses:Shopping-쇼핑  21000 KRW
+  Liabilities:Card-카드
+
+2026-05-22 * "동네마트" "장보기"
+  Expenses:Food-식비  57000 KRW
+  Liabilities:Card-카드
+
+2026-05-22 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-23 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  22300 KRW
+  Liabilities:Card-카드
+
+2026-05-26 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-27 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4300 KRW
+  Liabilities:Card-카드
+
+2026-05-27 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-28 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-29 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  9000 KRW
+  Liabilities:Card-카드
+
+2026-05-29 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-05-30 * "정육점" "삼겹살"
+  Expenses:Food-식비  16300 KRW
+  Liabilities:Card-카드
+
+2026-05-31 * "빵집" "식빵"
+  Expenses:Cafe-카페  6900 KRW
+  Liabilities:Card-카드
+
+2026-05-31 * "서점" "책"
+  Expenses:Shopping-쇼핑  15000 KRW
+  Liabilities:Card-카드
+
+2026-06-25 * "회사" "6월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-06-01 * "집주인" "6월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-06-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-06-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-06-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  579400 KRW
+  Assets:Bank-통장
+
+2026-06-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-06-21 * "중고거래" "안 쓰는 물건 판매"
+  Assets:Bank-통장  70000 KRW
+  Income:Side-부수입
+
+2026-06-01 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-02 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  30900 KRW
+  Liabilities:Card-카드
+
+2026-06-02 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-03 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  26200 KRW
+  Liabilities:Card-카드
+
+2026-06-03 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-04 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4000 KRW
+  Liabilities:Card-카드
+
+2026-06-04 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-05 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-06 * "정육점" "삼겹살"
+  Expenses:Food-식비  18200 KRW
+  Liabilities:Card-카드
+
+2026-06-08 * "정육점" "삼겹살"
+  Expenses:Food-식비  15500 KRW
+  Liabilities:Card-카드
+
+2026-06-08 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5100 KRW
+  Liabilities:Card-카드
+
+2026-06-08 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-09 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  10100 KRW
+  Liabilities:Card-카드
+
+2026-06-09 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-10 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-11 * "동네마트" "장보기"
+  Expenses:Food-식비  19700 KRW
+  Liabilities:Card-카드
+
+2026-06-12 * "정육점" "삼겹살"
+  Expenses:Food-식비  29700 KRW
+  Liabilities:Card-카드
+
+2026-06-12 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-16 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  26300 KRW
+  Liabilities:Card-카드
+
+2026-06-16 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4200 KRW
+  Liabilities:Card-카드
+
+2026-06-18 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  7000 KRW
+  Liabilities:Card-카드
+
+2026-06-18 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4200 KRW
+  Liabilities:Card-카드
+
+2026-06-18 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-19 * "정육점" "삼겹살"
+  Expenses:Food-식비  29000 KRW
+  Liabilities:Card-카드
+
+2026-06-19 * "빵집" "식빵"
+  Expenses:Cafe-카페  5700 KRW
+  Liabilities:Card-카드
+
+2026-06-20 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  6400 KRW
+  Liabilities:Card-카드
+
+2026-06-20 * "빵집" "식빵"
+  Expenses:Cafe-카페  3900 KRW
+  Liabilities:Card-카드
+
+2026-06-21 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4600 KRW
+  Liabilities:Card-카드
+
+2026-06-22 * "정육점" "삼겹살"
+  Expenses:Food-식비  26000 KRW
+  Liabilities:Card-카드
+
+2026-06-22 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-23 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  9000 KRW
+  Liabilities:Card-카드
+
+2026-06-25 * "편의점" "도시락"
+  Expenses:Food-식비  5900 KRW
+  Liabilities:Card-카드
+
+2026-06-25 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-26 * "동네마트" "장보기"
+  Expenses:Food-식비  23400 KRW
+  Liabilities:Card-카드
+
+2026-06-26 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-27 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5400 KRW
+  Liabilities:Card-카드
+
+2026-06-28 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4100 KRW
+  Liabilities:Card-카드
+
+2026-06-29 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  20800 KRW
+  Liabilities:Card-카드
+
+2026-06-29 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-06-30 * "정육점" "삼겹살"
+  Expenses:Food-식비  22500 KRW
+  Liabilities:Card-카드
+
+2026-07-25 * "회사" "7월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-07-01 * "집주인" "7월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-07-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-07-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-07-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  421900 KRW
+  Assets:Bank-통장
+
+2026-07-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-07-01 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  9600 KRW
+  Liabilities:Card-카드
+
+2026-07-01 * "빵집" "식빵"
+  Expenses:Cafe-카페  4500 KRW
+  Liabilities:Card-카드
+
+2026-07-01 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-03 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-04 * "빵집" "식빵"
+  Expenses:Cafe-카페  6000 KRW
+  Liabilities:Card-카드
+
+2026-07-05 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  25700 KRW
+  Liabilities:Card-카드
+
+2026-07-05 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4900 KRW
+  Liabilities:Card-카드
+
+2026-07-06 * "온라인쇼핑" "생활용품"
+  Expenses:Shopping-쇼핑  9000 KRW
+  Liabilities:Card-카드
+
+2026-07-07 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  7500 KRW
+  Liabilities:Card-카드
+
+2026-07-07 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-08 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-09 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-10 * "편의점" "도시락"
+  Expenses:Food-식비  7800 KRW
+  Liabilities:Card-카드
+
+2026-07-11 * "편의점" "도시락"
+  Expenses:Food-식비  7500 KRW
+  Liabilities:Card-카드
+
+2026-07-11 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5300 KRW
+  Liabilities:Card-카드
+
+2026-07-12 * "동네마트" "장보기"
+  Expenses:Food-식비  42400 KRW
+  Liabilities:Card-카드
+
+2026-07-12 * "빵집" "식빵"
+  Expenses:Cafe-카페  3900 KRW
+  Liabilities:Card-카드
+
+2026-07-13 * "동네마트" "장보기"
+  Expenses:Food-식비  23600 KRW
+  Liabilities:Card-카드
+
+2026-07-13 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-17 * "정육점" "삼겹살"
+  Expenses:Food-식비  22500 KRW
+  Liabilities:Card-카드
+
+2026-07-17 * "서점" "책"
+  Expenses:Shopping-쇼핑  12000 KRW
+  Liabilities:Card-카드
+
+2026-07-18 * "정육점" "삼겹살"
+  Expenses:Food-식비  16700 KRW
+  Liabilities:Card-카드
+
+2026-07-19 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  10200 KRW
+  Liabilities:Card-카드
+
+2026-07-19 * "서점" "책"
+  Expenses:Shopping-쇼핑  19000 KRW
+  Liabilities:Card-카드
+
+2026-07-20 * "편의점" "도시락"
+  Expenses:Food-식비  5500 KRW
+  Liabilities:Card-카드
+
+2026-07-20 * "빵집" "식빵"
+  Expenses:Cafe-카페  4100 KRW
+  Liabilities:Card-카드
+
+2026-07-20 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-21 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  11800 KRW
+  Liabilities:Card-카드
+
+2026-07-21 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-22 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  6300 KRW
+  Liabilities:Card-카드
+
+2026-07-22 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4600 KRW
+  Liabilities:Card-카드
+
+2026-07-22 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-27 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-28 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  8600 KRW
+  Liabilities:Card-카드
+
+2026-07-28 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-29 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  10300 KRW
+  Liabilities:Card-카드
+
+2026-07-29 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-30 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-07-31 * "동네마트" "장보기"
+  Expenses:Food-식비  22300 KRW
+  Liabilities:Card-카드
+
+2026-07-31 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-25 * "회사" "8월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-08-01 * "집주인" "8월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-08-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-08-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-08-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  365700 KRW
+  Assets:Bank-통장
+
+2026-08-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-08-12 * "동네의원" "감기 진료"
+  Expenses:Health-병원  24800 KRW
+  Liabilities:Card-카드
+
+2026-08-01 * "서점" "책"
+  Expenses:Shopping-쇼핑  13000 KRW
+  Liabilities:Card-카드
+
+2026-08-02 * "편의점" "도시락"
+  Expenses:Food-식비  4900 KRW
+  Liabilities:Card-카드
+
+2026-08-03 * "동네마트" "장보기"
+  Expenses:Food-식비  18800 KRW
+  Liabilities:Card-카드
+
+2026-08-04 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-05 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-06 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4500 KRW
+  Liabilities:Card-카드
+
+2026-08-06 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-07 * "빵집" "식빵"
+  Expenses:Cafe-카페  4700 KRW
+  Liabilities:Card-카드
+
+2026-08-07 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-08 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  6900 KRW
+  Liabilities:Card-카드
+
+2026-08-10 * "정육점" "삼겹살"
+  Expenses:Food-식비  28000 KRW
+  Liabilities:Card-카드
+
+2026-08-11 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5000 KRW
+  Liabilities:Card-카드
+
+2026-08-11 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-12 * "편의점" "도시락"
+  Expenses:Food-식비  6200 KRW
+  Liabilities:Card-카드
+
+2026-08-12 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  3900 KRW
+  Liabilities:Card-카드
+
+2026-08-12 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-13 * "동네마트" "장보기"
+  Expenses:Food-식비  57200 KRW
+  Liabilities:Card-카드
+
+2026-08-14 * "편의점" "도시락"
+  Expenses:Food-식비  7200 KRW
+  Liabilities:Card-카드
+
+2026-08-14 * "빵집" "식빵"
+  Expenses:Cafe-카페  6900 KRW
+  Liabilities:Card-카드
+
+2026-08-14 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-14 * "서점" "책"
+  Expenses:Shopping-쇼핑  15000 KRW
+  Liabilities:Card-카드
+
+2026-08-16 * "정육점" "삼겹살"
+  Expenses:Food-식비  18600 KRW
+  Liabilities:Card-카드
+
+2026-08-17 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  9300 KRW
+  Liabilities:Card-카드
+
+2026-08-17 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-18 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-19 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  30600 KRW
+  Liabilities:Card-카드
+
+2026-08-19 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-20 * "정육점" "삼겹살"
+  Expenses:Food-식비  20800 KRW
+  Liabilities:Card-카드
+
+2026-08-20 * "빵집" "식빵"
+  Expenses:Cafe-카페  3700 KRW
+  Liabilities:Card-카드
+
+2026-08-20 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-21 * "편의점" "도시락"
+  Expenses:Food-식비  4700 KRW
+  Liabilities:Card-카드
+
+2026-08-21 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-22 * "편의점" "도시락"
+  Expenses:Food-식비  8600 KRW
+  Liabilities:Card-카드
+
+2026-08-23 * "편의점" "도시락"
+  Expenses:Food-식비  7900 KRW
+  Liabilities:Card-카드
+
+2026-08-23 * "빵집" "식빵"
+  Expenses:Cafe-카페  4500 KRW
+  Liabilities:Card-카드
+
+2026-08-24 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-25 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-26 * "동네마트" "장보기"
+  Expenses:Food-식비  26800 KRW
+  Liabilities:Card-카드
+
+2026-08-26 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-08-27 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  17000 KRW
+  Liabilities:Card-카드
+
+2026-08-27 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4000 KRW
+  Liabilities:Card-카드
+
+2026-08-28 * "빵집" "식빵"
+  Expenses:Cafe-카페  3900 KRW
+  Liabilities:Card-카드
+
+2026-08-30 * "동네마트" "장보기"
+  Expenses:Food-식비  50700 KRW
+  Liabilities:Card-카드
+
+2026-08-31 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-25 * "회사" "9월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-09-01 * "집주인" "9월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-09-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-09-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-09-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  478000 KRW
+  Assets:Bank-통장
+
+2026-09-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-09-18 * "지인" "결혼식 축의금"
+  Expenses:Gift-경조사  100000 KRW
+  Assets:Bank-통장
+
+2026-09-21 * "중고거래" "안 쓰는 물건 판매"
+  Assets:Bank-통장  52000 KRW
+  Income:Side-부수입
+
+2026-09-01 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  21100 KRW
+  Liabilities:Card-카드
+
+2026-09-02 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-03 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  6600 KRW
+  Liabilities:Card-카드
+
+2026-09-03 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-04 * "편의점" "도시락"
+  Expenses:Food-식비  6700 KRW
+  Liabilities:Card-카드
+
+2026-09-04 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4000 KRW
+  Liabilities:Card-카드
+
+2026-09-04 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-05 * "동네마트" "장보기"
+  Expenses:Food-식비  35500 KRW
+  Liabilities:Card-카드
+
+2026-09-06 * "동네마트" "장보기"
+  Expenses:Food-식비  55200 KRW
+  Liabilities:Card-카드
+
+2026-09-08 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-09 * "동네마트" "장보기"
+  Expenses:Food-식비  28500 KRW
+  Liabilities:Card-카드
+
+2026-09-09 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-09 * "옷가게" "티셔츠"
+  Expenses:Shopping-쇼핑  35000 KRW
+  Liabilities:Card-카드
+
+2026-09-10 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  11500 KRW
+  Liabilities:Card-카드
+
+2026-09-11 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-12 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  26400 KRW
+  Liabilities:Card-카드
+
+2026-09-14 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  8100 KRW
+  Liabilities:Card-카드
+
+2026-09-14 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5100 KRW
+  Liabilities:Card-카드
+
+2026-09-14 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-15 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5000 KRW
+  Liabilities:Card-카드
+
+2026-09-16 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  8200 KRW
+  Liabilities:Card-카드
+
+2026-09-17 * "동네마트" "장보기"
+  Expenses:Food-식비  40100 KRW
+  Liabilities:Card-카드
+
+2026-09-17 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-18 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-19 * "편의점" "도시락"
+  Expenses:Food-식비  8100 KRW
+  Liabilities:Card-카드
+
+2026-09-19 * "빵집" "식빵"
+  Expenses:Cafe-카페  5100 KRW
+  Liabilities:Card-카드
+
+2026-09-20 * "빵집" "식빵"
+  Expenses:Cafe-카페  5400 KRW
+  Liabilities:Card-카드
+
+2026-09-21 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-22 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-22 * "옷가게" "티셔츠"
+  Expenses:Shopping-쇼핑  28000 KRW
+  Liabilities:Card-카드
+
+2026-09-23 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  7100 KRW
+  Liabilities:Card-카드
+
+2026-09-23 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-24 * "편의점" "도시락"
+  Expenses:Food-식비  5000 KRW
+  Liabilities:Card-카드
+
+2026-09-24 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-25 * "편의점" "도시락"
+  Expenses:Food-식비  5100 KRW
+  Liabilities:Card-카드
+
+2026-09-25 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-28 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  18100 KRW
+  Liabilities:Card-카드
+
+2026-09-28 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-29 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  17600 KRW
+  Liabilities:Card-카드
+
+2026-09-29 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-09-30 * "편의점" "도시락"
+  Expenses:Food-식비  6800 KRW
+  Liabilities:Card-카드
+
+2026-10-25 * "회사" "10월 월급"
+  Assets:Bank-통장  2800000 KRW
+  Income:Salary-월급
+
+2026-10-01 * "집주인" "10월 월세"
+  Expenses:Rent-월세  650000 KRW
+  Assets:Bank-통장
+
+2026-10-10 * "통신사" "휴대폰 요금"
+  Expenses:Phone-통신  55000 KRW
+  Assets:Bank-통장
+
+2026-10-05 * "영상구독" "월 구독료"
+  Expenses:Subscription-구독  13500 KRW
+  Liabilities:Card-카드
+
+2026-10-15 * "카드사" "지난달 카드값"
+  Liabilities:Card-카드  463200 KRW
+  Assets:Bank-통장
+
+2026-10-27 * "적금" "매달 적금"
+  Assets:Savings-적금  300000 KRW
+  Assets:Bank-통장
+
+2026-10-01 * "편의점" "도시락"
+  Expenses:Food-식비  6900 KRW
+  Liabilities:Card-카드
+
+2026-10-01 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-01 * "온라인쇼핑" "생활용품"
+  Expenses:Shopping-쇼핑  30000 KRW
+  Liabilities:Card-카드
+
+2026-10-02 * "동네마트" "장보기"
+  Expenses:Food-식비  41500 KRW
+  Liabilities:Card-카드
+
+2026-10-02 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-03 * "편의점" "도시락"
+  Expenses:Food-식비  7200 KRW
+  Liabilities:Card-카드
+
+2026-10-05 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-06 * "편의점" "도시락"
+  Expenses:Food-식비  7800 KRW
+  Liabilities:Card-카드
+
+2026-10-06 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4100 KRW
+  Liabilities:Card-카드
+
+2026-10-06 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-07 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-08 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  24100 KRW
+  Liabilities:Card-카드
+
+2026-10-08 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-09 * "정육점" "삼겹살"
+  Expenses:Food-식비  28100 KRW
+  Liabilities:Card-카드
+
+2026-10-09 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4300 KRW
+  Liabilities:Card-카드
+
+2026-10-09 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-10 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  25900 KRW
+  Liabilities:Card-카드
+
+2026-10-11 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  11600 KRW
+  Liabilities:Card-카드
+
+2026-10-12 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  7500 KRW
+  Liabilities:Card-카드
+
+2026-10-12 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4000 KRW
+  Liabilities:Card-카드
+
+2026-10-13 * "정육점" "삼겹살"
+  Expenses:Food-식비  16000 KRW
+  Liabilities:Card-카드
+
+2026-10-13 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-14 * "정육점" "삼겹살"
+  Expenses:Food-식비  19200 KRW
+  Liabilities:Card-카드
+
+2026-10-14 * "빵집" "식빵"
+  Expenses:Cafe-카페  5600 KRW
+  Liabilities:Card-카드
+
+2026-10-14 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-15 * "동네마트" "장보기"
+  Expenses:Food-식비  28400 KRW
+  Liabilities:Card-카드
+
+2026-10-16 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-18 * "빵집" "식빵"
+  Expenses:Cafe-카페  5600 KRW
+  Liabilities:Card-카드
+
+2026-10-19 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-20 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  4000 KRW
+  Liabilities:Card-카드
+
+2026-10-20 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-21 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  25700 KRW
+  Liabilities:Card-카드
+
+2026-10-21 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-22 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-23 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  26200 KRW
+  Liabilities:Card-카드
+
+2026-10-24 * "분식집" "점심 떡볶이"
+  Expenses:Food-식비  8800 KRW
+  Liabilities:Card-카드
+
+2026-10-25 * "동네마트" "장보기"
+  Expenses:Food-식비  37300 KRW
+  Liabilities:Card-카드
+
+2026-10-25 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  3800 KRW
+  Liabilities:Card-카드
+
+2026-10-26 * "동네마트" "장보기"
+  Expenses:Food-식비  27400 KRW
+  Liabilities:Card-카드
+
+2026-10-26 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-28 * "동네카페" "아메리카노"
+  Expenses:Cafe-카페  5000 KRW
+  Liabilities:Card-카드
+
+2026-10-28 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-29 * "동네마트" "장보기"
+  Expenses:Food-식비  30600 KRW
+  Liabilities:Card-카드
+
+2026-10-29 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-30 * "배달앱" "저녁 배달"
+  Expenses:Food-식비  20500 KRW
+  Liabilities:Card-카드
+
+2026-10-30 * "대중교통" "버스·지하철"
+  Expenses:Transport-교통  2900 KRW
+  Liabilities:Card-카드
+
+2026-10-31 * "빵집" "식빵"
+  Expenses:Cafe-카페  3800 KRW
+  Liabilities:Card-카드
+
+
+2026-11-01 balance Assets:Bank-통장 13826900 KRW
+
+2026-10-31 * "동네마트" "장보기"
+  Expenses:Food-식비  32000 KRW
+  Liabilities:Card-카드  -23000 KRW

@@ -1,0 +1,182 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 숫자는 실제 시연 결과(../results.json), 사진은 실제 결과 파일(../work). 사진은 scikit-image 예제(CC0·퍼블릭 도메인)
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+const KEYS = ['jpg90', 'jpg70', 'jpg50', 'jpg30', 'half', 'bright0.8', 'bright1.2', 'salt', 'cover', 'text', 'chat', 'rot_back', 'rot', 'crop_raw', 'crop', 'crop_recover'];
+const BASE = ['cat', 'cat_wm', 'cat_diff_x30', 'coffee', 'coffee_wm', 'astronaut', 'astronaut_wm', 'rocket', 'rocket_wm', 'logo48', 'astronaut_logo', 'logo_out_clean', 'logo_out_jpg50'];
+let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImgs('../work', BASE),
+  loadImgs('../work/attacks', ['cat', 'astronaut'].flatMap(n => KEYS.map(k => `${n}_${k}`)))]).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const M = 120, FW = W - 240, P = Object.fromEntries(R.photos.map(p => [p.name, p])), AT = n => Object.fromEntries(R.attacks[n].map(x => [x.key, x]));
+const CAT = AT('cat'), AST = AT('astronaut');
+function caption(c, lt) {
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
+  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
+  const s = cue[2], big = tw(s, 38, 700) > 1780, w = Math.min(tw(s, big ? 32 : 38, 700) + 80, 1880);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a); text(s, W / 2, 992, big ? 32 : 38, INK, 700, 'center', a);
+}
+function tag(c, lt) {
+  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+  box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)') {
+  term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.8); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\photo>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\photo> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(s, x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : kind === 'key' ? BLUE : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+}
+// 사진 카드: 사진 + 아래 설명 + ✔/✘
+function card(n, x, y, w, h, label, ok, lt, at, sub = '') {
+  const a = app(lt, at, .4); const [dx, dy, dw, dh] = pic(n, x, y, w, h, a);
+  text(label, x + w / 2, y + h + 34, 28, INK, 800, 'center', a); if (sub) text(sub, x + w / 2, y + h + 72, 24, SUB, 600, 'center', a);
+  if (ok !== null && ok !== undefined) mark(ok, dx + dw - 34, dy + 34, 30, app(lt, at + .6, .3));
+}
+const DRAW = {
+  title(lt) {
+    text('blind_watermark', W / 2, 230, 140, INK, 800, 'center', app(lt, .2), MONO);
+    text('사진에 눈에 안 보이는 글자 도장을 숨기는 무료 프로그램', W / 2, 370, 52, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 470, 56, GOLD, 800, 'center', app(lt, 4));
+    text('⭐ 약 1.5만 · MIT 무료 · pip blind-watermark 0.4.4 · 만든 사람: guofei9987 (중국, 2019년 시작)', W / 2, 550, 32, SUB, 600, 'center', app(lt, 4.5));
+    pic('cat', W / 2 - 300, 610, 600, 300, app(lt, 8));
+  },
+  what(lt) {
+    const L = [W / 2 - 820, 180, 760, 560], Rr = [W / 2 + 60, 180, 760, 560];
+    // 왼쪽: 보이는 워터마크
+    const a1 = app(lt, 7);
+    pic('cat', L[0], L[1], L[2], 500, a1);
+    if (a1 > 0) { ctx.save(); ctx.globalAlpha = a1 * .55; ctx.fillStyle = '#fff'; ctx.font = `900 90px ${F}`; ctx.textAlign = 'center'; ctx.fillText('ⓒ내사진', L[0] + L[2] / 2, L[1] + 280); ctx.restore(); }
+    text('보통 워터마크: 글씨가 보임', L[0] + L[2] / 2, 770, 36, SUB, 800, 'center', a1);
+    if (lt > 11) { const k = ease(prog(lt, 11, 13)); box(L[0] + 40, L[1] + 200, (L[2] - 80) * k, 150, 0, null, RED, a1, 6); text('✂ 잘라 내면 끝', L[0] + L[2] / 2, 815, 34, RED, 800, 'center', app(lt, 12.5)); }
+    const a2 = app(lt, 15);
+    pic('cat_wm', Rr[0], Rr[1], Rr[2], 500, a2);
+    text('숨은 도장: 사진 전체에 옅게 흩어 찍힘', Rr[0] + Rr[2] / 2, 770, 36, GOLD, 800, 'center', a2);
+    if (lt > 18) { const k = prog(lt, 18, 21); pic('cat_diff_x30', Rr[0] + Rr[2] - 260 * k - 10, Rr[1] + 10, 250 * k + 1, 170 * k + 1, k); }
+    if (lt > 24) { pill('꺼낼 때 필요한 것: 비밀번호 + 글자 길이 숫자 (자외선 등 역할)', W / 2, 888, 34, BLUE, app(lt, 24)); }
+    if (lt < 7.5) text('투명 잉크로 찍는 \'숨은 도장\'', W / 2, 450, 80, GOLD, 900, 'center', app(lt, .3) * (1 - prog(lt, 6.5, 7.2)));
+  },
+  install(lt) {
+    termLines(M, 150, FW, 420, [['note', ':: 1) 파이썬 설치 시 Add python.exe to PATH 체크', .3], ['$', 'pip install blind-watermark', 8, 1.5],
+      ['', 'Successfully installed blind-watermark-0.4.4 opencv-python numpy PyWavelets ...', 11], ['note', `:: 약 ${Math.round(R.install.sec)}초 · ${R.install.mb}MB (새 폴더 기준, 내려받기 포함)`, 16]], lt, 30);
+    if (lt > 23) { stat(M, 640, FW / 3 - 30, 220, '버전 (PyPI)', R.version, app(lt, 23), GOLD); stat(M + FW / 3, 640, FW / 3 - 30, 220, '라이선스', 'MIT 무료', app(lt, 23.5), GREEN); stat(M + FW * 2 / 3, 640, FW / 3 - 30, 220, '⭐ GitHub', '약 1.5만', app(lt, 24), BLUE); }
+  },
+  embed(lt) {
+    termLines(M, 130, FW, 300, [['$', 'blind_watermark --embed --pwd 1234 cat.png "ⓒ내사진 2026" stamp.png', .5, 3], ['', 'Embed succeed! to file  stamp.png', 15], ['key', 'Put down watermark size: 136', 23]], lt, 28);
+    pic('cat', M + 100, 480, 560, 380, app(lt, 4)); text('cat.png (451×300)', M + 380, 900, 28, SUB, 700, 'center', app(lt, 4));
+    text('→', W / 2, 670, 90, GOLD, 900, 'center', app(lt, 15));
+    pic('cat_wm', W - M - 660, 480, 560, 380, app(lt, 15)); text(`stamp.png · ${P.cat.embed}초`, W - M - 380, 900, 28, GOLD, 800, 'center', app(lt, 15));
+    if (lt > 8 && lt < 15) pill('넣은 글자: ⓒ내사진 2026 (한글 OK)', W / 2, 670, 40, GOLD, app(lt, 8) * (1 - prog(lt, 14.5, 15)));
+    if (lt > 25) { const k = (Math.sin(lt * 5) + 1) / 2; const bx = M + 30 + tw('Put down watermark size: ', 28, 600, MONO); box(bx - 10, 130 + 90 + 2 * 28 * 1.8 - 30, tw('136', 28, 600, MONO) + 20, 60, 8, null, GOLD, .5 + .5 * k, 4); }
+  },
+  invisible(lt) {
+    const show = lt < 16 ? 2 : 3, cw = show === 2 ? 780 : 540, gap = 40, x0 = (W - (cw * show + gap * (show - 1))) / 2;
+    ['cat', 'cat_wm', 'cat_diff_x30'].slice(0, show).forEach((n, i) => {
+      const x = x0 + i * (cw + gap); pic(n, x, 130, cw, show === 2 ? 520 : 360, app(lt, i === 2 ? 16 : .2));
+      text(['원본', '도장 넣은 사진', '차이 × 30'][i], x + cw / 2, show === 2 ? 690 : 530, 34, i === 2 ? GOLD : SUB, 800, 'center', app(lt, i === 2 ? 16 : .2));
+    });
+    if (lt > 8 && lt < 25) { const c = (P.cat.mean_diff * ease(prog(lt, 8, 10))).toFixed(2); pill(`색 값 차이: 평균 ${c} · 가장 큰 곳 ${P.cat.max_diff} (0~255 중)`, W / 2, show === 2 ? 790 : 620, 36, GREEN, app(lt, 8)); }
+    if (lt > 25) {
+      const rows = R.photos, y0 = 600; text('사진        크기        평균 차이     PSNR        넣기', W / 2, y0, 28, SUB, 700, 'center', app(lt, 25), MONO);
+      rows.forEach((p, i) => text(`${p.name.padEnd(10)} ${(p.w + '×' + p.h).padEnd(10)} ${String(p.mean_diff).padEnd(12)} ${(p.psnr + 'dB').padEnd(10)} ${p.embed}초`, W / 2, y0 + 50 + i * 46, 28, INK, 600, 'center', app(lt, 25.5 + i * .4), MONO));
+      text('PSNR(화질 지표): 숫자가 클수록 원본과 비슷 · 보통 35dB 넘으면 눈으로 구별이 어렵다고 봅니다', W / 2, 900, 26, SUB, 600, 'center', app(lt, 28));
+    }
+  },
+  extract(lt) {
+    termLines(M, 130, FW, 330, [['$', 'blind_watermark --extract --pwd 1234 --wm_shape 136 stamp.png', .5, 3], ['ok', 'ⓒ내사진 2026', 8], ['$', 'blind_watermark --extract --pwd 1234 --wm_shape 136 cat.png', 16, 2], ['err', R.no_wm.got.slice(0, 16) + '  ← 원본에는 도장이 없음', 19]], lt, 28);
+    if (lt > 8 && lt < 16) text('ⓒ내사진 2026', W / 2, 640, 130, GOLD, 900, 'center', app(lt, 8.3) * (1 - prog(lt, 15.5, 16)));
+    if (lt > 8 && lt < 16) pill(`꺼내는 데 ${P.cat.extract}초`, W / 2, 790, 36, GREEN, app(lt, 9));
+    if (lt > 23) R.photos.forEach((p, i) => { const x = M + i * (FW / 4); card(p.name + '_wm', x + 20, 520, FW / 4 - 40, 280, p.name, p.ok, lt, 23 + i * .4, `꺼내기 ${p.extract}초`); });
+  },
+  jpg(lt) {
+    const ks = ['jpg90', 'jpg70', 'jpg50', 'jpg30'], at = [8, 11, 16, 24];
+    text(`도장 넣은 PNG ${P.cat.kb_wm}KB → JPG로 다시 저장`, W / 2, 140, 40, INK, 800, 'center', app(lt, .3));
+    ks.forEach((k, i) => { const x = M + i * (FW / 4); card('cat_' + k, x + 20, 220, FW / 4 - 40, 280, `화질 ${k.slice(3)}`, CAT[k].ok, lt, at[i], `${CAT[k].kb}KB · 맞힌 비율 ${CAT[k].bit_acc}%`); });
+    ks.forEach((k, i) => { const x = M + i * (FW / 4); card('astronaut_' + k, x + 20, 600, FW / 4 - 40, 200, '', AST[k].ok, lt, at[i] + .5, `우주인 ${AST[k].kb}KB`); });
+  },
+  edit(lt) {
+    const L = [['half', '절반으로 줄임→늘림', .3], ['cover', '16% 가림', 8], ['text', '글씨 덧씀', 16], ['salt', '점 잡음 1%', 19], ['chat', '메신저 흉내', 24]];
+    L.forEach(([k, l, at], i) => { const x = M + i * (FW / 5); card('cat_' + k, x + 15, 150, FW / 5 - 30, 260, l, CAT[k].ok, lt, at, '고양이');
+      card('astronaut_' + k, x + 15, 510, FW / 5 - 30, 240, '', AST[k].ok, lt, at + .3, '우주인'); });
+    if (lt > 32) pill('같은 방법이라도 사진마다 결과가 다릅니다', W / 2, 900, 36, GOLD, app(lt, 32));
+  },
+  fail(lt) {
+    const L = [['bright0.8', '어둡게 80%', .3], ['bright1.2', '밝게 120%', 8], ['rot', '10도 돌린 채로', 16], ['crop_raw', '자른 채로', 25]];
+    L.forEach(([k, l, at], i) => { const x = M + i * (FW / 4); card('cat_' + (k === 'crop_raw' ? 'crop' : k), x + 20, 150, FW / 4 - 40, 280, l, CAT[k].ok, lt, at, `고양이 맞힌 비율 ${CAT[k].bit_acc}%`);
+      card('astronaut_' + (k === 'crop_raw' ? 'crop' : k), x + 20, 560, FW / 4 - 40, 240, '', AST[k].ok, lt, at + .3, `우주인 ${AST[k].bit_acc}%`); });
+  },
+  recover(lt) {
+    card('cat_rot', M + 40, 160, 480, 320, '10도 돌린 사진', false, lt, .3); text('→', M + 600, 320, 80, GOLD, 900, 'center', app(lt, 3));
+    card('cat_rot_back', M + 680, 160, 480, 320, '-10도 돌려 놓음', CAT.rot_back.ok, lt, 3);
+    if (lt > 9) { card('cat_crop', M + 40, 590, 360, 240, '잘린 사진', null, lt, 9); text('→', M + 470, 710, 80, GOLD, 900, 'center', app(lt, 12));
+      card('cat_crop_recover', M + 540, 590, 420, 280, '자리 찾아 복원', CAT.crop_recover.ok, lt, 12, ''); }
+    if (lt > 18) { const f = CAT.crop_recover.found; box(1280, 560, 520, 300, 16, '#161b22', '#30363d', app(lt, 18), 2);
+      text('찾은 자리', 1540, 610, 30, SUB, 700, 'center', app(lt, 18)); text(`(${f[0]},${f[1]}) ~ (${f[2]},${f[3]})`, 1540, 670, 36, GOLD, 800, 'center', app(lt, 18.5), MONO);
+      text('실제로 자른 자리와 같음 ✔', 1540, 740, 30, GREEN, 800, 'center', app(lt, 20));
+      text('도장 넣은 사진이 있어야 비교 가능', 1540, 810, 26, RED, 700, 'center', app(lt, 26)); }
+  },
+  table(lt) {
+    const rows = R.attacks.cat.map((c, i) => [c.label, c.ok, R.attacks.astronaut[i].ok]);
+    text('시연 내용', 760, 140, 28, SUB, 800, 'right', app(lt, .2)); text('고양이', 1050, 140, 28, SUB, 800, 'center', app(lt, .2)); text('우주인', 1250, 140, 28, SUB, 800, 'center', app(lt, .2));
+    rows.forEach(([l, a1, a2], i) => { const y = 190 + i * 49, a = app(lt, .3 + i * .25); const both = !a1 && !a2;
+      text(l, 760, y, 25, both && lt > 10 ? RED : INK, 700, 'right', a); mark(a1, 1050, y, 19, a); mark(a2, 1250, y, 19, a); });
+    const pc = rows.filter(r => r[1]).length, pa = rows.filter(r => r[2]).length;
+    stat(1400, 300, 400, 220, '15가지 중 성공', `${pc} · ${pa}`, app(lt, 5), GREEN, 30, 70);
+    text('(고양이 · 우주인)', 1600, 560, 26, SUB, 600, 'center', app(lt, 5));
+  },
+  password(lt) {
+    termLines(M, 130, FW, 470, [['$', 'blind_watermark --embed --pwd 1234 cat.png "ⓒ내사진 2026" stamp.png', .3, 2.5],
+      ...R.cli_pwd.flatMap((c, i) => [['$', `blind_watermark --extract --pwd ${c.pwd} --wm_shape 136 stamp.png`, 4 + i * 1.6, 1], ['ok', c.got + (c.pwd !== '1234' ? '   ← 다른 번호인데도 나옴' : ''), 5.2 + i * 1.6]])], lt, 26);
+    if (lt > 16) { box(M, 640, FW / 2 - 20, 250, 16, 'rgba(255,123,114,.08)', RED, app(lt, 16), 2);
+      text('명령어 --pwd', M + FW / 4 - 10, 690, 34, RED, 900, 'center', app(lt, 16)); text('사진 섞는 번호만 바뀜 → 잠금 아님', M + FW / 4 - 10, 760, 30, INK, 700, 'center', app(lt, 17)); text('아무 번호로도 꺼내짐', M + FW / 4 - 10, 820, 28, SUB, 600, 'center', app(lt, 18)); }
+    if (lt > 26) { const w = R.wrong_pw[0]; box(M + FW / 2 + 20, 640, FW / 2 - 20, 250, 16, 'rgba(126,231,135,.08)', GREEN, app(lt, 26), 2);
+      text('파이썬 password_wm (글자 비밀번호)', M + FW * 3 / 4 + 10, 690, 32, GREEN, 900, 'center', app(lt, 26)); text('틀린 번호 → 깨진 글자', M + FW * 3 / 4 + 10, 760, 30, INK, 700, 'center', app(lt, 27));
+      text(`맞힌 비율 ${w.bit_acc}% (동전 던지기 수준)`, M + FW * 3 / 4 + 10, 820, 28, SUB, 600, 'center', app(lt, 28)); }
+  },
+  length(lt) {
+    termLines(M, 130, FW, 330, [['$', 'blind_watermark --extract --pwd 1234 --wm_shape 128 stamp.png', .3, 2], ['err', R.wrong_len[0].got.slice(0, 18), 2.8], ['$', 'blind_watermark --extract --pwd 1234 --wm_shape 144 stamp.png', 3.5, 2], ['err', R.wrong_len[1].got.slice(0, 18), 6]], lt, 28);
+    if (lt > 8 && lt < 16) pill('숫자 136 = 사진과 함께 꼭 적어 둘 것', W / 2, 560, 40, GOLD, app(lt, 8));
+    if (lt > 16) { const cap = R.capacity; cap.forEach((c, i) => { const x = M + i * (FW / 4); const ok = !c.error;
+      stat(x + 20, 520, FW / 4 - 40, 220, `한글 ${c.chars}자`, ok ? `${c.bits}비트` : '넘침', app(lt, 16 + i * 1.2 + (i === 3 ? 5 : 0)), ok ? GREEN : RED, 32, 56); });
+      text('고양이 사진(451×300) 최대 약 2,072비트 = 한글 약 86자', W / 2, 800, 30, SUB, 700, 'center', app(lt, 25)); }
+  },
+  logo(lt) {
+    card('logo48', M + 40, 200, 300, 300, '숨길 그림 (48×48)', null, lt, .3);
+    text('→', M + 430, 350, 80, GOLD, 900, 'center', app(lt, 3)); card('astronaut_logo', M + 520, 160, 420, 420, '우주인 사진에 넣음', null, lt, 3);
+    text('→', M + 1020, 350, 80, GOLD, 900, 'center', app(lt, 8));
+    card('logo_out_clean', M + 1110, 170, 260, 260, `꺼낸 그림 ${R.logo.clean}%`, null, lt, 8);
+    if (lt > 16) card('logo_out_jpg50', M + 1410, 170, 260, 260, `JPG 50 뒤 ${R.logo.jpg50}%`, null, lt, 16);
+    if (lt > 24) pill('그림 도장은 파이썬 몇 줄 (설명란 예제)', W / 2, 800, 36, BLUE, app(lt, 24));
+  },
+  big(lt) {
+    pic('coffee', W / 2 - 500, 150, 1000, 560, app(lt, .3)); pill('4032 × 3024 (휴대폰 사진 크기)', W / 2, 180 + 30, 32, BLUE, app(lt, 1));
+    if (lt > 8) { stat(M + 150, 740, 500, 170, '넣기', `${R.big.embed}초`, app(lt, 8), GOLD, 30, 60); stat(W / 2 - 250, 740, 500, 170, '꺼내기', `${R.big.extract}초`, app(lt, 9), GREEN, 30, 60); stat(W - M - 650, 740, 500, 170, '작은 사진 넣기', `${P.cat.embed}초`, app(lt, 15), SUB, 30, 60); }
+  },
+  cons(lt) {
+    const L = ['① 꺼낼 때 글자 길이 숫자(136)를 알아야 함', '② 명령어 --pwd 는 잠금 역할을 하지 않음', '③ JPG 화질 30·밝기 변경·돌림·자름에는 그대로는 약함', '④ 창 화면이 없고 명령어로만 사용', `⑤ 마지막 PyPI 버전 ${R.version} (2023년 4월)`];
+    L.forEach((s, i) => { const at = [0.3, 8, 15, 22, 29][i]; box(M + 200, 150 + i * 150, FW - 400, 120, 16, '#161b22', i === lt ? GOLD : '#30363d', app(lt, at), 2); text(s, W / 2, 210 + i * 150, 38, INK, 800, 'center', app(lt, at)); });
+  },
+  end(lt) {
+    text('blind_watermark', W / 2, 260, 120, INK, 900, 'center', app(lt, .2), MONO);
+    text('사진에 눈에 안 보이는 글자 도장을 숨기는 무료 프로그램', W / 2, 380, 48, SUB, 700, 'center', app(lt, .4));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 475, 56, GOLD, 900, 'center', app(lt, .6));
+    pill('pip install blind-watermark · 명령은 설명란에', W / 2, 590, 36, GREEN, app(lt, .8));
+    text('정보 제공용 · 2026-11-07 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 700, 26, SUB, 500, 'center', app(lt, 1));
+    text('도용 방지·법적 증거를 보장하지 않음 · 원본 사진은 따로 보관 · 남의 사진에 쓰지 않기', W / 2, 740, 26, SUB, 500, 'center', app(lt, 1));
+  }
+};
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
+  ctx.save(); ctx.globalAlpha = prog(lt, 0, .35) * (c.id === 'end' ? 1 : 1 - prog(lt, c.dur - .3, c.dur)); DRAW[c.id](lt); ctx.restore();
+  tag(c, lt); caption(c, lt);
+}
+</script></body></html>

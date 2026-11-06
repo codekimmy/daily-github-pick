@@ -1,0 +1,445 @@
+{
+ "text": "ⓒ내사진 2026",
+ "bytes": 17,
+ "pw": [
+  1234,
+  5678
+ ],
+ "version": "0.4.4",
+ "photos": [
+  {
+   "name": "cat",
+   "w": 451,
+   "h": 300,
+   "bits": 136,
+   "embed": 0.18,
+   "extract": 0.12,
+   "got": "ⓒ내사진 2026",
+   "ok": true,
+   "bit_acc": 100.0,
+   "psnr": 38.1,
+   "max_diff": 17,
+   "mean_diff": 2.47,
+   "same_px_pct": 2.3,
+   "le3_pct": 39.3,
+   "kb_src": 235,
+   "kb_wm": 243
+  },
+  {
+   "name": "coffee",
+   "w": 600,
+   "h": 400,
+   "bits": 136,
+   "embed": 0.32,
+   "extract": 0.21,
+   "got": "ⓒ내사진 2026",
+   "ok": true,
+   "bit_acc": 100.0,
+   "psnr": 38.2,
+   "max_diff": 19,
+   "mean_diff": 2.47,
+   "same_px_pct": 0.3,
+   "le3_pct": 38.5,
+   "kb_src": 449,
+   "kb_wm": 458
+  },
+  {
+   "name": "astronaut",
+   "w": 512,
+   "h": 512,
+   "bits": 136,
+   "embed": 0.33,
+   "extract": 0.22,
+   "got": "ⓒ내사진 2026",
+   "ok": true,
+   "bit_acc": 100.0,
+   "psnr": 37.7,
+   "max_diff": 28,
+   "mean_diff": 2.44,
+   "same_px_pct": 2.7,
+   "le3_pct": 42.8,
+   "kb_src": 454,
+   "kb_wm": 492
+  },
+  {
+   "name": "rocket",
+   "w": 640,
+   "h": 427,
+   "bits": 136,
+   "embed": 0.32,
+   "extract": 0.25,
+   "got": "ⓒ내사진 2026",
+   "ok": true,
+   "bit_acc": 100.0,
+   "psnr": 37.2,
+   "max_diff": 20,
+   "mean_diff": 2.62,
+   "same_px_pct": 1.0,
+   "le3_pct": 37.2,
+   "kb_src": 359,
+   "kb_wm": 431
+  }
+ ],
+ "attacks": {
+  "cat": [
+   {
+    "key": "jpg90",
+    "label": "JPG로 다시 저장 (화질 90)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "kb": 35
+   },
+   {
+    "key": "jpg70",
+    "label": "JPG로 다시 저장 (화질 70)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "kb": 19
+   },
+   {
+    "key": "jpg50",
+    "label": "JPG로 다시 저장 (화질 50)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "kb": 14
+   },
+   {
+    "key": "jpg30",
+    "label": "JPG로 다시 저장 (화질 30)",
+    "got": "�\u0012�\u0002�l��꧁ 202&",
+    "ok": false,
+    "bit_acc": 51.5,
+    "kb": 10
+   },
+   {
+    "key": "half",
+    "label": "절반 크기로 줄임 → 원래 크기로 되돌려 꺼냄",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "bright0.8",
+    "label": "밝기 80%",
+    "got": "Ⲓ�\u0002��¬진 2026",
+    "ok": false,
+    "bit_acc": 58.8
+   },
+   {
+    "key": "bright1.2",
+    "label": "밝기 120%",
+    "got": "⒀�\u0006����臄 :02&",
+    "ok": false,
+    "bit_acc": 55.9
+   },
+   {
+    "key": "salt",
+    "label": "점 잡음 1% (소금·후추)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "cover",
+    "label": "사진 일부(16%)를 검은 상자로 가림",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "text",
+    "label": "사진 위에 큰 글씨를 씀",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "chat",
+    "label": "메신저 전송 흉내 (75%로 줄이고 JPG 85)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "kb": 17
+   },
+   {
+    "key": "rot_back",
+    "label": "10도 돌림 → 다시 -10도 돌려 꺼냄",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "rot",
+    "label": "10도 돌린 채로 그대로 꺼냄",
+    "got": "�\u0006�3��\u0010c��\u0004�ܗy\u0007\u0015",
+    "ok": false,
+    "bit_acc": 50.7
+   },
+   {
+    "key": "crop_raw",
+    "label": "가장자리를 잘라 냄 (그대로 꺼냄)",
+    "got": "*\u0012\u0013���-%��\u0013�AZ��",
+    "ok": false,
+    "bit_acc": 50.0
+   },
+   {
+    "key": "crop_recover",
+    "label": "가장자리를 잘라 냄 → 원래 자리 찾아 복원 후 꺼냄",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "found": [
+     45,
+     30,
+     360,
+     255
+    ],
+    "true": [
+     45,
+     30,
+     360,
+     255
+    ]
+   }
+  ],
+  "astronaut": [
+   {
+    "key": "jpg90",
+    "label": "JPG로 다시 저장 (화질 90)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "kb": 70
+   },
+   {
+    "key": "jpg70",
+    "label": "JPG로 다시 저장 (화질 70)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "kb": 37
+   },
+   {
+    "key": "jpg50",
+    "label": "JPG로 다시 저장 (화질 50)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "kb": 28
+   },
+   {
+    "key": "jpg30",
+    "label": "JPG로 다시 저장 (화질 30)",
+    "got": "�ҫ��사진 p42�",
+    "ok": false,
+    "bit_acc": 50.7,
+    "kb": 21
+   },
+   {
+    "key": "half",
+    "label": "절반 크기로 줄임 → 원래 크기로 되돌려 꺼냄",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "bright0.8",
+    "label": "밝기 80%",
+    "got": "ⓒ내���진 2026",
+    "ok": false,
+    "bit_acc": 70.6
+   },
+   {
+    "key": "bright1.2",
+    "label": "밝기 120%",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "salt",
+    "label": "점 잡음 1% (소금·후추)",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "cover",
+    "label": "사진 일부(16%)를 검은 상자로 가림",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "text",
+    "label": "사진 위에 큰 글씨를 씀",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "chat",
+    "label": "메신저 전송 흉내 (75%로 줄이고 JPG 85)",
+    "got": "�\u0013�내사진 2026",
+    "ok": false,
+    "bit_acc": 51.5,
+    "kb": 34
+   },
+   {
+    "key": "rot_back",
+    "label": "10도 돌림 → 다시 -10도 돌려 꺼냄",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0
+   },
+   {
+    "key": "rot",
+    "label": "10도 돌린 채로 그대로 꺼냄",
+    "got": "�pd����d�\u00002�:I�~6",
+    "ok": false,
+    "bit_acc": 43.4
+   },
+   {
+    "key": "crop_raw",
+    "label": "가장자리를 잘라 냄 (그대로 꺼냄)",
+    "got": "G�Y�Й�l�\u0017����x\u000e�",
+    "ok": false,
+    "bit_acc": 41.2
+   },
+   {
+    "key": "crop_recover",
+    "label": "가장자리를 잘라 냄 → 원래 자리 찾아 복원 후 꺼냄",
+    "got": "ⓒ내사진 2026",
+    "ok": true,
+    "bit_acc": 100.0,
+    "found": [
+     51,
+     51,
+     409,
+     435
+    ],
+    "true": [
+     51,
+     51,
+     409,
+     435
+    ]
+   }
+  ]
+ },
+ "wrong_pw": [
+  {
+   "pw": [
+    1234,
+    1111
+   ],
+   "got": "�\u00047�\u0000�>� ��? Ȉ\f�",
+   "ok": false,
+   "bit_acc": 46.3
+  },
+  {
+   "pw": [
+    1111,
+    5678
+   ],
+   "got": "ⓒ내사진 2026",
+   "ok": true,
+   "bit_acc": 100.0
+  },
+  {
+   "pw": [
+    1,
+    1
+   ],
+   "got": "�r�Hp�A�ð_&Kf�J\u0018",
+   "ok": false,
+   "bit_acc": 50.0
+  }
+ ],
+ "no_wm": {
+  "got": "YZ�͋��%���n��",
+  "ok": false,
+  "bit_acc": 41.2
+ },
+ "wrong_len": [
+  {
+   "n": 128,
+   "got": "��{���=�v����z�",
+   "ok": false,
+   "bit_acc": 51.5
+  },
+  {
+   "n": 144,
+   "got": "����ߣ-��\u001d��>o����",
+   "ok": false,
+   "bit_acc": 55.9
+  }
+ ],
+ "capacity": [
+  {
+   "chars": 10,
+   "bits": 240,
+   "ok": true,
+   "bit_acc": 100.0
+  },
+  {
+   "chars": 30,
+   "bits": 720,
+   "ok": true,
+   "bit_acc": 100.0
+  },
+  {
+   "chars": 60,
+   "bits": 1440,
+   "ok": true,
+   "bit_acc": 100.0
+  },
+  {
+   "chars": 100,
+   "error": "最多可嵌入2.072kb信息，多于水印的2.4kb信息，溢出"
+  }
+ ],
+ "big": {
+  "embed": 16.9,
+  "extract": 11.46,
+  "got": "ⓒ내사진 2026",
+  "ok": true,
+  "bit_acc": 100.0
+ },
+ "cli": {
+  "embed_out": [
+   "Put down watermark size: 136"
+  ],
+  "embed_sec": 0.52,
+  "extract_out": [
+   "ⓒ내사진 2026"
+  ],
+  "extract_sec": 0.42
+ },
+ "logo": {
+  "clean": 99.9,
+  "jpg50": 85.1
+ },
+ "cli_pwd": [
+  {
+   "pwd": "1234",
+   "got": "ⓒ내사진 2026"
+  },
+  {
+   "pwd": "9999",
+   "got": "ⓒ내사진 2026"
+  },
+  {
+   "pwd": "1",
+   "got": "ⓒ내사진 2026"
+  }
+ ],
+ "install": {
+  "note": "새 폴더에 pip install --no-cache-dir --target 로 3번: 3.45초(이상하게 빠름)·33.28초·30.36초, 받은 크기 253MB (OpenCV·numpy·PyWavelets 포함)",
+  "sec": 30.4,
+  "mb": 253
+ }
+}

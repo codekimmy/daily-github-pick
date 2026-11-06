@@ -1,0 +1,108 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 30초 과정 애니메이션. 숫자는 실제 시연 결과(../results.json), 사진은 실제 결과 파일(../work). 사진은 scikit-image 예제(CC0)
+const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const T = { p0: 2.5, x0: 10, a0: 15, k0: 23, e0: 27, end: 30 }, TOTAL = T.end * FPS;
+const ATK = ['jpg90', 'jpg50', 'jpg30', 'half', 'chat', 'cover', 'text', 'bright0.8', 'rot', 'crop_recover'];
+const ALABEL = { jpg90: 'JPG 화질 90', jpg50: 'JPG 화질 50', jpg30: 'JPG 화질 30', half: '절반으로 줄임', chat: '메신저 전송 흉내', cover: '일부 가림', text: '글씨 덧씀', 'bright0.8': '어둡게 80%', rot: '10도 돌림', crop_recover: '잘라 냄→복원' };
+let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`),
+  loadImgs('../work', ['cat', 'cat_wm', 'cat_diff_x30']), loadImgs('../work/attacks', ATK.map(k => 'cat_' + (k === 'crop_recover' ? 'crop' : k)))]).then(() => READY = true);
+const fade = (t, a, b) => prog(t, a, a + .4) * (1 - prog(t, b - .4, b));
+const M = VERT ? 60 : 100, FW = W - 2 * M, P = R.photos[0], AT = Object.fromEntries(R.attacks.cat.map(x => [x.key, x]));
+
+function sceneIntro(t) {
+  const a = fade(t, 0, T.p0); if (a <= 0) return;
+  pic('cat', VERT ? M : W / 2 - 420, VERT ? 260 : 120, VERT ? FW : 840, VERT ? 640 : 560, a * prog(t, 0, .4));
+  text('이 사진에 글자가', W / 2, VERT ? 1060 : 790, VERT ? 80 : 76, INK, 900, 'center', a);
+  text('숨어 있다면?', W / 2, VERT ? 1180 : 890, VERT ? 104 : 96, GOLD, 900, 'center', a * prog(t, .5, .9));
+  text('blind_watermark', W / 2, VERT ? 1320 : 990, 44, SUB, 800, 'center', a * prog(t, 1.1, 1.5), MONO);
+}
+function sceneEmbed(t) {
+  const a = fade(t, T.p0, T.x0); if (a <= 0) return; const lt = t - T.p0;
+  text('① 사진에 안 보이는 글자 도장을 넣습니다', W / 2, VERT ? 170 : 80, VERT ? 46 : 50, INK, 900, 'center', a);
+  const tx = M, ty = VERT ? 240 : 130, th = VERT ? 170 : 120, fs = VERT ? 24 : 28;
+  term(tx, ty, FW, th, '명령 프롬프트 (cmd)', a);
+  if (VERT) { text(typed('blind_watermark --embed --pwd 1234', lt, .2, 1), tx + 24, ty + 80, 28, INK, 600, 'left', a, MONO);
+    text(typed('  cat.png "ⓒ내사진 2026" stamp.png', lt, 1, 1.8), tx + 24, ty + 130, 28, INK, 600, 'left', a * prog(lt, .95, 1), MONO); }
+  else text(typed("C:\\photo> blind_watermark --embed --pwd 1234 cat.png \"ⓒ내사진 2026\" stamp.png", lt, .2, 1.8), tx + 24, ty + 85, fs, INK, 600, 'left', a, MONO);
+  // 원본 / 도장 넣은 사진 / 차이(30배)
+  const showDiff = lt > 4.6, k = prog(lt, 4.6, 5.3);
+  const cols = showDiff ? 3 : 2, gap = 30, cw = VERT ? FW : (FW - gap * (cols - 1)) / cols;
+  const names = ['cat', 'cat_wm', 'cat_diff_x30'], labels = ['원본', `도장 넣은 사진 (${P.embed}초)`, '차이를 30배로 키워 보면'];
+  for (let i = 0; i < cols; i++) {
+    const aa = a * (i < 2 ? prog(lt, 1.9 + i * .5, 2.3 + i * .5) : k);
+    let x, y, w, h;
+    if (VERT) { const ph = 340; x = M + (i === 2 ? 0 : 0); y = 450 + i * (ph + 90); w = FW; h = ph; }
+    else { x = M + i * (cw + gap); y = 330; w = cw; h = 470; }
+    pic(names[i], x, y, w, h, aa);
+    text(labels[i], x + w / 2, y + h + 36, VERT ? 32 : 32, i === 2 ? GOLD : SUB, 800, 'center', aa);
+  }
+  const c = Math.round(P.mean_diff * 100 * ease(prog(lt, 3, 4.4))) / 100;
+  if (!VERT || !showDiff) pill(`두 사진의 평균 차이: ${c.toFixed(2)} (0~255 중) → 눈으로는 구별 안 됨`, W / 2, VERT ? 1480 : 920, VERT ? 32 : 36, GREEN, a * prog(lt, 3, 3.3));
+  if (VERT && showDiff) pill(`평균 차이 ${P.mean_diff} / 255`, W / 2, 1790, 36, GREEN, a * k);
+}
+function sceneExtract(t) {
+  const a = fade(t, T.x0, T.a0); if (a <= 0) return; const lt = t - T.x0;
+  text('② 비밀 글자를 다시 꺼냅니다', W / 2, VERT ? 200 : 90, VERT ? 50 : 54, INK, 900, 'center', a);
+  const tx = M, ty = VERT ? 300 : 180, th = VERT ? 420 : 300, fs = VERT ? 24 : 30;
+  term(tx, ty, FW, th, '명령 프롬프트 (cmd)', a);
+  if (VERT) { text(typed('blind_watermark --extract --pwd 1234', lt, .2, 1), tx + 24, ty + 100, 28, INK, 600, 'left', a, MONO);
+    text(typed('  --wm_shape 136 stamp.png', lt, 1, 1.6), tx + 24, ty + 150, 28, INK, 600, 'left', a * prog(lt, .95, 1), MONO); }
+  else text(typed('C:\\photo> blind_watermark --extract --pwd 1234 --wm_shape 136 stamp.png', lt, .2, 1.6), tx + 24, ty + 100, fs, INK, 600, 'left', a, MONO);
+  if (lt > 1.9) text(`꺼내는 데 ${P.extract}초`, tx + 24, ty + (VERT ? 220 : 170), fs, SUB, 600, 'left', a * prog(lt, 1.9, 2.1));
+  const s = R.text, n = Math.floor(s.length * prog(lt, 2, 3.4));
+  text(s.slice(0, n), W / 2, ty + th + (VERT ? 260 : 170), VERT ? 120 : 130, GOLD, 900, 'center', a);
+  if (lt > 3.6) pill('136 = 넣은 글자의 비트 수 (넣을 때 알려 주는 숫자, 꼭 적어 두기)', W / 2, ty + th + (VERT ? 500 : 330), VERT ? 28 : 34, BLUE, a * prog(lt, 3.6, 3.9));
+}
+function sceneAttack(t) {
+  const a = fade(t, T.a0, T.k0); if (a <= 0) return; const lt = t - T.a0;
+  text('③ 사진을 망가뜨려도 글자가 나올까?', W / 2, VERT ? 190 : 70, VERT ? 50 : 50, INK, 900, 'center', a);
+  const cols = VERT ? 2 : 5, rows = Math.ceil(ATK.length / cols), gx = 24, gy = VERT ? 90 : 76;
+  const top = VERT ? 290 : 130, cw = (FW - gx * (cols - 1)) / cols, ch = VERT ? 200 : 300;
+  let pass = 0, shown = 0;
+  ATK.forEach((k, i) => {
+    const at = .3 + i * .6, aa = a * prog(lt, at, at + .3), r = AT[k]; if (lt > at + .45) { shown++; if (r.ok) pass++; }
+    const x = M + (i % cols) * (cw + gx), y = top + Math.floor(i / cols) * (ch + gy);
+    const [dx, dy, dw, dh] = pic('cat_' + (k === 'crop_recover' ? 'crop' : k), x, y, cw, ch, aa);
+    text(ALABEL[k], x + cw / 2, y + ch + (VERT ? 32 : 30), VERT ? 28 : 26, SUB, 700, 'center', aa);
+    mark(r.ok, dx + dw - 30, dy + 30, 26, a * prog(lt, at + .45, at + .6));
+  });
+  const yy = VERT ? top + rows * (ch + gy) + 50 : H - 80;
+  pill(`이 10가지 중 ${pass}가지에서 글자가 그대로 나옴 (고양이 사진)`, W / 2, yy, VERT ? 34 : 36, pass > 6 ? GREEN : GOLD, a * prog(lt, .6, .9));
+}
+function sceneKey(t) {
+  const a = fade(t, T.k0, T.e0); if (a <= 0) return; const lt = t - T.k0;
+  text('시연 결과 (클라우드 자동 실행)', W / 2, VERT ? 220 : 100, VERT ? 52 : 56, INK, 900, 'center', a);
+  const cards = [['도장 넣기 (451×300 사진)', `${P.embed}초`, GOLD], ['꺼내기', `${P.extract}초`, GREEN], ['휴대폰 사진 크기 넣기', `${R.big.embed}초`, BLUE]];
+  cards.forEach(([k, v, c], i) => { const aa = a * prog(lt, .2 + i * .4, .6 + i * .4);
+    if (VERT) stat(M, 330 + i * 230, FW, 200, k, v, aa, c, 36, 80); else stat(M + i * (FW / 3) + 15, 190, FW / 3 - 30, 240, k, v, aa, c, 34, 80); });
+  const fa = a * prog(lt, 1.6, 2), by = VERT ? 1100 : 560;
+  box(M, by, FW, VERT ? 420 : 300, 18, 'rgba(255,123,114,.08)', RED, fa, 2);
+  text('⚠ 꼭 알아 둘 점', W / 2, by + 60, VERT ? 40 : 40, RED, 900, 'center', fa);
+  const L = VERT ? ['JPG 화질 30·밝기 바꾸기·돌리기에는 글자가 깨짐', '명령어의 --pwd는 다른 번호로도 꺼내짐', '글자 길이(136) 숫자를 잊으면 못 꺼냄']
+    : ['JPG 화질 30 · 밝기 바꾸기 · 돌린 채로는 글자가 깨졌습니다', '명령어의 --pwd 는 다른 번호(9999)로도 꺼내져 자물쇠 역할을 하지 않습니다'];
+  L.forEach((s, i) => text('· ' + s, W / 2, by + (VERT ? 160 : 140) + i * (VERT ? 80 : 70), VERT ? 32 : 34, INK, 700, 'center', a * prog(lt, 2 + i * .4, 2.4 + i * .4)));
+}
+function sceneEnd(t) {
+  const a = prog(t, T.e0, T.e0 + .4); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const cy = VERT ? 700 : 300;
+  text('blind_watermark', W / 2, cy, VERT ? 96 : 120, INK, 900, 'center', 1, MONO);
+  text('사진에 눈에 안 보이는 글자 도장을 숨기는 무료 프로그램', W / 2, cy + (VERT ? 130 : 120), VERT ? 38 : 48, SUB, 700);
+  text('일반인 쓸모 ★★★☆☆', W / 2, cy + (VERT ? 240 : 215), VERT ? 60 : 56, GOLD, 900);
+  pill('pip install blind-watermark · 명령은 설명란에', W / 2, cy + (VERT ? 370 : 330), VERT ? 32 : 36, GREEN);
+  const d1 = '정보 제공용 · 2026-11-07 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '도용 방지·법적 증거를 보장하지 않음 · 원본 사진은 따로 보관 · 남의 사진에 쓰지 않기';
+  if (VERT) { text(d1, W / 2, 1480, 28, SUB, 500); text(d2, W / 2, 1524, 26, SUB, 500); }
+  else { text(d1, W / 2, H - 92, 26, SUB, 500); text(d2, W / 2, H - 52, 26, SUB, 500); }
+  ctx.restore();
+}
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneEmbed(t); sceneExtract(t); sceneAttack(t); sceneKey(t); sceneEnd(t);
+}
+</script></body></html>

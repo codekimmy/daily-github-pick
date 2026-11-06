@@ -16,7 +16,7 @@
 |---|---|---|---|---|---|---|---|---|
 | ⭐ ✅ Day 5 | danielgatis/rembg | 사진 배경 자동 지우기 | 브라질 | 2.5만 | pip `rembg[cli]` | `-m u2net` 11.9초(모델 176MB 받기 포함), `-m u2netp` 5.6초. 기본 모델(1GB)은 시간 초과 → 모델 지정 필수 (11/1 재확인: 2.0.86은 `rembg[cpu,cli]`로 설치, 기본 bria-rmbg 1GB는 메모리 부족 강제 종료) | 누끼 따기 한 줄 | ★5 |
 | ⭐ ✅ Day 7 | x-hw/amazing-qr | 내 사진·GIF를 배경으로 한 QR코드 | 중국 | 1.1만 | pip `amzqr` | 0.14초, 스캔 성공, 움직이는 QR도 됨 (11/3 재확인: 0.1.0, 그림 QR은 zxing 11/11·OpenCV 0/11, 한글 불가) | 이 그림이 QR이라고? | ★5 |
-| ⭐ | guofei9987/blind_watermark | 눈에 안 보이는 워터마크 | 중국 | 1.5만 | pip `blind-watermark` | 1.4초, JPEG 재압축 후에도 문자 추출 | 사진 도용 잡는 투명 도장 | ★4 |
+| ⭐ ✅ Day 11 | guofei9987/blind_watermark | 눈에 안 보이는 워터마크 | 중국 | 1.5만 | pip `blind-watermark` | 1.4초, JPEG 재압축 후에도 문자 추출 (11/7 재확인: 0.4.4, 넣기 0.18초·꺼내기 0.12초, 15가지 망가뜨리기 중 10가지 통과, JPG 화질 30·밝기·돌림·자름은 실패, 명령어 --pwd는 다른 번호로도 꺼내짐) | 사진 도용 잡는 투명 도장 | ★4 |
 |  | MemeCrafters/meme-generator | 밈 템플릿 300종에 글·얼굴 합성 | 중국 | 1천 | pip `meme_generator` | 0.2~0.5초, 한글 짤·쓰다듬기 GIF. 템플릿 받으려면 config의 resource_url을 raw.githubusercontent로 변경 | 내 사진으로 짤 1초 | ★4 |
 |  | KohakuBlueleaf/PixelOE | AI 없이 사진을 도트 그림으로 | 대만 | 542 | pip `pixeloe` | 5.2초 | 내 사진이 16비트 게임 속으로 | ★4 |
 |  | visioncortex/vtracer | 그림을 확대해도 안 깨지는 SVG로 | 홍콩 | 7.4천 | pip `vtracer` (파이썬으로 호출) | 0.23초, path 36개 | 로고 무한 확대 | ★4 |
@@ -91,5 +91,6 @@
 - **Go 패키지 (proxy.golang.org 차단)**: pdfcpu, maaslalani/invoice, primitive, ascii-image-converter
 - **시스템 라이브러리가 필요한데 apt가 막힘**: manim, silicon, tplay, trianglify
 - **GUI 설치형이거나 클론해서 빌드해야 함**: Stirling-PDF, PhotoCraft, Concat, Umi-OCR, VoiceStudio, ComfyUI
+- **사람 얼굴이 나온 CC0 사진을 구할 수 없음 (11/7)**: ORB-HD/deface(얼굴 블러) — 위키미디어·NASA 사진 서버 차단, scikit-image에는 우주인 1장뿐. 얼굴 사진을 운영자가 제공하면 가능
 - **기타**: pixelsort(Pillow 11과 호환 안 됨), @squoosh/cli(Node 22에서 크래시), pdfly(OpenSSL 인식 실패), pdf2docx(한글 띄어쓰기 사라짐), PyBoy(게임 ROM 없음)
 - **설치가 보안 확인에서 거부됨 (11/4)**: xevrion/hatchzip (crates, 10월 22일 등록된 새 패키지라 `cargo install` 거부), 같은 날 venv 안 `pip install`도 한 번 거부됨 → 전역 `pip install --break-system-packages`로는 설치됨

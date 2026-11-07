@@ -1,0 +1,161 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 본편(미리보기 뒤). 숫자는 실제 시연 결과(../results.json), 글은 실제 변환 결과(../work/out/*.md). 문서는 모두 시연용 가상 자료
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`)]).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const M = 120, FW = W - 240, FF = R.F, MD = R.MD;
+function caption(c, lt) {
+  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
+  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
+  const s = cue[2], big = tw(s, 38, 700) > 1780, w = Math.min(tw(s, big ? 32 : 38, 700) + 80, 1880);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a); text(s, W / 2, 992, big ? 32 : 38, INK, 700, 'center', a);
+}
+function tag(c, lt) {
+  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+  box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)') {
+  term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.8); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\docs>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\docs> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(s, x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : kind === 'key' ? BLUE : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+}
+const mdN = (name, lt, a, b) => MD[name].length * prog(lt, a, b);
+// 마크다운 표 줄 → 칸 배열 (엑셀 모양 그리기용, NaN 은 원래 빈칸이므로 비움)
+const rowsOf = (lines, from, n) => lines.filter(s => /^\| /.test(s) && !/^\| ---/.test(s)).slice(from, from + n).map(s => s.split('|').slice(1, -1).map(c => c.trim() === 'NaN' ? '' : c.trim()));
+function hl(x, y, w, h, lt, at, color = GOLD) { const k = (Math.sin(lt * 5) + 1) / 2; box(x, y, w, h, 8, null, color, app(lt, at, .3) * (.5 + .5 * k), 4); }
+const DRAW = {
+  title(lt) {
+    text('markitdown', W / 2, 230, 150, INK, 800, 'center', app(lt, .2), MONO);
+    text('워드·엑셀·PDF를 AI가 읽기 좋은 글로 바꿔 주는 무료 프로그램', W / 2, 370, 50, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★★☆', W / 2, 470, 56, GOLD, 800, 'center', app(lt, 4));
+    text(`⭐ 약 19.4만 · MIT 무료 · pip markitdown ${R.version} · 만든 곳: Microsoft (미국)`, W / 2, 550, 32, SUB, 600, 'center', app(lt, 4.5));
+    ['워드', '엑셀', '파워포인트', 'PDF', '웹페이지', 'CSV', '전자책', 'ZIP'].forEach((k, i) => fileIcon(k, W / 2 - 700 + i * 200, 760, 150, app(lt, 8 + i * .25)));
+  },
+  what(lt) {
+    if (lt < 7.6) text("문서의 포장을 벗기는 '포장 뜯개'", W / 2, 450, 80, GOLD, 900, 'center', app(lt, .3) * (1 - prog(lt, 6.8, 7.4)));
+    const a1 = app(lt, 7.5), D = FF['회의록.docx'];
+    if (a1 > 0) {
+      // 포장 상자 = 원본 파일, 안의 구성 요소들
+      const bx = 160, by = 160, bw = 700, bh = 560; box(bx, by, bw, bh, 20, 'rgba(43,108,214,.08)', '#2b6cd6', a1, 3);
+      text(`회의록.docx · ${kb(D.kb_in)}`, bx + bw / 2, by + 50, 36, INK, 900, 'center', a1);
+      const parts = [['글꼴·크기 정보', SUB], ['색·여백·줄 간격', SUB], ['쪽 설정·머리글', SUB], ['스타일 목록', SUB], ['글·표·목록 (알맹이)', GOLD]];
+      parts.forEach(([s, c], i) => { const gone = i < 4 && lt > 16 + i * .6; const aa = a1 * app(lt, 9 + i * .8) * (gone ? 1 - prog(lt, 16 + i * .6, 16.6 + i * .6) : 1);
+        box(bx + 60, by + 110 + i * 85, bw - 120, 66, 12, i === 4 ? 'rgba(242,193,78,.12)' : '#161b22', c, aa, 2); text(s, bx + bw / 2, by + 143 + i * 85, 32, c, 800, 'center', aa); });
+      text('→', 960, 440, 100, GOLD, 900, 'center', app(lt, 17));
+      mdView(1060, 160, 700, 560, MD['회의록'], mdN('회의록', lt, 18, 22), 19, app(lt, 17.5), `회의록.md · ${kb(D.kb_out)}`);
+    }
+    if (lt > 23) pill('목표: AI(대화형 인공지능)가 읽기 좋은 글 · 사람이 보는 예쁜 문서용은 아님', W / 2, 860, 34, BLUE, app(lt, 23));
+  },
+  install(lt) {
+    termLines(M, 150, FW, 420, [['note', ':: 1) 파이썬 설치 시 Add python.exe to PATH 체크', .3], ['$', 'pip install "markitdown[all]"', 8, 1.5],
+      ['', `Successfully installed markitdown-${R.version} mammoth openpyxl pandas pdfminer.six python-pptx ...`, 11], ['note', `:: 약 ${Math.round(R.install.all_sec)}초 · ${R.install.all_mb}MB (새 폴더 기준, 내려받기 포함)`, 16]], lt, 30);
+    if (lt > 23) { stat(M, 640, FW / 3 - 30, 220, '버전 (PyPI)', R.version, app(lt, 23), GOLD); stat(M + FW / 3, 640, FW / 3 - 30, 220, '라이선스', 'MIT 무료', app(lt, 23.5), GREEN); stat(M + FW * 2 / 3, 640, FW / 3 - 30, 220, '⭐ GitHub', '약 19.4만', app(lt, 24), BLUE); }
+  },
+  docx(lt) {
+    const D = FF['회의록.docx'];
+    termLines(M, 110, FW, 150, [['$', 'markitdown 회의록.docx -o 회의록.md', .5, 2.5]], lt, 28);
+    page(M, 290, 760, 620, DOCX, app(lt, 3), 1.2);
+    mdView(M + 820, 290, FW - 820, 620, MD['회의록'], mdN('회의록', lt, 8, 13), 20, app(lt, 8), `회의록.md · ${D.sec}초`);
+    if (lt > 15) pill('✔ 소제목 # · 목록 * · 굵은 글씨 ** · 표 | 가 살아 있음', M + 380, 940 - 20, 26, GREEN, app(lt, 15) * (lt > 23 ? 0 : 1));
+    if (lt > 23) { pill(`${kb(D.kb_in)} → ${kb(D.kb_out)}`, M + 380, 920, 30, GREEN, app(lt, 23));
+      pill('✘ 맨 위 큰 제목은 # 없이 · 표 머리줄이 빈 줄로 밀림', M + 820 + (FW - 820) / 2, 920, 26, RED, app(lt, 25)); }
+  },
+  xlsx(lt) {
+    const X = FF['가계부.xlsx'], rows = rowsOf(MD['가계부'], 0, 14);
+    sheet(M, 130, 760, 560, rows, ['10월', '11월'], app(lt, .3), 1.15);
+    text('가계부.xlsx (시트 2개)', M + 380, 730, 30, SUB, 800, 'center', app(lt, .3));
+    mdView(M + 820, 130, FW - 820, 790, MD['가계부'], mdN('가계부', lt, 8, 14), 17, app(lt, 8), `가계부.md · ${X.sec}초`);
+    if (lt > 18) pill(`빈칸 → NaN (${X.nan}곳)`, M + 380, 800, 36, RED, app(lt, 18));
+  },
+  pptx(lt) {
+    const P = FF['발표.pptx'];
+    slide(M, 130, 480, 270, '우리 동네 플리마켓 안내', ['2026년 11월 · 주민센터 문화팀'], app(lt, .3), .8);
+    slide(M, 430, 480, 270, '언제·어디서?', ['11월 21일(토) 오전 10시~오후 4시', '주민센터 앞마당', '판매 자리 40칸'], app(lt, .6), .8, '주차 공간이 없다는 점을 꼭 말하기');
+    text('발표.pptx (3장)', M + 240, 800, 30, SUB, 800, 'center', app(lt, .3));
+    mdView(M + 560, 130, FW - 560, 760, MD['발표'], mdN('발표', lt, 6, 12), 21, app(lt, 6), `발표.md · ${P.sec}초`);
+    const L = MD['발표'], ni = L.findIndex(s => s.startsWith('### Notes')), lh = 21 * 1.55;
+    if (lt > 16 && lt < 23) hl(M + 580, 130 + 70 + ni * lh - 20, FW - 600, lh * 2 + 8, lt, 16, GOLD);
+    if (lt > 23) { const ti = L.findIndex(s => s.startsWith('| 방법')); hl(M + 580, 130 + 70 + ti * lh - 20, FW - 600, lh * 5 + 8, lt, 23, GREEN); }
+  },
+  pdf(lt) {
+    const P = FF['안내문.pdf'];
+    page(M, 130, 760, 760, [['t', '겨울철 동파 예방 안내'], ['p', '입주민 여러분, 기온이 영하 10도 아래로 내려가는 날에는…'], ['h', '지켜 주실 것'], ['n', ['1', "외출할 때도 보일러를 '외출' 모드로"]], ['n', ['2', '수도꼭지를 아주 조금 틀어 두기']], ['n', ['3', '계량기함 안을 보온재로 채우기']],
+      ['h', '동파 시 연락처'], ['tb', [['구분', '연락처', '시간'], ['관리사무소', '02-000-0000', '평일 9시~18시'], ['당직실', '02-000-0001', '24시간']]], ['p', '자세한 내용은 관리사무소 누리집(링크)에서 확인']], app(lt, .3), 1.25);
+    text('안내문.pdf', M + 380, 920, 30, SUB, 800, 'center', app(lt, .3));
+    mdView(M + 820, 130, FW - 820, 520, MD['안내문'], mdN('안내문', lt, 5, 9), 20, app(lt, 5), `안내문.md · ${P.sec}초`);
+    if (lt > 16) { box(M + 820, 680, FW - 820, 210, 16, 'rgba(255,123,114,.08)', RED, app(lt, 16), 2);
+      text('✘ 제목 표시(#) 0개 · ✘ 링크 주소 사라짐', M + 820 + (FW - 820) / 2, 740, 32, RED, 800, 'center', app(lt, 16.3));
+      text(`화면 경고 ${P.warn_lines}줄: Could not get FontBBox … (결과에는 영향 없음)`, M + 820 + (FW - 820) / 2, 820, 26, SUB, 600, 'center', app(lt, 23)); }
+  },
+  etc(lt) {
+    const sec = lt < 16 ? 0 : lt < 24 ? 1 : 2, base = [0, 16, 24][sec], llt = lt - base;
+    const nm = ['공지', '명단_cp949', '화분책'][sec], f = ['공지.html', '명단_cp949.csv', '화분책.epub'][sec], kd = FF[f].kind;
+    const a = app(llt, .2) * (sec < 2 ? 1 - prog(lt, [16, 24][sec] - .3, [16, 24][sec]) : 1);
+    fileIcon(kd, M + 180, 400, 260, a); text(f, M + 180, 600, 34, INK, 800, 'center', a); text(`${FF[f].chars}자 · ${FF[f].sec}초`, M + 180, 650, 30, GREEN, 800, 'center', a);
+    if (sec === 1) text('윈도우 한글 인코딩(cp949)', M + 180, 700, 26, GOLD, 700, 'center', a);
+    ctx.save(); ctx.globalAlpha = a; mdView(M + 420, 130, FW - 420, 780, MD[nm], MD[nm].length * prog(llt, .5, 3), 19, 1, nm + '.md'); ctx.restore();
+    if (sec === 0 && lt > 8) { hl(M + 440, 130 + 70 - 20, FW - 460, 40, lt, 8, RED); hl(M + 440, 130 + 70 + (MD['공지'].length - 1) * 19 * 1.55 - 20, FW - 460, 40, lt, 8.5, RED); }
+  },
+  batch(lt) {
+    const Z = FF['묶음.zip'];
+    fileIcon('ZIP', M + 160, 300, 220, app(lt, .3)); text('묶음.zip', M + 160, 450, 32, INK, 800, 'center', app(lt, .3));
+    ['워드', '엑셀', 'CSV'].forEach((k, i) => fileIcon(k, M + 420, 200 + i * 130, 100, app(lt, 1.5 + i * .4)));
+    text('→', M + 560, 330, 80, GOLD, 900, 'center', app(lt, 3));
+    stat(M + 640, 200, 420, 240, 'ZIP 하나 → 글 하나', `${Z.chars.toLocaleString()}자`, app(lt, 8), GOLD, 30, 64);
+    text(`${Z.sec}초 · '## File: 이름' 으로 파일마다 나눔`, M + 850, 480, 26, SUB, 700, 'center', app(lt, 8.5));
+    if (lt > 15) termLines(M + 1120, 130, FW - 1120, 520, [['$', 'python 폴더변환.py docs', .1 + 15, 1], ...['가계부.xlsx', '공지.html', '명단_cp949.csv', '발표.pptx', '스캔본.pdf', '안내문.pdf', '화분책.epub', '회의록.docx'].map((n, i) => [n.startsWith('스캔') ? 'err' : 'ok', (n.startsWith('스캔') ? '✘ ' : '✔ ') + n + (n.startsWith('스캔') ? ' (0자)' : ''), 16.5 + i * .4]), ['note', `${R.folder.files}개 파일, ${R.folder.sec}초`, 20]], lt, 22, '폴더 통째로');
+    if (lt > 23) pill('Windows용 폴더변환.bat: 문서 폴더에 넣고 두 번 누르기 (Windows 실행 확인 전)', W / 2, 820, 32, BLUE, app(lt, 23));
+  },
+  big(lt) {
+    const C = [['PDF', '설명서 100쪽', FF['설명서100쪽.pdf'], R.checks.pdf100_paragraphs + ' 문단', .3], ['엑셀', '주문표 1만 줄', FF['주문1만줄.xlsx'], R.checks.xlsx_rows + ' 줄', 8], ['파워포인트', '교육 자료 50장', FF['교육50장.pptx'], '제목 50/50', 15]];
+    C.forEach(([k, l, r, c, at], i) => { const x = M + i * (FW / 3) + 15, w = FW / 3 - 30, aa = app(lt, at);
+      box(x, 140, w, 620, 18, '#161b22', '#30363d', aa, 2); fileIcon(k, x + w / 2, 280, 170, aa); text(l, x + w / 2, 430, 40, INK, 900, 'center', aa);
+      text((r.sec * ease(prog(lt, at + .3, at + 2))).toFixed(2) + '초', x + w / 2, 530, 84, GOLD, 900, 'center', aa);
+      text('✔ ' + c, x + w / 2, 620, 30, GREEN, 800, 'center', app(lt, at + 2)); text(`${kb(r.kb_in)} → ${kb(r.kb_out)}`, x + w / 2, 690, 28, i === 1 && lt > 21 ? RED : SUB, 700, 'center', app(lt, at + 2)); });
+    if (lt > 21) pill('엑셀은 칸마다 | 기호가 붙어 글이 원본보다 커졌습니다', W / 2, 840, 34, RED, app(lt, 21));
+  },
+  fail(lt) {
+    const S = FF['스캔본.pdf'], J = FF['영수증사진.jpg'];
+    page(M, 140, 420, 560, [['t', '겨울철 동파 예방 안내'], ['p', '입주민 여러분, 기온이…'], ['h', '지켜 주실 것'], ['n', ['1', '외출 모드로 켜 두기']], ['n', ['2', '수도꼭지 조금 틀기']]], app(lt, .3), 1);
+    text('스캔본.pdf (글자가 그림)', M + 210, 740, 28, SUB, 800, 'center', app(lt, .3)); stat(M + 470, 300, 300, 200, '결과', `${S.chars}자`, app(lt, 3), RED, 30, 70);
+    box(M + 860, 240, 460, 230, 8, '#fdf6e3', null, app(lt, 8)); text('영수증  합계 12,500원', M + 1090, 355, 34, '#222', 700, 'center', app(lt, 8));
+    text('영수증사진.jpg', M + 1090, 510, 28, SUB, 800, 'center', app(lt, 8)); stat(M + 1360, 260, 300, 200, '결과', `${J.chars}자`, app(lt, 10), RED, 30, 70);
+    if (lt > 16 && lt < 24) pill('사진 속 글 읽기: 유료 AI 서비스 키 연결이 필요하다고 문서에 적혀 있음 (이번 시연에서는 안 함)', W / 2, 820, 30, GOLD, app(lt, 16));
+    if (lt > 24) termLines(M, 780, FW, 150, [['$', 'markitdown 보고서.hwp', 24.2, 1], ['err', 'UnsupportedFormatException: … the filetype is simply not supported.', 25.6]], lt, 24);
+  },
+  use(lt) {
+    const L = [['1', '긴 보고서 → 글로 바꿔 AI 대화창에 붙여 넣고 요약 부탁', .3, BLUE], ['2', '흩어진 회의록·안내문 → 글 파일로 모아 검색', 8, GREEN], ['3', '파워포인트 발표자 메모만 뽑아 대본으로', 15, GOLD], ['⚠', '회사 문서·개인정보가 든 문서는 AI 서비스에 올리지 않기', 21, RED]];
+    L.forEach(([ic, s, at, c], i) => { box(M + 100, 150 + i * 180, FW - 200, 140, 18, '#161b22', c, app(lt, at), 2); text(ic, M + 190, 220 + i * 180, 56, c, 900, 'center', app(lt, at)); text(s, M + 260, 220 + i * 180, 38, INK, 800, 'left', app(lt, at)); });
+  },
+  cons(lt) {
+    const L = ['① 스캔본·사진 속 글자는 못 읽음 (0자)', '② 한글 문서(HWP)는 지원 목록에 없음', '③ 엑셀 빈칸 NaN · 워드 표 머리줄 밀림 · PDF 제목 표시 사라짐', '④ 창 화면이 없고 명령어로만 사용', `⑤ 전부 설치하면 ${R.install.all_mb}MB로 큰 편`];
+    L.forEach((s, i) => { const at = [0.3, 6, 12, 18, 24][i]; box(M + 150, 150 + i * 150, FW - 300, 120, 16, '#161b22', '#30363d', app(lt, at), 2); text(s, W / 2, 210 + i * 150, 38, INK, 800, 'center', app(lt, at)); });
+  },
+  end(lt) {
+    text('markitdown', W / 2, 260, 130, INK, 900, 'center', app(lt, .2), MONO);
+    text('워드·엑셀·PDF를 AI가 읽기 좋은 글로 바꿔 주는 무료 프로그램', W / 2, 380, 48, SUB, 700, 'center', app(lt, .4));
+    text('일반인 쓸모 ★★★★☆', W / 2, 475, 56, GOLD, 900, 'center', app(lt, .6));
+    pill('pip install "markitdown[all]" · 명령은 설명란에', W / 2, 590, 36, GREEN, app(lt, .8));
+    text('정보 제공용 · 2026-11-08 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 700, 26, SUB, 500, 'center', app(lt, 1));
+    text('변환 결과는 원본과 꼭 비교 · 개인정보 문서를 AI에 올리지 않기 · 원본 보관', W / 2, 740, 26, SUB, 500, 'center', app(lt, 1));
+  }
+};
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
+  ctx.save(); ctx.globalAlpha = prog(lt, 0, .35) * (c.id === 'end' ? 1 : 1 - prog(lt, c.dur - .3, c.dur)); DRAW[c.id](lt); ctx.restore();
+  tag(c, lt); caption(c, lt);
+}
+</script></body></html>

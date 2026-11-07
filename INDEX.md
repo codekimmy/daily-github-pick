@@ -16,3 +16,4 @@
 | 9 | 2026-11-05 | [smacke/ffsubsync](https://github.com/smacke/ffsubsync) | 어긋난 자막을 영상 소리에 맞춰 자동으로 당겨 주는 무료 '싱크 맞추개' | 영상·자막 | ★★★★☆ | 약 7,900 | [바로가기](2026-11-05-ffsubsync/) |
 | 10 | 2026-11-06 | [beancount/fava](https://github.com/beancount/fava) | 메모장에 적은 가계부를 차트 대시보드로 보여 주는 무료 '가계부 계기판' | 가계부·돈 관리 | ★★★☆☆ | 약 2,600 | [바로가기](2026-11-06-fava/) |
 | 11 | 2026-11-07 | [guofei9987/blind_watermark](https://github.com/guofei9987/blind_watermark) | 사진에 눈에 안 보이는 글자 도장을 숨기는 무료 '투명 잉크 도장' | 사진·저작권 | ★★★☆☆ | 약 1.5만 | [바로가기](2026-11-07-blind-watermark/) |
+| 12 | 2026-11-08 | [microsoft/markitdown](https://github.com/microsoft/markitdown) | 워드·엑셀·PDF의 포장을 벗겨 AI가 읽기 좋은 글만 꺼내 주는 무료 '포장 뜯개' | 문서·AI 활용 | ★★★★☆ | 약 19.4만 | [바로가기](2026-11-08-markitdown/) |

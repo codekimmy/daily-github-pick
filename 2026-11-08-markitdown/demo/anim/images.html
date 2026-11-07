@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 썸네일(?k=thumb, 1280×720)·전/후 그림(?k=ba, 1800×900). 글은 실제 변환 결과, 숫자는 results.json
+const k = new URLSearchParams(location.search).get('k'), W = k === 'thumb' ? 1280 : 1800, H = k === 'thumb' ? 720 : 900;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+let READY = false; const D = R.F['회의록.docx'];
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`500 20px ${MONO}`)]).then(() => { draw(); READY = true; });
+function draw() {
+  ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  if (k === 'thumb') {
+    page(40, 60, 480, 600, DOCX, 1, .78); text('→', 590, 360, 110, GOLD, 900);
+    mdView(660, 60, 580, 330, R.MD['회의록'], 10, 15, 1, '회의록.md');
+    text('워드·엑셀·PDF를', 950, 450, 58, INK, 900); text('AI용 글로 1초', 950, 535, 76, GOLD, 900);
+    text(`${kb(D.kb_in)} → ${kb(D.kb_out)}`, 950, 620, 44, GREEN, 900); text('markitdown · 무료', 950, 680, 30, SUB, 700, 'center', 1, MONO);
+  } else {
+    text('워드 회의록이 글(마크다운)로 바뀐 모습', W / 2, 50, 46, INK, 900);
+    page(60, 95, 800, 720, DOCX, 1, 1.2); text(`원본 회의록.docx · ${kb(D.kb_in)}`, 460, 845, 30, SUB, 800);
+    mdView(920, 95, 820, 720, R.MD['회의록'], 99, 15, 1, '회의록.md'); text(`결과 회의록.md · ${kb(D.kb_out)} · ${D.sec}초`, 1330, 845, 30, GREEN, 800);
+    text('2026-11-08 클라우드 시연 결과 · 문서는 시연용 가상 자료', W / 2, 884, 22, SUB, 600);
+  }
+}
+</script></body></html>

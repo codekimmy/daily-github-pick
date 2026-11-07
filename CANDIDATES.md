@@ -52,7 +52,7 @@
 | ⭐ ✅ Day 6 | marp-team/marp-cli | 메모장 글로 발표 슬라이드 PDF·PPTX | 일본 | 3.9천 | npm `@marp-team/marp-cli` | 3쪽 PDF 4초, 수정 가능한 PPTX 4.6초, 한글 OK (`--no-stdin` 필수) | 텍스트 10줄이 5초 만에 PPT | ★4 |
 | ⭐ ✅ Day 8 | tfeldmann/organize | 규칙대로 폴더 자동 정리 | 독일 | 3.2천 | pip `organize-tool` | 0.8초, 한글 파일명 OK, 중복도 알려 줌 (11/4 재확인: 3.3.0, 27개 0.39초, 내용으로 영수증 PDF 찾기 OK, 스캔 PDF·하위 폴더 중복은 못 잡음) | 다운로드 폴더 1초 정리 | ★4 |
 | ⭐ | qarmin/czkawka | 중복·비슷한 파일 찾아 용량 확보 | 폴란드 | 3.5만 | crates `czkawka_cli` (빌드 13분) | 0.1초에 중복 2그룹 | '최종_진짜최종' 찾기 | ★4 |
-|  | microsoft/markitdown | PDF·워드·엑셀·PPT를 텍스트로 | 미국 MS | 19만 | pip `markitdown[all]` | docx 1.9초(표·목록 유지), PDF 2.7초 | 문서를 ChatGPT용 글로 | ★4 |
+| ✅ Day 12 | microsoft/markitdown | PDF·워드·엑셀·PPT를 텍스트로 | 미국 MS | 19만 | pip `markitdown[all]` | docx 1.9초(표·목록 유지), PDF 2.7초 (11/8 재확인: 0.1.9, 문서 하나 0.8~1.05초, 100쪽 PDF 9.78초, 스캔 PDF·사진 0자, 엑셀 빈칸 NaN, HWP 변환기 없음) | 문서를 ChatGPT용 글로 | ★4 |
 |  | ocrmypdf/OCRmyPDF | 스캔 PDF를 검색되는 PDF로 | 미국 | 3.5만 | pip `ocrmypdf` (venv 권장) | 한글 영수증 7.4초, 일부 글자 깨짐 | 영수증 PDF가 Ctrl+F로 검색 | ★4 |
 |  | simonhaenisch/md-to-pdf | 마크다운을 보고서 PDF로 | 독일 | 2천 | npm `md-to-pdf` | 4.1초, 한글 OK | 메모가 보고서처럼 | ★3 |
 |  | rendercv/rendercv | 설정 파일 하나로 디자이너급 이력서 | 튀르키예 | 1.8만 | pip `rendercv<2` | 영문만 됨(한글 실패), 최신판은 다운로드 막힘 | 이력서 디자인 끝 | ★3 |

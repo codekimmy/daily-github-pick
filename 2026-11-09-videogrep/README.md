@@ -67,7 +67,7 @@
 
 ![터미널](media/terminal.gif)
 
-- **업로드용: `media/vg-long-voice.mp4`(롱폼 7분 25초, 15개 장, 실제 결과 영상으로 구성, 자막 + 음성 · 음성 없는 원본 `media/vg-long.mp4`), `media/vg-anim-vertical.mp4`(숏폼 30초)**
+- **업로드용: `media/vg-long-voice.mp4`(롱폼 7분 25초, 15개 장, 실제 결과 영상으로 구성, 자막 + 음성 · 음성 없는 원본 `media/vg-long.mp4`), `media/vg-shorts-voice.mp4`(숏폼 30초, 자막 + 음성 · 음성 없는 원본 `media/vg-anim-vertical.mp4`)**
 - 과정 애니메이션: `media/vg-anim.mp4`(가로 30초), `media/vg-anim-vertical.mp4`(세로 30초) — `demo/results.json` 숫자와 실제 결과 영상(`demo/work/out/*.mp4`)에서 뽑은 프레임으로 그림
 - 썸네일: `media/thumbnail.jpg`
 - 화면 속 타임라인·자막 줄 상자는 실제 자막 시각으로 그린 그림이고, 플레이어 안 화면은 videogrep이 실제로 만든 영상입니다

@@ -43,10 +43,10 @@ def write(name, title, video, length, cues):
             "- 대본이 없는 구간은 화면만 보여 주는 곳이라 비워 둡니다", "", "■ 구간별 대본", ""]
     body = []
     for a, b, r in cues:
-        body += [f"[{ts(a)} ~ {ts(b)}]  ({b - a:.1f}초)", r, ""]
-    tail = ["■ 전체 이어 읽기", ""] + [r for _, _, r in cues]
+        body += [f"[{ts(a)} ~ {ts(b)}]  ({b - a:.1f}초)", *r.split("\n"), ""]  # 한 구간에 두 문장이면 \n으로 나눠 한 줄씩
+    tail = ["■ 전체 이어 읽기", ""] + [l for _, _, r in cues for l in r.split("\n")]
     (day / f"narration-{name}.txt").write_text("﻿" + "\r\n".join(head + body + tail) + "\r\n", encoding="utf-8")
-    (day / f"narration-{name}-text.txt").write_text("﻿" + "\r\n".join(r for _, _, r in cues) + "\r\n", encoding="utf-8")
+    (day / f"narration-{name}-text.txt").write_text("﻿" + "\r\n".join(l for _, _, r in cues for l in r.split("\n")) + "\r\n", encoding="utf-8")
     print(name, len(cues), "문장", ts(length))
 
 

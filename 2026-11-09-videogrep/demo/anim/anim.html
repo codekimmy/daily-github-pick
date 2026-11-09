@@ -10,7 +10,8 @@ const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.
 const T = { s0: 2.5, r0: 12, m0: 18.5, w0: 23.5, e0: 27, end: 30 }, TOTAL = T.end * FPS;
 let READY = false;
 Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadFrames('fr')]).then(() => READY = true);
-const fade = (t, a, b) => prog(t, a, a + .4) * (1 - prog(t, b - .4, b));
+// 깜빡임 방지: 앞 장면이 사라지는 동안 다음 장면이 같이 나타남(빈 화면을 거치지 않음)
+const fade = (t, a, b) => (a <= 0 ? 1 : prog(t, a - .25, a + .25)) * (1 - prog(t, b - .25, b + .25));
 const M = VERT ? 60 : 100, FW = W - 2 * M, C = R.cases, SR = R.SRT['요리교실'], TOT = R.src['요리교실'].sec;
 const HITS = SR.map((l, i) => /소금/.test(l[2]) ? i : -1).filter(i => i >= 0);
 
@@ -88,7 +89,7 @@ function sceneWarn(t) {
   L.forEach((s, i) => text('· ' + s, W / 2, by + (VERT ? 240 : 220) + i * (VERT ? 170 : 130), VERT ? 38 : 40, INK, 700, 'center', a * prog(lt, .3 + i * .4, .7 + i * .4)));
 }
 function sceneEnd(t) {
-  const a = prog(t, T.e0, T.e0 + .4); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  const a = prog(t, T.e0 - .25, T.e0 + .25); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
   const cy = VERT ? 700 : 300;
   text('videogrep', W / 2, cy, VERT ? 120 : 130, INK, 900, 'center', 1, MONO);
   text('자막에서 낱말을 찾아 그 장면만 이어 붙여 주는 무료 프로그램', W / 2, cy + (VERT ? 130 : 120), VERT ? 34 : 46, SUB, 700);

@@ -14,23 +14,31 @@ Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px
 const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
 const M = 120, FW = W - 240, C = R.cases, SY = R.SRT['요리교실'], SM = R.SRT['회의'], TY = R.src['요리교실'].sec, TM = R.src['회의'].sec;
 const hitsOf = (srt, re) => srt.map((l, i) => re.test(l[2]) ? i : -1).filter(i => i >= 0);
-function caption(c, lt) {
-  const cue = c.cues.find(q => lt >= q[0] && lt < q[1]); if (!cue) return;
-  const a = prog(lt, cue[0], cue[0] + .2) * (1 - prog(lt, cue[1] - .15, cue[1]));
-  const s = cue[2], big = tw(s, 38, 700) > 1780, w = Math.min(tw(s, big ? 32 : 38, 700) + 80, 1880);
-  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a); text(s, W / 2, 992, big ? 32 : 38, INK, 700, 'center', a);
+// 깜빡임 방지: 자막을 전체 시간 기준으로 이어 붙임. 다음 자막까지 0.6초 안이면 상자를 끄지 않고 글만 겹쳐 바꿈, 상자 너비도 부드럽게
+const CAP = []; CH.forEach(c => c.cues.forEach(q => CAP.push([c.t0 + q[0], c.t0 + q[1], q[2]])));
+CAP.forEach((q, i) => { const n = CAP[i + 1]; q.join = !!n && n[0] - q[1] < .6; if (q.join) q[1] = n[0]; });
+const capSize = s => tw(s, 38, 700) > 1780 ? 32 : 38, capW = s => Math.min(tw(s, capSize(s), 700) + 80, 1880);
+function caption(t) {
+  const i = CAP.findIndex(q => t >= q[0] && t < q[1]); if (i < 0) return;
+  const q = CAP[i], p = CAP[i - 1], joinPrev = p && p.join, k = joinPrev ? ease(prog(t, q[0], q[0] + .3)) : 1;
+  const a = (joinPrev ? 1 : prog(t, q[0], q[0] + .2)) * (q.join ? 1 : 1 - prog(t, q[1] - .15, q[1]));
+  const w = joinPrev ? lerp(capW(p[2]), capW(q[2]), k) : capW(q[2]);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a);
+  if (joinPrev && k < 1) text(p[2], W / 2, 992, capSize(p[2]), INK, 700, 'center', a * (1 - k));
+  text(q[2], W / 2, 992, capSize(q[2]), INK, 700, 'center', a * k);
 }
-function tag(c, lt) {
-  if (!c.tag) return; const a = app(lt, 0, .4); const w = tw(c.tag, 28, 800) + 48;
+function tag(c, lt, a = 1) {
+  if (!c.tag) return; const w = tw(c.tag, 28, 800) + 48;
   box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
 }
-function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)') {
-  term(x, y, w, h, title, 1);
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)', A = 1) {
+  if (A <= 0) return; ctx.save(); ctx.globalAlpha *= A; term(x, y, w, h, title, 1);
   lines.forEach(([kind, s, at, dur], i) => {
     const yy = y + 90 + i * (size * 1.8); if (lt < at - .1) return;
     if (kind === '$') { text('C:\\영상>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\영상> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
     else text(cut(s, size, w - 60, 600), x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : kind === 'hit' ? GOLD : SUB, 600, 'left', app(lt, at, .3), MONO);
   });
+ ctx.restore();
 }
 const demoLine = c => `${c.file} ${c.start} ${c.end} ${c.text}`;
 // 결과 영상 재생 (장면 목록 옆에) — 플레이어 시각 = lt - at
@@ -43,7 +51,7 @@ function playWithList(name, cs, lt, at, title) {
     text(`원본 ${mmss(c.start)} → 결과 ${mmss(st[i])}`, M + 1030, yy + 30, 24, on ? GOLD : SUB, 800, 'left', aa);
     text(cut(c.text, 22, FW - 1050, 600), M + 1030, yy + 72, 22, INK, 600, 'left', aa); });
 }
-function hl(x, y, w, h, lt, at, color = GOLD) { const k = (Math.sin(lt * 5) + 1) / 2; box(x, y, w, h, 8, null, color, app(lt, at, .3) * (.5 + .5 * k), 4); }
+function hl(x, y, w, h, lt, at, color = GOLD) { const k = (Math.sin(lt * 5) + 1) / 2; box(x, y, w, h, 8, null, color, app(lt, at, .3) * (.8 + .2 * k), 4); }
 const DRAW = {
   title(lt) {
     text('videogrep', W / 2, 230, 150, INK, 800, 'center', app(lt, .2), MONO);
@@ -82,39 +90,41 @@ const DRAW = {
     if (lt > 23) pill('시연 영상: 기계 음성(espeak-ng)으로 만든 가상 강의·회의 — 실제 기관과 관련 없음', W / 2, 820, 30, SUB, app(lt, 23));
   },
   salt(lt) {
-    if (lt < 15) { termLines(M, 130, FW, 400, [['$', 'videogrep -i 요리교실.mp4 -s 소금 --demo', .5, 2], ...C.salt.clips.map((c, i) => ['hit', demoLine(c), 3 + i * .3])], lt, 26);
+    const ph = 1 - prog(lt, 14.4, 15);
+    if (ph > 0) { ctx.save(); ctx.globalAlpha *= ph; termLines(M, 130, FW, 400, [['$', 'videogrep -i 요리교실.mp4 -s 소금 --demo', .5, 2], ...C.salt.clips.map((c, i) => ['hit', demoLine(c), 3 + i * .3])], lt, 26);
       timeline(M, 600, FW, 100, SY, TY, prog(lt, 8, 8.5) > 0 ? hitsOf(SY, /소금/) : [], app(lt, 8), 1);
-      text(`자막 ${SY.length}줄 중 ${C.salt.n}줄 · 찾기 ${C.salt.demo_sec}초`, W / 2, 780, 34, GOLD, 800, 'center', app(lt, 9)); }
-    else { if (lt < 22) termLines(M, 130, FW, 140, [['$', 'videogrep -i 요리교실.mp4 -s 소금 -o 소금모음.mp4', 15.2, 2]], lt, 26);
+      text(`자막 ${SY.length}줄 중 ${C.salt.n}줄 · 찾기 ${C.salt.demo_sec}초`, W / 2, 780, 34, GOLD, 800, 'center', app(lt, 9)); ctx.restore(); }
+    if (lt > 14.6) { termLines(M, 130, FW, 140, [['$', 'videogrep -i 요리교실.mp4 -s 소금 -o 소금모음.mp4', 15.2, 2]], lt, 26, undefined, prog(lt, 14.6, 15.2) * (1 - prog(lt, 21.4, 22)));
       if (lt >= 18) playWithList('소금모음', C.salt.clips, lt, 19, '소금모음.mp4');
       if (lt >= 22) { text(`${TY.toFixed(1)}초 → ${C.salt.out_sec}초 · 만드는 데 ${C.salt.make_sec}초`, W / 2, 200, 44, GREEN, 900, 'center', app(lt, 22)); } }
   },
   um(lt) {
     termLines(M, 110, FW, 140, [['$', 'videogrep -i 요리교실.mp4 -s "^음," -o 음모음.mp4', .5, 2]], lt, 26);
     playWithList('음모음', C.um.clips, lt, 7, '음모음.mp4');
-    if (lt > 0.3 && lt < 7) pill('^ = 줄 맨 앞 · 쉼표까지 넣어 "음악" 같은 낱말은 빼기', W / 2, 600, 34, BLUE, app(lt, 2));
+    if (lt < 7) pill('^ = 줄 맨 앞 · 쉼표까지 넣어 "음악" 같은 낱말은 빼기', W / 2, 600, 34, BLUE, app(lt, 2) * (1 - prog(lt, 6.4, 7)));
   },
   meet(lt) {
     termLines(M, 110, FW, 140, [['$', 'videogrep -i 회의.mp4 -s 결정 -o 결정모음.mp4 --export-vtt', .5, 2]], lt, 26);
-    if (lt < 7) timeline(M, 500, FW, 100, SM, TM, prog(lt, 3, 3.5) > 0 ? hitsOf(SM, /결정/) : [], app(lt, 2.5), 1);
+    if (lt < 7) timeline(M, 500, FW, 100, SM, TM, prog(lt, 3, 3.5) > 0 ? hitsOf(SM, /결정/) : [], app(lt, 2.5) * (1 - prog(lt, 6.4, 7)), 1);
     if (lt > 6.5) playWithList('결정모음', C.decide.clips, lt, 7.5, '결정모음.mp4');
     if (lt > 24) pill(`✔ 결정_자막.vtt 도 함께 생김 (${C.vtt.n}줄)`, M + 1010 + (FW - 1010) / 2, 830, 28, GREEN, app(lt, 24));
   },
   regex(lt) {
-    const sec = lt < 14 ? 0 : 1, c = sec ? C.both : C.regex, base = sec ? 14 : 0, a = app(lt, base + .2) * (sec ? 1 : 1 - prog(lt, 13.6, 14));
-    ctx.save(); ctx.globalAlpha = a;
-    termLines(M, 130, FW, 150, [['$', sec ? 'videogrep -i 요리교실.mp4 회의.mp4 -s 마지막 -o 마지막_두영상.mp4' : 'videogrep -i 회의.mp4 -s "예산|만 원" -o 돈이야기.mp4', base + .4, 2]], lt, 26);
-    c.clips.forEach((x, i) => { const yy = 330 + i * 100, aa = app(lt, base + 2.5 + i * .3);
-      pill(x.file.replace('.mp4', ''), M + 90, yy, 24, x.file.startsWith('회의') ? BLUE : GREEN, aa); pill(mmss(x.start), M + 230, yy, 24, GOLD, aa);
-      let s = x.text; text(cut(s, 30, FW - 340, 700), M + 310, yy, 30, INK, 700, 'left', aa); });
-    pill(`장면 ${c.n}개 → ${c.out_sec}초 · 만드는 데 ${c.make_sec}초`, W / 2, 870, 36, GREEN, app(lt, base + 5));
-    ctx.restore();
+    // 깜빡임 방지: 앞 부분(예산)이 사라지는 동안 뒷부분(두 영상)이 나타남
+    [[0, 1 - prog(lt, 13.6, 14.2)], [1, prog(lt, 13.8, 14.4)]].forEach(([sec, a]) => { if (a <= 0) return;
+      const c = sec ? C.both : C.regex, base = sec ? 14 : 0; ctx.save(); ctx.globalAlpha *= a;
+      termLines(M, 130, FW, 150, [['$', sec ? 'videogrep -i 요리교실.mp4 회의.mp4 -s 마지막 -o 마지막_두영상.mp4' : 'videogrep -i 회의.mp4 -s "예산|만 원" -o 돈이야기.mp4', base + .4, 2]], lt, 26);
+      c.clips.forEach((x, i) => { const yy = 330 + i * 100, aa = app(lt, base + 2.5 + i * .3);
+        pill(x.file.replace('.mp4', ''), M + 90, yy, 24, x.file.startsWith('회의') ? BLUE : GREEN, aa); pill(mmss(x.start), M + 230, yy, 24, GOLD, aa);
+        text(cut(x.text, 30, FW - 340, 700), M + 310, yy, 30, INK, 700, 'left', aa); });
+      pill(`장면 ${c.n}개 → ${c.out_sec}초 · 만드는 데 ${c.make_sec}초`, W / 2, 870, 36, GREEN, app(lt, base + 5));
+      ctx.restore(); });
   },
   opt(lt) {
     const L = [['-p 0.5', '앞뒤로 0.5초 여유', `장면 4개 → ${C.pad.n}개 (붙은 두 장면이 합쳐짐) · ${C.pad.out_sec}초`, .3, GOLD], ['-m 2', '앞에서부터 2장면만', `${C.max.n}장면 · ${C.max.out_sec}초`, 16, BLUE], ['--export-clips', '장면을 파일 하나씩', C.export.files.join('  '), 24, GREEN]];
     L.forEach(([o, d, r, at, c], i) => { const yy = 150 + i * 250, aa = app(lt, at); box(M, yy, FW, 210, 18, '#161b22', c, aa, 2);
       text(o, M + 40, yy + 60, 44, c, 900, 'left', aa, MONO); text(d, M + 520, yy + 60, 36, INK, 800, 'left', aa); text(r, M + 40, yy + 145, 30, SUB, 700, 'left', app(lt, at + 1)); });
-    if (lt > 8 && lt < 16) { const P = C.pad.clips; timeline(M + 860, 300, FW - 900, 50, SY, TY, [], 1, 1, false); P.forEach(c => box(M + 860 + (FW - 900) * c.start / TY, 300, Math.max(6, (FW - 900) * (c.end - c.start) / TY), 50, 4, 'rgba(242,193,78,.9)', GOLD, app(lt, 8.3), 2)); }
+    if (lt > 8 && lt < 16) { const P = C.pad.clips, pa = app(lt, 8, .4) * (1 - prog(lt, 15.4, 16)); ctx.save(); ctx.globalAlpha *= pa; timeline(M + 860, 300, FW - 900, 50, SY, TY, [], 1, 1, false); P.forEach(c => box(M + 860 + (FW - 900) * c.start / TY, 300, Math.max(6, (FW - 900) * (c.end - c.start) / TY), 50, 4, 'rgba(242,193,78,.9)', GOLD, app(lt, 8.3), 2)); ctx.restore(); }
   },
   export(lt) {
     termLines(M, 130, FW / 2 - 20, 520, [['$', 'videogrep -i 회의.mp4 -s 결정 -o 결정.xml', .4, 1.6], ['ok', `✔ 결정.xml · ${C.xml.make_sec}초 (영상 대신 목록)`, 2.5], ['', '<xmeml version="5">', 3], ['', '  <sequence> … 장면 4개 …', 3.2], ['note', ':: 문서 기준 프리미어·다빈치 리졸브용', 8], ['note', ':: (이번 시연에서는 열어 보지 않음)', 8.4], ['$', 'videogrep -i 회의.mp4 -s 결정 -o 결정.m3u', 10, 1.4], ['', ':: 재생 목록 · 영상과 같은 폴더에 저장', 11.6]], lt, 22);
@@ -132,7 +142,7 @@ const DRAW = {
     if (lt > 20) pill(`결과 영상 ${mmss(C.long.out_sec)} · 장면이 많을수록 만드는 시간이 깁니다 (CPU 2개 기준)`, W / 2, 780, 32, RED, app(lt, 20));
   },
   fail(lt) {
-    const rows = [['자막 없는 영상', R.cases.nosub.out[0], .3], ['낱말 하나만 자르기 (-st fragment)', R.cases.fragment.out[0], 8], ['자동 받아쓰기 (--transcribe)', `"${R.cases.transcribe.sample[0]}" … (${R.cases.transcribe.sec}초, 영어 낱말로 받아씀)`, 16], ['한국어 받아쓰기 모델', '작업 공간에서 내려받기 막힘 → 시연 못 함', 24]];
+    const rows = [['자막 없는 영상', R.cases.nosub.out[0], .3], ['낱말 하나만 잘라 내기 (-st fragment)', R.cases.fragment.out[0], 8], ['자막 자동 만들기 (--transcribe)', `"${R.cases.transcribe.sample[0]}" … (${R.cases.transcribe.sec}초, 영어 낱말로 받아씀)`, 16], ['한국어를 알아듣게 하는 파일', '작업 공간에서 내려받기 막힘 → 확인 못 함', 24]];
     rows.forEach(([k, v, at], i) => { const yy = 150 + i * 190, aa = app(lt, at); box(M, yy, FW, 160, 16, 'rgba(255,123,114,.06)', RED, aa, 2);
       mark(false, M + 60, yy + 80, 30, aa); text(k, M + 120, yy + 52, 36, INK, 900, 'left', aa); text(cut(v, 26, FW - 160, 600), M + 120, yy + 110, 26, SUB, 600, 'left', aa, MONO); });
   },
@@ -154,10 +164,12 @@ const DRAW = {
   }
 };
 function fileIcon2(name, kind, cx, cy, color, a) { box(cx - 120, cy - 120, 240, 240, 20, '#161b22', color, a, 3); text(kind, cx, cy - 20, 56, color, 900, 'center', a); text(name, cx, cy + 60, 28, INK, 800, 'center', a, MONO); }
+// 깜빡임 방지: 장이 바뀔 때 앞 장 마지막 모습이 사라지는 동안 새 장이 나타남(크로스페이드 0.6초). 첫 장은 compose.py에서 미리보기와 겹침
 function frame(f) {
   const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
-  const c = CH.find(c => t >= c.t0 && t < c.t0 + c.dur) || CH[CH.length - 1], lt = t - c.t0;
-  ctx.save(); ctx.globalAlpha = prog(lt, 0, .35) * (c.id === 'end' ? 1 : 1 - prog(lt, c.dur - .3, c.dur)); DRAW[c.id](lt); ctx.restore();
-  tag(c, lt); caption(c, lt);
+  const ci = Math.max(0, CH.findIndex(c => t >= c.t0 && t < c.t0 + c.dur)), c = CH[ci], lt = t - c.t0, k = ci === 0 ? 1 : ease(prog(lt, 0, .6));
+  if (k < 1) { const p = CH[ci - 1]; ctx.save(); ctx.globalAlpha = 1 - k; DRAW[p.id](p.dur - .001); ctx.restore(); tag(p, p.dur, 1 - k); }
+  ctx.save(); ctx.globalAlpha = k; DRAW[c.id](lt); ctx.restore();
+  tag(c, lt, k); caption(t);
 }
 </script></body></html>

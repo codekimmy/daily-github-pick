@@ -28,7 +28,7 @@ function term(x, y, w, h, title, a = 1) {
   ['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => { ctx.beginPath(); ctx.arc(x + (28 + i * 26) * S, y + 23 * S, 8 * S, 0, 7); ctx.fillStyle = c; ctx.fill(); });
   text(title, x + w / 2, y + 23 * S, 20, SUB, 500, 'center'); ctx.restore();
 }
-function typed(s, lt, a, b) { const n = Math.floor(s.length * prog(lt, a, b)); return s.slice(0, n) + (lt > a - 0.6 && lt < b + 0.6 && lt % 1 < .5 ? '▌' : ''); }
+function typed(s, lt, a, b) { const n = Math.floor(s.length * prog(lt, a, b)); return s.slice(0, n) + (lt >= a && lt < b + .3 ? '▌' : ''); } // 깜빡임 방지: 커서는 치는 동안만 켜 둠(깜빡이지 않음)
 const fmtSec = s => s.toFixed(2) + "초";
 function cut(s, size, maxw, weight = 600) { if (tw(s, size, weight) <= maxw) return s; while (s.length > 1 && tw(s + '…', size, weight) > maxw) s = s.slice(0, -1); return s + '…'; }
 function mark(ok, x, y, size, a = 1) { // ✔ / ✘ 동그라미

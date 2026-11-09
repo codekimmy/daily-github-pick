@@ -92,4 +92,4 @@ videogrep, 슈퍼컷, 영상자막검색, 영상자르기, 자막, 강의복습,
 - [x] 강의·회의 영상은 기계 음성으로 만든 가상 영상 (실제 기관·사람과 관련 없음)
 - [x] 엔딩(7:01~)에 유의사항 두 줄
 - [x] 음성: 운영자가 만든 음성(mp3)을 문장별로 잘라 구간 시간에 맞춰 입힘 → `media/vg-long-voice.mp4` (`demo/voice/align.py`, 61문장 모두 구간 안, 엔딩 유의사항 문구 유지)
-- [x] 배경음악: 직접 합성한 잔잔한 음악(북소리 없음, `demo/voice/calm_bgm.py`)을 튀는 소리를 압축으로 누르고 아주 작게(말 없는 구간 약 -50dB), 목소리가 나올 때 자동으로 더 작아지게 깔음 → `media/vg-long-voice-bgm.mp4` (`demo/voice/add_bgm.py`)
+- [x] 배경음악: 직접 합성한 잔잔한 음악(화음과 낮은 베이스만, 맑은 음·북소리 없음, `demo/voice/calm_bgm.py`)을 튀는 소리를 압축으로 누르고 아주 작게(말 없는 구간 약 -50dB), 목소리가 나올 때 자동으로 더 작아지게 깔음 → `media/vg-long-voice-bgm.mp4` (`demo/voice/add_bgm.py`)

@@ -1,0 +1,181 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 (미리보기 포함 전체). 숫자는 실제 시연 결과(../results.json), 그림은 wordcloud가 실제로 만든 결과(../anim/img). 대화·의견은 시연용 가상 자료
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS), NB = DATA.build.length, C = R.cases;
+let READY = false;
+const FILES = ['01_영어_기본.png', '02_한글_기본글꼴.png', '03_한글_글꼴지정.png', '04_명사만.png', '05_가로로만.png', '06_불용어빼기.png', '07_하트모양.png', '08_카페의견_말풍선.png',
+  '09_노을색.png', '10_명령어.png', '11_명령어_말풍선.png', '12_카톡구름_예제.png', '하트틀.png', '말풍선틀.png', '노을색.png', ...DATA.build.map((_, i) => BUILD(i + 1))];
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImgs('../anim/img', FILES)]).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const M = 120, FW = W - 240;
+// 깜빡임 방지: 자막을 전체 시간 기준으로 이어 붙임. 다음 자막까지 0.6초 안이면 상자를 끄지 않고 글만 겹쳐 바꿈, 상자 너비도 부드럽게
+const CAP = []; CH.forEach(c => c.cues.forEach(q => CAP.push([c.t0 + q[0], c.t0 + q[1], q[2]])));
+CAP.forEach((q, i) => { const n = CAP[i + 1]; q.join = !!n && n[0] - q[1] < .6; if (q.join) q[1] = n[0]; });
+const capSize = s => tw(s, 38, 700) > 1780 ? 32 : 38, capW = s => Math.min(tw(s, capSize(s), 700) + 80, 1880);
+function caption(t) {
+  const i = CAP.findIndex(q => t >= q[0] && t < q[1]); if (i < 0) return;
+  const q = CAP[i], p = CAP[i - 1], joinPrev = p && p.join, k = joinPrev ? ease(prog(t, q[0], q[0] + .3)) : 1;
+  const a = (joinPrev ? 1 : prog(t, q[0], q[0] + .2)) * (q.join ? 1 : 1 - prog(t, q[1] - .15, q[1]));
+  const w = joinPrev ? lerp(capW(p[2]), capW(q[2]), k) : capW(q[2]);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a);
+  if (joinPrev && k < 1) text(p[2], W / 2, 992, capSize(p[2]), INK, 700, 'center', a * (1 - k));
+  text(q[2], W / 2, 992, capSize(q[2]), INK, 700, 'center', a * k);
+}
+function tag(c, lt, a = 1) {
+  if (!c.tag) return; const w = tw(c.tag, 28, 800) + 48;
+  box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)', A = 1) {
+  if (A <= 0) return; ctx.save(); ctx.globalAlpha *= A; term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.8); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\글>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\글> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(cut(s, size, w - 60, 600), x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+  ctx.restore();
+}
+// 낱말 구름이 하나씩 놓이는 과정 (실제 layout 순서)
+function buildCloud(x, y, w, lt, at, step = .5, fast = 8) {
+  const e = lt - at, k = e < 0 ? 0 : e < step * fast ? Math.min(fast, 1 + Math.floor(e / step)) : Math.min(NB, fast + Math.floor((e - step * fast) / .15));
+  const h = w * 9 / 16; box(x - 4, y - 4, w + 8, h + 8, 10, '#000', '#30363d', 1, 2);
+  if (k > 0) ctx.drawImage(IMG[BUILD(k)], x, y, w, h); return k;
+}
+function chatBubbles(x, y, w, n, lt, at, gap = 74, size = 30) {
+  DATA.chat.slice(0, n).forEach((l, i) => { const m = l.match(/, (.+?) : (.*)$/), aa = app(lt, at + i * .8, .4), right = i % 2 === 1, s = m[2], bw = tw(s, size, 700) + 56, bx = right ? x + w - bw : x + 110, yy = y + i * gap;
+    if (!right) text(m[1], x + 50, yy + 28, 22, SUB, 700, 'center', aa);
+    box(bx, yy, bw, 56, 20, right ? GOLD : '#21262d', null, aa); text(s, bx + bw / 2, yy + 28, size, right ? '#111' : INK, 700, 'center', aa); });
+}
+const lr = (lt, a, b) => app(lt, a) * (1 - prog(lt, b - .5, b)); // a에 나타나 b에 사라짐 (0.5초 흐려짐)
+const DRAW = {
+  preview(lt) {
+    // 장면 3개, 장면마다 7초 이상 (GUIDE 5장 미리보기)
+    const A = lr(lt, 0, 7.6), B = prog(lt, 7.1, 7.6) * (1 - prog(lt, 14.4, 14.9)), Cc = prog(lt, 14.4, 14.9);
+    if (A > 0) { ctx.save(); ctx.globalAlpha *= A; text('제주 여행 준비방 (시연용 가상 단톡방)', W / 2, 90, 30, SUB, 700); chatBubbles(360, 140, 1200, 6, lt, .2);
+      text('가장 많이 한 이야기는 무엇입니까?', W / 2, 650, 72, GOLD, 900, 'center', app(lt, 4.6)); text('wordcloud', W / 2, 760, 44, SUB, 800, 'center', app(lt, 5.2), MONO); ctx.restore(); }
+    if (B > 0) { ctx.save(); ctx.globalAlpha *= B; const k = buildCloud(W / 2 - 720, 60, 1440, lt, 7.8, .45); text(`놓은 낱말 ${k} / ${NB}`, W / 2, 900, 28, SUB, 700, 'center', 1); ctx.restore(); }
+    if (Cc > 0) { ctx.save(); ctx.globalAlpha *= Cc; ['07_하트모양.png', '08_카페의견_말풍선.png', '09_노을색.png'].forEach((n, i) => pic(n, M + i * FW / 3, 140, FW / 3 - 30, 640, app(lt, 14.8 + i * .9))); ctx.restore(); }
+  },
+  title(lt) {
+    text('wordcloud', W / 2, 220, 150, INK, 800, 'center', app(lt, .2), MONO);
+    text('글에서 많이 나온 낱말을 크게 그려 주는 무료 프로그램', W / 2, 360, 50, SUB, 700, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 460, 56, GOLD, 800, 'center', app(lt, 4));
+    text(`⭐ 약 10,500 · MIT 라이선스 · pip wordcloud ${R.version} · 만든 사람: Andreas Mueller (2012년 시작)`, W / 2, 540, 30, SUB, 600, 'center', app(lt, 4.5));
+    ['05_가로로만.png', '07_하트모양.png', '08_카페의견_말풍선.png', '09_노을색.png'].forEach((n, i) => pic(n, M + i * FW / 4, 620, FW / 4 - 30, 280, app(lt, 8 + i * .8)));
+  },
+  what(lt) {
+    if (lt < 7.8) text("낱말들의 '인기투표 개표판'", W / 2, 450, 90, GOLD, 900, 'center', app(lt, .3) * (1 - prog(lt, 7.2, 7.8)));
+    if (lt > 7.5) { const a = app(lt, 7.6);
+      text('글에 나올 때마다 한 표', M + 330, 150, 34, SUB, 800, 'center', a);
+      DATA.build.slice(0, 7).forEach(([w], i) => { const f = DATA.freq.find(x => x[0] === w)[1], n = Math.round(f * ease(prog(lt, 9 + i * .3, 14 + i * .3))), yy = 220 + i * 92;
+        text(w, M + 150, yy, 34, INK, 800, 'right', a); box(M + 175, yy - 16, 4.2 * n, 32, 6, i < 2 ? GOLD : BLUE, null, a); text(`${n}표`, M + 190 + 4.2 * n, yy, 26, SUB, 700, 'left', a); });
+      text('표가 많을수록 큰 글씨로 놓기', M + 1240, 150, 34, SUB, 800, 'center', app(lt, 16));
+      if (lt > 16) buildCloud(M + 780, 200, 920, lt, 16.5, .55); }
+    if (lt > 23) pill('누구나 무료로 쓰고 고칠 수 있는 MIT 라이선스 · 회사에서도 사용 가능', W / 2, 860, 32, BLUE, app(lt, 23));
+  },
+  install(lt) {
+    termLines(M, 130, FW, 470, [['note', ':: 1) 파이썬 설치 시 Add python.exe to PATH 체크', .3], ['$', 'pip install wordcloud', 8, 1.2],
+      ['', `Successfully installed wordcloud-${R.version} matplotlib numpy pillow ...`, 10.5], ['note', `:: 약 ${R.install.wordcloud.sec}초 · ${R.install.wordcloud.mb}MB (새 폴더 기준, 내려받기 포함)`, 12],
+      ['$', 'pip install kiwipiepy', 16, 1.2], ['', 'Successfully installed kiwipiepy-0.24.1 kiwipiepy_model-0.24.0 ...', 18], ['note', `:: 약 ${R.install.kiwipiepy.sec}초 · ${R.install.kiwipiepy.mb}MB (한국어 낱말 고르기)`, 19]], lt, 26);
+    if (lt > 23) { stat(M, 650, FW / 3 - 30, 220, '버전 (PyPI)', R.version, app(lt, 23), GOLD); stat(M + FW / 3, 650, FW / 3 - 30, 220, '첫 시도', '내려받기 멈춤 → 재시도', app(lt, 23.5), RED, 28, 40); stat(M + FW * 2 / 3, 650, FW / 3 - 30, 220, '⭐ GitHub', '약 10,500', app(lt, 24), BLUE); }
+  },
+  english(lt) {
+    term(M, 130, 620, 520, 'market.txt (직접 쓴 영어 글)', app(lt, .3));
+    ['The Saturday market opens early', 'and the farmers bring fresh', 'apples, honey and bread.', 'Children love the apple stand', 'because the farmers give free', 'slices. Coffee from the small', 'cart smells great …'].forEach((s, i) => text(s, M + 30, 220 + i * 50, 26, INK, 500, 'left', app(lt, .6 + i * .1), MONO));
+    text('→', M + 680, 390, 80, SUB, 900, 'center', app(lt, 6));
+    pic('01_영어_기본.png', M + 740, 130, FW - 740, 520, app(lt, 7));
+    stat(M + 740, 690, (FW - 760) / 2, 200, '걸린 시간', C.english.sec + '초', app(lt, 8.5), GREEN);
+    stat(M + 760 + (FW - 760) / 2, 690, (FW - 760) / 2, 200, '놓인 낱말', C.english.n_words + '개', app(lt, 9), GOLD);
+    if (lt > 16) pill('fresh bread · Local honey 처럼 두 낱말 묶음', M + 310, 770, 30, BLUE, app(lt, 16));
+  },
+  tofu(lt) {
+    pic('02_한글_기본글꼴.png', M, 140, FW / 2 - 30, 560, app(lt, .3), true, '기본 글꼴: 한글이 □□□');
+    mark(false, M + 60, 190, 34, app(lt, 3));
+    if (lt > 14.5) { pic('03_한글_글꼴지정.png', M + FW / 2 + 30, 140, FW / 2 - 30, 560, app(lt, 15), true, 'font_path = 맑은 고딕');
+      mark(true, M + FW / 2 + 90, 190, 34, app(lt, 16)); }
+    if (lt > 22) pill("크게 나온 말: '괜찮다' · '알아봤어' · '예약했어' — 정작 '제주도'는 작음", W / 2, 840, 32, RED, app(lt, 22));
+  },
+  particle(lt) {
+    const V = C.font.jeju_variants, ks = Object.keys(V), merge = ease(prog(lt, 14, 16));
+    ks.forEach((k, i) => { const x = lerp(M + 200 + (i % 3) * 420, M + 330, merge), y = lerp(200 + Math.floor(i / 3) * 110, 520, merge);
+      pill(`${k}  ${V[k]}번`, x, y, 36, BLUE, app(lt, .5 + i * .8) * (1 - prog(lt, 15.4, 15.9))); });
+    if (lt > 8) text('17 + 13 + 16 + 12 + 17 → 흩어져서 각각 작게', M + 600, 440, 32, RED, 800, 'center', app(lt, 8) * (1 - prog(lt, 14, 14.5)));
+    if (lt > 15.4) { text(`제주도 ${Math.round(75 * ease(prog(lt, 15.5, 17.5)))}번`, M + 330, 520, 80, GOLD, 900, 'center', app(lt, 15.4));
+      pill('kiwipiepy로 명사만 골라 세기', M + 330, 640, 30, GREEN, app(lt, 16)); }
+    if (lt > 15) pic('04_명사만.png', M + 760, 130, FW - 760, 500, app(lt, 15.5), true, `명사만 ${C.nouns.n_words}종 · 고르기 ${C.nouns.tok_sec}초 + 그리기 ${C.nouns.sec}초`);
+    if (lt > 23) { const U = C.nouns.no_userword;
+      stat(M, 730, FW / 3 - 30, 180, '등록 전', `흑 ${U['흑']} · 돼지 ${U['돼지']} · 흑돼지 ${U['흑돼지']}`, app(lt, 23), RED, 26, 40);
+      stat(M + FW / 3, 730, FW / 3 - 30, 180, '사용자 단어 등록', 'add_user_word', app(lt, 24.5), BLUE, 26, 40);
+      stat(M + FW * 2 / 3, 730, FW / 3 - 30, 180, '등록 후', `흑돼지 ${C.nouns.top[1][1]}번 (2위)`, app(lt, 26), GREEN, 26, 40); }
+  },
+  stop(lt) {
+    pic('06_불용어빼기.png', M, 140, FW / 2 - 30, 560, app(lt, .3), true, `빼기 목록 ${C.stop.removed}개 (ㅋㅋㅋ · 그럼 · 근데 …)`);
+    if (lt > 8) pic('04_명사만.png', M + FW / 2 + 30, 140, FW / 2 - 30, 560, app(lt, 8) * (1 - prog(lt, 15.5, 16)), true, `기본: ${C.horiz.n_layout}개 중 ${C.horiz.default_vertical}개가 세로`);
+    if (lt > 15.5) pic('05_가로로만.png', M + FW / 2 + 30, 140, FW / 2 - 30, 560, app(lt, 15.5), true, 'prefer_horizontal = 1 → 모두 가로');
+  },
+  shape(lt) {
+    pic('하트틀.png', M, 160, 300, 300, app(lt, .3), true, '틀 (흑백 그림)'); text('→', M + 360, 310, 70, SUB, 900, 'center', app(lt, 1));
+    pic('07_하트모양.png', M + 420, 130, 400, 400, app(lt, 1.5), true, `하트 · ${C.mask.sec}초`);
+    if (lt > 14.5) { pic('말풍선틀.png', M + 900, 180, 300, 260, app(lt, 15), true, '말풍선 틀'); text('→', M + 1250, 310, 70, SUB, 900, 'center', app(lt, 15.5));
+      pic('08_카페의견_말풍선.png', M + 1300, 130, FW - 1300, 400, app(lt, 16), true, `카페 의견 150줄 · ${C.cafe.sec}초`); }
+    if (lt > 23) C.cafe.top.slice(0, 5).forEach(([w, n], i) => pill(`${i + 1}. ${w} ${n}번`, M + 170 + i * 340, 720, 30, i < 3 ? GOLD : BLUE, app(lt, 23 + i * .4)));
+  },
+  color(lt) {
+    pic('04_명사만.png', M, 150, FW / 3 - 30, 420, app(lt, .3), true, 'colormap = viridis');
+    pic('노을색.png', M + FW / 3, 150, FW / 3 - 30, 420, app(lt, 8), true, '직접 그린 노을 그림');
+    pic('09_노을색.png', M + FW * 2 / 3, 150, FW / 3 - 30, 420, app(lt, 9.5), true, '그림 색 따라 칠하기');
+    if (lt > 15) pill('background_color = "white" 처럼 배경색도 바꿈 (하트·말풍선은 흰 배경)', W / 2, 760, 32, BLUE, app(lt, 15));
+  },
+  cli(lt) {
+    termLines(M, 130, FW, 300, [['$', 'wordcloud_cli --text 대화.txt --fontfile C:\\Windows\\Fonts\\malgun.ttf --imagefile 구름.png', .4, 3],
+      ['ok', `✔ 구름.png · ${C.cli.sec}초`, 4], ['$', '... --mask 말풍선틀.png --background white --imagefile 말풍선.png', 8, 2], ['ok', `✔ 말풍선.png · ${C.cli.mask_sec}초`, 10.5]], lt, 24);
+    pic('10_명령어.png', M, 450, FW / 2 - 30, 360, app(lt, 5)); pic('11_명령어_말풍선.png', M + FW / 2 + 30, 450, FW / 2 - 30, 360, app(lt, 11));
+    if (lt > 15) pill("명령어만으로는 조사를 못 뗌 → '예약했어' · '제주도에서' 그대로", W / 2, 875, 30, RED, app(lt, 15));
+  },
+  example(lt) {
+    termLines(M, 130, FW / 2 + 60, 420, [['$', 'python 카톡구름.py 대화.txt --단어 흑돼지 --가로', .4, 2.4],
+      ['ok', '완료: 대화_낱말구름.png / 대화_낱말순위.csv', 3.5], ['', '(낱말 36종, 4.2초)', 3.8], ['', '많이 나온 낱말: 제주도(75), 흑돼지(51),', 4.2], ['', '예약(47), 숙소(40), 생각(40)', 4.3]], lt, 24);
+    pic('12_카톡구름_예제.png', M + FW / 2 + 100, 130, FW / 2 - 100, 420, app(lt, 6), true, '대화_낱말구름.png');
+    term(M, 600, 520, 300, '대화_낱말순위.csv (엑셀)', app(lt, 8.5));
+    DATA.freq.slice(0, 4).forEach(([w, n], i) => text(`${i + 1}   ${w}   ${n}`, M + 40, 680 + i * 52, 28, INK, 600, 'left', app(lt, 9 + i * .3), MONO));
+    if (lt > 15) { box(M + 600, 620, FW - 600, 260, 18, '#161b22', GREEN, app(lt, 15), 2); text('낱말구름.bat (두 번 누르기)', M + 630, 670, 32, GREEN, 900, 'left', app(lt, 15));
+      ['글 파일 이름을 입력하시기 바랍니다: 대화.txt', '빼고 싶은 낱말 (쉼표): 생각,기대', '쪼개지면 안 되는 낱말: 흑돼지'].forEach((s, i) => text(s, M + 630, 730 + i * 46, 26, INK, 600, 'left', app(lt, 16 + i * .8), MONO)); }
+  },
+  speed(lt) {
+    C.size.forEach(([s, v], i) => stat(M + i * FW / 3, 150, FW / 3 - 30, 240, `그림 크기 ${s}`, (v * ease(prog(lt, .5 + i * .8, 2.5 + i * .8))).toFixed(2) + '초', app(lt, .3 + i * .8), i === 2 ? RED : GOLD, 28, 60));
+    stat(M, 480, FW / 2 - 30, 260, `단톡방 100배 (${C.big.lines.toLocaleString()}줄) · 그림 만들기`, (C.big.gen_sec * ease(prog(lt, 8.5, 10.5))).toFixed(1) + '초', app(lt, 8), GREEN, 28, 64);
+    stat(M + FW / 2 + 30, 480, FW / 2 - 30, 260, '같은 글 · 명사 고르기 (kiwipiepy)', (C.big.tok_sec * ease(prog(lt, 16.5, 19))).toFixed(1) + '초', app(lt, 16), RED, 28, 64);
+    if (lt > 20) pill('CPU 2개 · 그래픽카드 없음 기준', W / 2, 820, 30, SUB, app(lt, 20));
+  },
+  cons(lt) {
+    const L = ['① 한글은 글꼴 파일 지정이 꼭 필요 (안 하면 □□□)', '② 조사를 떼려면 형태소 분석기 따로 설치 (202MB)', '③ 낱말을 잘못 나누기도 함 (일정표 → 일정 + 표)', '④ 낱말이 0개면 ValueError 오류로 멈춤', '⑤ 크기 = 나온 횟수일 뿐, 중요도는 아님'];
+    L.forEach((s, i) => { const at = [0.3, 7, 13, 19, 25][i]; box(M + 150, 130 + i * 155, FW - 300, 125, 16, '#161b22', '#30363d', app(lt, at), 2); text(s, W / 2, 192 + i * 155, 38, INK, 800, 'center', app(lt, at)); });
+  },
+  use(lt) {
+    const L = [['1', '단톡방·모임 대화를 그림 한 장으로 요약', .3, BLUE], ['2', '가게 손님 의견·설문 답변에서 많이 나온 말 찾기', 8, GREEN], ['⚠', '남의 대화가 담긴 그림은 동의 없이 공유하지 않기', 16, RED]];
+    L.forEach(([ic, s, at, c], i) => { box(M + 100, 170 + i * 220, FW - 200, 170, 18, '#161b22', c, app(lt, at), 2); text(ic, M + 190, 255 + i * 220, 60, c, 900, 'center', app(lt, at)); text(s, M + 270, 255 + i * 220, 42, INK, 800, 'left', app(lt, at)); });
+  },
+  end(lt) {
+    text('wordcloud', W / 2, 240, 130, INK, 900, 'center', app(lt, .2), MONO);
+    text('글에서 많이 나온 낱말을 크게 그려 주는 무료 프로그램', W / 2, 360, 48, SUB, 700, 'center', app(lt, .4));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 455, 56, GOLD, 900, 'center', app(lt, .6));
+    pill('pip install wordcloud kiwipiepy · 명령은 설명란에', W / 2, 570, 36, GREEN, app(lt, .8));
+    text('정보 제공용 · 2026-11-10 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 690, 26, SUB, 500, 'center', app(lt, 1));
+    text('한글 글꼴 지정 필요 · 개인 대화는 동의 없이 공유 금지 · 결과 그림은 직접 확인', W / 2, 730, 26, SUB, 500, 'center', app(lt, 1));
+  }
+};
+// 깜빡임 방지: 장이 바뀔 때 앞 장 마지막 모습이 사라지는 동안 새 장이 나타남(크로스페이드 0.6초)
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const ci = Math.max(0, CH.findIndex(c => t >= c.t0 && t < c.t0 + c.dur)), c = CH[ci], lt = t - c.t0, k = ci === 0 ? 1 : ease(prog(lt, 0, .6));
+  if (k < 1) { const p = CH[ci - 1]; ctx.save(); ctx.globalAlpha = 1 - k; DRAW[p.id](p.dur - .001); ctx.restore(); tag(p, p.dur, 1 - k); }
+  ctx.save(); ctx.globalAlpha = k; DRAW[c.id](lt); ctx.restore();
+  tag(c, lt, k); caption(t);
+}
+</script></body></html>

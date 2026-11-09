@@ -20,7 +20,7 @@
 |  | MemeCrafters/meme-generator | 밈 템플릿 300종에 글·얼굴 합성 | 중국 | 1천 | pip `meme_generator` | 0.2~0.5초, 한글 짤·쓰다듬기 GIF. 템플릿 받으려면 config의 resource_url을 raw.githubusercontent로 변경 | 내 사진으로 짤 1초 | ★4 |
 |  | KohakuBlueleaf/PixelOE | AI 없이 사진을 도트 그림으로 | 대만 | 542 | pip `pixeloe` | 5.2초 | 내 사진이 16비트 게임 속으로 | ★4 |
 |  | visioncortex/vtracer | 그림을 확대해도 안 깨지는 SVG로 | 홍콩 | 7.4천 | pip `vtracer` (파이썬으로 호출) | 0.23초, path 36개 | 로고 무한 확대 | ★4 |
-|  | amueller/word_cloud | 글에서 많이 나온 단어 구름 그림 | 독일 | 1만 | pip `wordcloud` | 0.6초, 한글은 Noto CJK 글꼴 지정 | 카톡 대화로 워드클라우드 | ★4 |
+| ✅ Day 14 | amueller/word_cloud | 글에서 많이 나온 단어 구름 그림 | 독일 | 1만 | pip `wordcloud` | 0.6초, 한글은 Noto CJK 글꼴 지정 (11/10 재확인: 1.9.6, 글꼴 없으면 □, 조사 붙은 말 따로 셈 → kiwipiepy 명사만으로 해결, 그림 0.5초·6만 줄 명사 고르기 19.7초, 첫 설치 matplotlib 내려받기 멈춤 1회) | 카톡 대화로 워드클라우드 | ★4 |
 |  | TotallyNotChase/glitch-this | 사진을 고장 난 TV 효과 GIF로 | 개인 | 1.8천 | pip `glitch-this` | 2.6초 | 레트로 TV 고장 효과 | ★3 |
 |  | Schroedinger-Hat/ImageGoNord | 사진 색감을 테마 팔레트로 | 이탈리아 | 936 | pip `image-go-nord` | 0.9초 | 바탕화면 색 통일 | ★3 |
 |  | li-plus/seam-carving | 사물은 그대로 두고 사진 비율만 줄이기 | 중국 | 119 | pip `seam-carving` | 800→500px 23초 | 사진 가운데만 쏙 | ★3 |

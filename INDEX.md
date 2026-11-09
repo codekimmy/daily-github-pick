@@ -18,3 +18,4 @@
 | 11 | 2026-11-07 | [guofei9987/blind_watermark](https://github.com/guofei9987/blind_watermark) | 사진에 눈에 안 보이는 글자 도장을 숨기는 무료 '투명 잉크 도장' | 사진·저작권 | ★★★☆☆ | 약 1.5만 | [바로가기](2026-11-07-blind-watermark/) |
 | 12 | 2026-11-08 | [microsoft/markitdown](https://github.com/microsoft/markitdown) | 워드·엑셀·PDF의 포장을 벗겨 AI가 읽기 좋은 글만 꺼내 주는 무료 '포장 뜯개' | 문서·AI 활용 | ★★★★☆ | 약 19.4만 | [바로가기](2026-11-08-markitdown/) |
 | 13 | 2026-11-09 | [antiboredom/videogrep](https://github.com/antiboredom/videogrep) | 자막에서 낱말을 찾아 그 장면만 이어 붙여 주는 무료 '영상용 Ctrl+F 가위' | 영상·자막 | ★★★☆☆ | 약 3,500 | [바로가기](2026-11-09-videogrep/) |
+| 14 | 2026-11-10 | [amueller/word_cloud](https://github.com/amueller/word_cloud) | 글에서 많이 나온 낱말을 크게 그려 주는 무료 '낱말 인기투표 개표판' | 글·시각화 | ★★★☆☆ | 약 1.05만 | [바로가기](2026-11-10-wordcloud/) |

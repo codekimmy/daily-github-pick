@@ -1,0 +1,92 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 54.5초 과정 애니메이션 (장면 5개, 장면마다 9~13초, 다 나타난 뒤 2.5초 이상 멈춤 — GUIDE 5장)
+// 숫자는 실제 시연 결과(../results.json), 그림은 wordcloud가 실제로 만든 결과(img/). 대화는 시연용 가상 대화
+const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const T = { c0: 9.5, c1: 21.5, c2: 34.5, c3: 45.5, end: 54.5 }, TOTAL = T.end * FPS;
+const NB = DATA.build.length, C = R.cases;
+let READY = false;
+const NAMES = ['07_하트모양.png', '08_카페의견_말풍선.png', '09_노을색.png', ...DATA.build.map((_, i) => BUILD(i + 1))];
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImgs('img', NAMES)]).then(() => READY = true);
+// 깜빡임 방지: 앞 장면이 사라지는 동안 다음 장면이 같이 나타남(빈 화면을 거치지 않음)
+const fade = (t, a, b) => (a <= 0 ? 1 : prog(t, a - .3, a + .3)) * (1 - prog(t, b - .3, b + .3));
+const M = VERT ? 60 : 100, FW = W - 2 * M;
+
+function sceneIntro(t) {
+  const a = fade(t, 0, T.c0); if (a <= 0) return;
+  const n = 6, lx = VERT ? M : 260, lw = VERT ? FW : W - 520, y0 = VERT ? 300 : 110, gap = VERT ? 110 : 86;
+  text('제주 여행 준비방 (시연용 가상 단톡방)', W / 2, y0 - (VERT ? 80 : 50), VERT ? 34 : 30, SUB, 700, 'center', a);
+  DATA.chat.slice(0, n).forEach((l, i) => { const m = l.match(/, (.+?) : (.*)$/), aa = a * prog(t, .3 + i * .8, .7 + i * .8), right = i % 2 === 1;
+    const s = m[2], bw = tw(s, VERT ? 36 : 32, 700) + 60, bx = right ? lx + lw - bw : lx + (VERT ? 0 : 120), yy = y0 + i * gap;
+    if (!right) text(m[1], lx + (VERT ? 0 : 50), yy + 30, 24, SUB, 700, VERT ? 'left' : 'center', aa);
+    box(bx, yy + (VERT && !right ? 44 : 0), bw, VERT ? 62 : 60, 22, right ? '#f2c14e' : '#21262d', null, aa);
+    text(s, bx + bw / 2, yy + (VERT && !right ? 44 : 0) + (VERT ? 31 : 30), VERT ? 36 : 32, right ? '#111' : INK, 700, 'center', aa); });
+  const cy = VERT ? 1180 : 690, nn = Math.round(R.src.chat_lines * ease(prog(t, 5, 6.6)));
+  text(`이런 대화가 ${nn}줄`, W / 2, cy, VERT ? 60 : 56, INK, 900, 'center', a * prog(t, 4.8, 5.2));
+  text('가장 많이 한 이야기는 무엇입니까?', W / 2, cy + (VERT ? 120 : 100), VERT ? 70 : 76, GOLD, 900, 'center', a * prog(t, 5.6, 6.1));
+  text('wordcloud', W / 2, cy + (VERT ? 240 : 200), 46, SUB, 800, 'center', a * prog(t, 6.2, 6.6), MONO);
+}
+function sceneParticle(t) {
+  const a = fade(t, T.c0, T.c1); if (a <= 0) return; const lt = t - T.c0, V = C.font.jeju_variants;
+  text('① 같은 낱말도 조사가 붙으면 따로 셉니다', W / 2, VERT ? 200 : 90, VERT ? 46 : 52, INK, 900, 'center', a);
+  const ks = Object.keys(V), merge = ease(prog(lt, 5.3, 6.6));
+  ks.forEach((k, i) => { const aa = a * prog(lt, .5 + i * .8, .9 + i * .8);
+    const x0 = VERT ? W / 2 : W / 2 - 520 + (i % 3) * 520, y0 = VERT ? 360 + i * 130 : 230 + Math.floor(i / 3) * 130;
+    const cx = VERT ? W / 2 : W / 2, cy = VERT ? 1300 : 720, x = lerp(x0, cx, merge), y = lerp(y0, cy, merge);
+    pill(`${k}  ${V[k]}번`, x, y, VERT ? 44 : 42, BLUE, aa * (1 - prog(lt, 6.3, 6.7))); });
+  text('기본 설정: 띄어쓰기로만 나눔 → "제주도"가 5갈래로 흩어짐', W / 2, VERT ? 1060 : 520, VERT ? 32 : 34, RED, 800, 'center', a * prog(lt, 4.3, 4.7) * (1 - prog(lt, 6.3, 6.7)));
+  pill('형태소 분석기(kiwipiepy)로 조사를 떼고 명사만', W / 2, VERT ? 1120 : 560, VERT ? 34 : 36, GREEN, a * prog(lt, 6.4, 6.8));
+  const n = Math.round(C.nouns.jeju_total * ease(prog(lt, 6.6, 8.2)));
+  if (lt > 6.4) text(`제주도  ${n}번`, W / 2, VERT ? 1300 : 720, VERT ? 110 : 120, GOLD, 900, 'center', a * prog(lt, 6.4, 6.8));
+  text('17 + 13 + 16 + 12 + 17 = 75 (한 낱말로 모임)', W / 2, VERT ? 1440 : 850, VERT ? 34 : 36, SUB, 700, 'center', a * prog(lt, 8.3, 8.7));
+}
+function sceneBuild(t) {
+  const a = fade(t, T.c1, T.c2); if (a <= 0) return; const lt = t - T.c1;
+  text('② 많이 나온 낱말일수록 크게 놓습니다', W / 2, VERT ? 200 : 70, VERT ? 48 : 52, INK, 900, 'center', a);
+  // 큰 낱말 8개는 0.6초 간격, 나머지는 빠르게 (실제 wordcloud가 정한 자리·크기 그대로)
+  const k = lt < 1 ? 0 : lt < 5.8 ? Math.min(8, 1 + Math.floor((lt - 1) / .6)) : Math.min(NB, 8 + Math.floor((lt - 5.8) / .15));
+  const pw = VERT ? FW : 1280, ph = pw * 9 / 16, px = VERT ? M : M, py = VERT ? 320 : 130;
+  box(px - 4, py - 4, pw + 8, ph + 8, 10, '#000', '#30363d', a, 2);
+  if (k > 0) { ctx.save(); ctx.globalAlpha *= a; ctx.drawImage(IMG[BUILD(k)], px, py, pw, ph); ctx.restore(); }
+  // 옆(아래) 순위 목록
+  const lx = VERT ? M : px + pw + 50, ly = VERT ? py + ph + 90 : 160, lw = VERT ? FW : FW - pw - 50;
+  DATA.build.slice(0, 6).forEach(([w], i) => { const on = k > i, yy = ly + i * (VERT ? 92 : 100), aa = a * (on ? 1 : .25), f = DATA.freq.find(x => x[0] === w)[1];
+    text(`${i + 1}. ${w}`, lx + 10, yy + 30, VERT ? 38 : 34, on ? GOLD : SUB, 800, 'left', aa);
+    text(`${f}번`, lx + lw - 10, yy + 30, VERT ? 34 : 30, on ? INK : SUB, 700, 'right', aa); });
+  text(`놓은 낱말 ${k} / ${NB}`, VERT ? W / 2 : px + pw / 2, VERT ? py + ph + 40 : py + ph + 40, 30, SUB, 700, 'center', a * prog(lt, .8, 1.1));
+  pill(`그림 1장 만드는 데 ${C.horiz.sec}초 · 낱말 고르기 ${C.nouns.tok_sec}초`, W / 2, VERT ? 1700 : 960, VERT ? 34 : 38, GREEN, a * prog(lt, 9, 9.4));
+}
+function sceneShape(t) {
+  const a = fade(t, T.c2, T.c3); if (a <= 0) return; const lt = t - T.c2;
+  text('③ 모양과 색도 바꿀 수 있습니다', W / 2, VERT ? 160 : 80, VERT ? 52 : 54, INK, 900, 'center', a);
+  const L = [['07_하트모양.png', '하트 모양 틀 (mask)'], ['08_카페의견_말풍선.png', '카페 손님 의견 150줄 → 말풍선'], ['09_노을색.png', '그림 색 따라 칠하기']];
+  L.forEach(([n, lab], i) => { const aa = a * prog(lt, .5 + i * .9, 1 + i * .9);
+    if (VERT) pic(n, M, 240 + i * 540, FW, 440, aa, true, lab);
+    else pic(n, M + i * (FW / 3), 180, FW / 3 - 30, 640, aa, true, lab); });
+  text('명령 한 줄에 --mask 그림.png 처럼 붙이면 됩니다', W / 2, VERT ? 1875 : H - 70, VERT ? 30 : 32, SUB, 700, 'center', a * prog(lt, 3.6, 4));
+}
+function sceneEnd(t) {
+  const a = prog(t, T.c3 - .3, T.c3 + .3); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; const lt = t - T.c3;
+  const cy = VERT ? 420 : 170;
+  text('wordcloud', W / 2, cy, VERT ? 120 : 120, INK, 900, 'center', 1, MONO);
+  text('글에서 많이 나온 낱말을 크게 그려 주는 무료 프로그램', W / 2, cy + (VERT ? 120 : 105), VERT ? 36 : 44, SUB, 700);
+  text('일반인 쓸모 ★★★☆☆', W / 2, cy + (VERT ? 220 : 190), VERT ? 60 : 54, GOLD, 900);
+  const L = ['한글은 글꼴 지정이 꼭 필요 (안 하면 □□□)', '조사를 떼려면 형태소 분석기를 함께 사용', '남의 대화는 동의 없이 공유하지 않기'];
+  box(VERT ? M : 360, cy + (VERT ? 300 : 250), VERT ? FW : W - 720, VERT ? 400 : 280, 18, 'rgba(255,123,114,.07)', RED, prog(lt, .6, 1), 2);
+  L.forEach((s, i) => text('· ' + s, W / 2, cy + (VERT ? 380 : 310) + i * (VERT ? 110 : 80), VERT ? 36 : 36, INK, 700, 'center', prog(lt, 1 + i * .8, 1.4 + i * .8)));
+  pill('pip install wordcloud · 명령은 설명란에', W / 2, cy + (VERT ? 830 : 610), VERT ? 34 : 36, GREEN, prog(lt, 3.6, 4));
+  const d1 = '정보 제공용 · 2026-11-10 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '한글 글꼴 지정 필요 · 개인 대화는 동의 없이 공유 금지 · 결과 그림은 직접 확인';
+  if (VERT) { text(d1, W / 2, 1600, 28, SUB, 500); text(d2, W / 2, 1644, 28, SUB, 500); }
+  else { text(d1, W / 2, H - 92, 26, SUB, 500); text(d2, W / 2, H - 52, 26, SUB, 500); }
+  ctx.restore();
+}
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneParticle(t); sceneBuild(t); sceneShape(t); sceneEnd(t);
+}
+</script></body></html>

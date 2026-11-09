@@ -1,6 +1,6 @@
 # 롱폼: 영상에서 원하는 말이 나온 장면만 쏙 — 무료 videogrep 사용법과 한계 (7분 25초)
 
-**업로드할 영상: `media/vg-long.mp4`** (1920×1080, 7:25, 자막 포함 · 음성 없음 → `narration-long-text.txt`로 음성을 만들어 입히면 됨)
+**업로드할 영상: `media/vg-long-voice.mp4`** (1920×1080, 7:25, 자막 + 음성. 음성 없는 원본은 `media/vg-long.mp4`)
 
 ## ✅ 업로드용 (이 부분만 복사해서 쓰면 됨)
 
@@ -51,7 +51,7 @@
 videogrep, 슈퍼컷, 영상자막검색, 영상자르기, 자막, 강의복습, 회의녹화, 영상편집, 무료프로그램, 오픈소스
 ```
 
-**썸네일**: `media/thumbnail.jpg` · **영상**: `media/vg-long.mp4`
+**썸네일**: `media/thumbnail.jpg` · **영상**: `media/vg-long-voice.mp4`
 
 ---
 아래는 참고용 원본 메모입니다.
@@ -91,4 +91,4 @@ videogrep, 슈퍼컷, 영상자막검색, 영상자르기, 자막, 강의복습,
 - [x] 플레이어 안 화면은 모두 videogrep이 실제로 만든 결과 영상(`demo/work/out/*.mp4`), 숫자는 실제 측정값(`demo/results.json`)
 - [x] 강의·회의 영상은 기계 음성으로 만든 가상 영상 (실제 기관·사람과 관련 없음)
 - [x] 엔딩(7:01~)에 유의사항 두 줄
-- [ ] 음성: `narration-long-text.txt`로 만들어 구간 시간(`narration-long.txt`)에 맞춰 입히기 (음성 버전을 따로 만들면 `tools/end_disclaimer.py`로 엔딩 문구 확인)
+- [x] 음성: 운영자가 만든 음성(mp3)을 문장별로 잘라 구간 시간에 맞춰 입힘 → `media/vg-long-voice.mp4` (`demo/voice/align.py`, 61문장 모두 구간 안, 엔딩 유의사항 문구 유지)

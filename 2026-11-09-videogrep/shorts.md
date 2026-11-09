@@ -26,7 +26,7 @@
 파이썬 설치 후 cmd에서 pip install videogrep, 모으기는 videogrep -i 강의.mp4 -s 시험 -o 시험모음.mp4 입니다. 강의.srt처럼 영상과 이름이 같은 자막 파일이 필요합니다. 예제 파일은 전체 영상 설명란 링크에 있습니다!
 ```
 
-**영상**: `media/vg-shorts-voice.mp4` (30초, 자막 + 음성 · 음성 없는 원본 `media/vg-anim-vertical.mp4`)
+**영상**: `media/vg-shorts-voice-bgm.mp4` (30초, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `media/vg-shorts-voice.mp4`, 음성 없는 원본 `media/vg-anim-vertical.mp4`)
 
 ---
 아래는 참고용 원본 메모입니다.

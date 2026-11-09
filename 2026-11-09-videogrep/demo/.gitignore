@@ -1,0 +1,8 @@
+node_modules
+anim/fr/
+work/_*/
+work/_loop.txt
+work/긴강의.*
+work/out/긴강의_*
+work/out/clips/
+work/out/자막없음.*

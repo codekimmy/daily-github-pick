@@ -35,7 +35,7 @@
 |---|---|---|---|---|---|---|---|---|
 | ⭐ ✅ Day 3 | WyattBlue/auto-editor | 영상에서 말 없는 구간 자동 컷 | 미국 | 5.7천 | pip `auto-editor` | 15.0초→9.8초, 2.4초 | 편집 3시간을 명령 한 줄로 | ★5 |
 | ⭐ ✅ Day 9 | smacke/ffsubsync | 어긋난 자막 싱크를 소리 듣고 자동 보정 | 미국 | 7.9천 | pip `ffsubsync` | 2초 밀린 자막 → -1.99초 찾아 보정, 1.3초 (11/5 재확인: 0.5.1, 2.5초 늦은 자막 0.58초에 평균 0.03초로, 점점 밀리는 자막 OK, 중간부터 밀림은 `--split-penalty` 필요, 소리 없는 영상 실패, ffmpeg 필요) | 자막 싱크 1초 해결 | ★5 |
-| ⭐ | antiboredom/videogrep | 자막에서 단어 찾아 그 장면만 이어 붙이기 | 미국 | 3.5천 | pip `videogrep` | 6초 슈퍼컷, 3.2초 | '음…'만 모은 영상 | ★4 |
+| ⭐ ✅ Day 13 | antiboredom/videogrep | 자막에서 단어 찾아 그 장면만 이어 붙이기 | 미국 | 3.5천 | pip `videogrep` | 6초 슈퍼컷, 3.2초 (11/9 재확인: 2.3.0, 찾기 0.7초·4장면 이어 붙이기 8.2초, 30분 영상 48장면 148초, 같은 이름 .srt 필수, 낱말 단위 자르기 실패, 내장 받아쓰기 모델은 영어용·한국어 모델 내려받기 차단, 라이선스 Anti-Capitalist(일반 회사 불가)) | '음…'만 모은 영상 | ★4 |
 |  | timsainb/noisereduce | 녹음의 '쉬~' 잡음 제거 | 미국 | 1.9천 | pip `noisereduce` | 잡음 -34→-71dB, 0.66초 (실제 말소리로 재시연 필요) | 원룸 녹음을 스튜디오처럼 | ★4 |
 |  | lagmoellertim/unsilence | 무음 구간 자르기·빨리 감기 | 독일 | 600 | pip `unsilence` (+`setuptools<80`) | 15.0→10.7초 | 강의 몰아보기 | ★4 |
 |  | spotify/pedalboard | 소리에 리버브·피치·코러스 | 스웨덴 Spotify | 6.4천 | pip `pedalboard` | 0.55초 | Spotify 이펙터 공짜로 | ★3 |

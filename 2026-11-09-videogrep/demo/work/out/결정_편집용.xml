@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+            <!DOCTYPE xmeml>
+            <xmeml version="5">
+              <sequence>
+                <name>out/결정_편집용.xml</name>
+                <duration>520</duration>
+                <rate>
+                  <timebase>30</timebase>
+                  <ntsc>FALSE</ntsc>
+                </rate>
+                <in>-1</in>
+                <out>-1</out>
+                <timecode>
+                  <string>01:00:00:00</string>
+                  <frame>108000</frame>
+                  <displayformat>NDF</displayformat>
+                  <rate>
+                    <timebase>30</timebase>
+                    <ntsc>TRUE</ntsc>
+                  </rate>
+                </timecode>
+                <media>
+                  <video>
+                    <track>
+                        
+          <clipitem id="회의.mp4-0">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>0</start>
+            <end>116</end>
+            <enabled>TRUE</enabled>
+            <in>885</in>
+            <out>1002</out>
+            
+            <file id="회의.mp4">
+              <pathurl>file:///home/claude/daily-github-pick/2026-11-09-videogrep/demo/work/회의.mp4</pathurl>
+              <name>회의.mp4</name>
+              <rate>
+                <timebase>30</timebase>
+                <ntsc>FALSE</ntsc>
+              </rate>
+              <duration>2867</duration>
+              <timecode>
+                <rate>
+                  <timebase>30</timebase>
+                  <ntsc>FALSE</ntsc>
+                </rate>
+                <string>00:00:00:00</string>
+                <displayformat>NDF</displayformat>
+              </timecode>
+              <media>
+                <video>
+                  <duration>2867</duration>
+                  <samplecharacteristics>
+                    <width>1280</width>
+                    <height>720</height>
+                  </samplecharacteristics>
+                </video>
+                <audio>
+                  <channelcount>2</channelcount>
+                </audio>
+              </media>
+            </file>
+            <compositemode>normal</compositemode>
+            <link>
+              <linkclipref>회의.mp4-0</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <link>
+              <linkclipref>회의.mp4-0-audio</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <comments />
+          </clipitem>
+
+          <clipitem id="회의.mp4-1">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>116</start>
+            <end>261</end>
+            <enabled>TRUE</enabled>
+            <in>1448</in>
+            <out>1593</out>
+            <file id="회의.mp4" />
+            <compositemode>normal</compositemode>
+            <link>
+              <linkclipref>회의.mp4-1</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <link>
+              <linkclipref>회의.mp4-1-audio</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <comments />
+          </clipitem>
+
+          <clipitem id="회의.mp4-2">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>261</start>
+            <end>376</end>
+            <enabled>TRUE</enabled>
+            <in>2171</in>
+            <out>2286</out>
+            <file id="회의.mp4" />
+            <compositemode>normal</compositemode>
+            <link>
+              <linkclipref>회의.mp4-2</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <link>
+              <linkclipref>회의.mp4-2-audio</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <comments />
+          </clipitem>
+
+          <clipitem id="회의.mp4-3">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>376</start>
+            <end>520</end>
+            <enabled>TRUE</enabled>
+            <in>2626</in>
+            <out>2770</out>
+            <file id="회의.mp4" />
+            <compositemode>normal</compositemode>
+            <link>
+              <linkclipref>회의.mp4-3</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <link>
+              <linkclipref>회의.mp4-3-audio</linkclipref>
+              <groupindex>1</groupindex>
+              <trackindex>1</trackindex>
+            </link>
+            <comments />
+          </clipitem>
+                    </track>
+                    <format>
+                      <samplecharacteristics>
+                        <width>1280</width>
+                        <height>720</height>
+                        <pixelaspectratio>square</pixelaspectratio>
+                        <rate>
+                          <timebase>30</timebase>
+                          <ntsc>FALSE</ntsc>
+                        </rate>
+                      </samplecharacteristics>
+                    </format>
+                  </video>
+                  <audio>
+                    <track>
+                        
+          <clipitem id="회의.mp4-0-audio">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>0</start>
+            <end>116</end>
+            <enabled>TRUE</enabled>
+            <in>885</in>
+            <out>1002</out>
+            <file id="회의.mp4" />
+            <sourcetrack>
+              <mediatype>audio</mediatype>
+              <trackindex>1</trackindex>
+            </sourcetrack>
+          </clipitem>
+
+          <clipitem id="회의.mp4-1-audio">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>116</start>
+            <end>261</end>
+            <enabled>TRUE</enabled>
+            <in>1448</in>
+            <out>1593</out>
+            <file id="회의.mp4" />
+            <sourcetrack>
+              <mediatype>audio</mediatype>
+              <trackindex>1</trackindex>
+            </sourcetrack>
+          </clipitem>
+
+          <clipitem id="회의.mp4-2-audio">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>261</start>
+            <end>376</end>
+            <enabled>TRUE</enabled>
+            <in>2171</in>
+            <out>2286</out>
+            <file id="회의.mp4" />
+            <sourcetrack>
+              <mediatype>audio</mediatype>
+              <trackindex>1</trackindex>
+            </sourcetrack>
+          </clipitem>
+
+          <clipitem id="회의.mp4-3-audio">
+            <name>회의.mp4</name>
+            <duration>2867</duration>
+            <rate>
+              <timebase>30</timebase>
+              <ntsc>FALSE</ntsc>
+            </rate>
+            <start>376</start>
+            <end>520</end>
+            <enabled>TRUE</enabled>
+            <in>2626</in>
+            <out>2770</out>
+            <file id="회의.mp4" />
+            <sourcetrack>
+              <mediatype>audio</mediatype>
+              <trackindex>1</trackindex>
+            </sourcetrack>
+          </clipitem>
+                        <enabled>TRUE</enabled>
+                        <locked>FALSE</locked>
+                    </track>
+                  </audio>
+                </media>
+              </sequence>
+            </xmeml>

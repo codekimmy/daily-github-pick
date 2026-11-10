@@ -26,7 +26,7 @@
 파이썬 설치 후 cmd에서 pip install wordcloud kiwipiepy, 만들기는 wordcloud_cli --text 대화.txt --fontfile C:\Windows\Fonts\malgun.ttf --imagefile 구름.png 입니다. 조사를 떼고 명사만 세는 예제 파일은 전체 영상 설명란 링크에 있습니다!
 ```
 
-**영상**: `media/wc-anim-vertical.mp4` (54.5초, 화면 자막 포함 · 운영자 음성을 받으면 음성·배경음악 버전을 따로 만듦)
+**영상**: `media/wc-shorts-voice-bgm.mp4` (54.5초, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `media/wc-shorts-voice.mp4`, 음성 없는 원본 `media/wc-anim-vertical.mp4`)
 
 ---
 아래는 참고용 원본 메모입니다.

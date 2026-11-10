@@ -61,7 +61,7 @@
 
 ![터미널](media/terminal.gif)
 
-- **업로드용: `media/wc-long-voice-bgm.mp4`(롱폼 6분 58초, 16개 장, 실제 결과 그림으로 구성, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `wc-long-voice.mp4`, 음성 없는 원본 `wc-long.mp4`), `media/wc-anim-vertical.mp4`(숏폼 54.5초, 세로)**
+- **업로드용: `media/wc-long-voice-bgm.mp4`(롱폼 6분 58초, 16개 장, 실제 결과 그림으로 구성, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `wc-long-voice.mp4`, 음성 없는 원본 `wc-long.mp4`), `media/wc-shorts-voice-bgm.mp4`(숏폼 54.5초, 세로, 자막 + 음성 + 배경음악 · 음악 없는 버전 `wc-shorts-voice.mp4`, 원본 `wc-anim-vertical.mp4`)**
 - 과정 애니메이션: `media/wc-anim.mp4`(가로 54.5초), `media/wc-anim-vertical.mp4`(세로 54.5초) — `demo/results.json` 숫자와 wordcloud가 실제로 정한 낱말 자리(`layout_`)로 그림
 - 썸네일: `media/thumbnail.jpg`
 - 화면 속 낱말이 하나씩 놓이는 장면은 wordcloud가 실제로 정한 자리·크기·색을 앞에서부터 차례로 다시 그린 것입니다

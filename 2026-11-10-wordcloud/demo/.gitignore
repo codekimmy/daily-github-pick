@@ -1,3 +1,4 @@
 anim/img/build/
 work/_*
 __pycache__/
+voice/*.mp3

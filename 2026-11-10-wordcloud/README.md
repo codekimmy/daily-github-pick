@@ -61,7 +61,7 @@
 
 ![터미널](media/terminal.gif)
 
-- **업로드용: `media/wc-long.mp4`(롱폼 6분 58초, 16개 장, 실제 결과 그림으로 구성, 자막 포함 · 음성은 운영자 음성을 받은 뒤 입힘), `media/wc-anim-vertical.mp4`(숏폼 54.5초, 세로)**
+- **업로드용: `media/wc-long-voice-bgm.mp4`(롱폼 6분 58초, 16개 장, 실제 결과 그림으로 구성, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `wc-long-voice.mp4`, 음성 없는 원본 `wc-long.mp4`), `media/wc-anim-vertical.mp4`(숏폼 54.5초, 세로)**
 - 과정 애니메이션: `media/wc-anim.mp4`(가로 54.5초), `media/wc-anim-vertical.mp4`(세로 54.5초) — `demo/results.json` 숫자와 wordcloud가 실제로 정한 낱말 자리(`layout_`)로 그림
 - 썸네일: `media/thumbnail.jpg`
 - 화면 속 낱말이 하나씩 놓이는 장면은 wordcloud가 실제로 정한 자리·크기·색을 앞에서부터 차례로 다시 그린 것입니다
@@ -138,5 +138,6 @@ python 카톡구름.py 대화.txt --모양 하트.png
 - `demo/demo.sh` → asciinema + agg로 `media/terminal.gif`
 - `demo/anim/`: 실제 결과 그림과 낱말 자리로 54.5초 과정 애니메이션을 프레임 단위로 렌더링 (`prep.py`, `engine.js`, `anim.html`, `render.py`)
 - `demo/long/`: 롱폼(미리보기 포함, `script.js` 대본, `long.html`, `render_long.py`, `compose.py`)
+- `demo/voice/`: 운영자 음성을 문장별로 구간에 맞춰 입히기(`align.py`), 잔잔한 배경음악 합성·깔기(`calm_bgm.py`, `add_bgm.py`)
 - `demo/make_images.py`: 썸네일 · `demo/narration/make.py`: 음성용 대본 (구간 시간, 한글 읽기, 초당 6글자 검사)
 - `demo/카톡구름.py`, `demo/tools_win/낱말구름.bat`: 활용 예제

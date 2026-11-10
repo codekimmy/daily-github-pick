@@ -1,0 +1,5 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+Found 1 files with bad names.
+"다운로드/사진  최종 .jpg" -> "사진 최종.jpg"
+

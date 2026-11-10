@@ -1,0 +1,9 @@
+Results of searching ["정리전"] with reference paths [], excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [], reference paths: [])
+-------------------------------------------------Files with same names-------------------------------------------------
+Found 1 files in 1 groups with same name(may have different content)
+Name - 강의자료.zip - 2 files 
+"바탕화면/강의자료.zip"
+"다운로드/강의자료.zip"
+
+

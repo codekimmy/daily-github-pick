@@ -1,0 +1,8 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+--------------------------Empty folder list--------------------------
+Found 3 empty folders
+새 폴더
+새 폴더 (2)
+정리할것
+

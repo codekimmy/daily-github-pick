@@ -1,0 +1,31 @@
+Results of searching ["_지우기시험"] with reference paths ["_지우기시험/동영상", "_지우기시험/문서/회사", "_지우기시험/사진"], excluded paths [] and excluded items []
+(Before optimizations - included paths: ["_지우기시험", "_지우기시험/사진", "_지우기시험/문서/회사", "_지우기시험/동영상"], excluded paths: [], reference paths: ["_지우기시험/사진", "_지우기시험/문서/회사", "_지우기시험/동영상"])
+-------------------------------------------------Files with same hashes in referenced folders-------------------------------------------------
+Found 6 duplicated files which in 4 groups which takes 13.41 MiB.
+
+---- Size 13.10 MiB (13738797) - 1 files
+Reference file - "_지우기시험/동영상/로켓발사_원본.mp4"
+"_지우기시험/바탕화면/로켓발사_원본 - 복사본.mp4"
+
+---- Size 277.35 KiB (284003) - 1 files
+Reference file - "_지우기시험/사진/2025_제주/커피.jpg"
+"_지우기시험/다운로드/영수증.pdf"
+
+---- Size 29.27 KiB (29976) - 1 files
+Reference file - "_지우기시험/사진/2025_제주/바다_3.jpg"
+"_지우기시험/다운로드/사진  최종 .jpg"
+
+---- Size 2.73 KiB (2795) - 3 files
+Reference file - "_지우기시험/문서/회사/보고서_최종.txt"
+"_지우기시험/바탕화면/보고서_최종_진짜최종.txt"
+"_지우기시험/다운로드/보고서_최종(1).txt"
+"_지우기시험/문서/백업/보고서_최종_최종2.txt"
+-------------------------------MESSAGES--------------------------------
+Properly saved to file ⁨16⁩ cache entries.
+Would delete: "_지우기시험/바탕화면/보고서_최종_진짜최종.txt"
+Would delete: "_지우기시험/다운로드/보고서_최종(1).txt"
+Would delete: "_지우기시험/문서/백업/보고서_최종_최종2.txt"
+Would delete: "_지우기시험/다운로드/사진  최종 .jpg"
+Would delete: "_지우기시험/다운로드/영수증.pdf"
+Would delete: "_지우기시험/바탕화면/로켓발사_원본 - 복사본.mp4"
+---------------------------END OF MESSAGES-----------------------------

@@ -1,0 +1,7 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+Found 3 empty files.
+"바탕화면/새 텍스트 문서 (2).txt"
+"바탕화면/새 텍스트 문서.txt"
+"다운로드/메모.txt"
+

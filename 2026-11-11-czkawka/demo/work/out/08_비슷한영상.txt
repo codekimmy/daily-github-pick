@@ -1,0 +1,12 @@
+Results of searching ["정리전"] with reference paths [], excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [], reference paths: [])
+1 videos which have similar friends
+
+Found 3 videos which have similar friends (path, size, bitrate, fps, codec, dimensions, duration)
+"동영상/로켓발사_원본.mp4" - 13.10 MiB - 5.4 Mbps - 30.00 - h264 - 1280x854 - 00:20
+"바탕화면/로켓발사_원본 - 복사본.mp4" - 13.10 MiB - 5.4 Mbps - 30.00 - h264 - 1280x854 - 00:20
+"동영상/로켓발사_카톡용.mp4" - 323.87 KiB - 54 kbps - 30.00 - h264 - 640x428 - 00:20
+
+-------------------------------MESSAGES--------------------------------
+Properly saved to file ⁨3⁩ cache entries.
+---------------------------END OF MESSAGES-----------------------------

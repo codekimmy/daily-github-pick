@@ -1,0 +1,8 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+Found 3 temporary files.
+
+"다운로드/설치파일.tmp"
+"다운로드/영화자막.srt.crdownload"
+"문서/백업/정리.bak"
+

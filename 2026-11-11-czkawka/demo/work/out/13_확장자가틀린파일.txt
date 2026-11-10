@@ -1,0 +1,7 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+Found 2 files with invalid extension.
+
+"다운로드/로켓사진.jpg" ----- (png) - png,pnz
+"다운로드/영수증.pdf" ----- (jpg) - jfif,jpe,jpeg,jpg
+

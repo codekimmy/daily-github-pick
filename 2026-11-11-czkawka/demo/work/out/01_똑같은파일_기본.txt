@@ -1,0 +1,29 @@
+Results of searching ["정리전"] with reference paths [], excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [], reference paths: [])
+-------------------------------------------------Files with same hashes-------------------------------------------------
+Found 7 duplicated files which in 5 groups which takes 79.68 MiB.
+
+---- Size 24.00 MiB (25167284) - 3 files
+"바탕화면/강의자료.zip"
+"다운로드/강의자료 (1).zip"
+"다운로드/강의자료.zip"
+
+---- Size 18 MiB (18874368) - 2 files
+"다운로드/설치파일_v2 (1).exe"
+"다운로드/설치파일_v2.exe"
+
+---- Size 13.10 MiB (13738797) - 2 files
+"바탕화면/로켓발사_원본 - 복사본.mp4"
+"동영상/로켓발사_원본.mp4"
+
+---- Size 277.35 KiB (284003) - 3 files
+"다운로드/영수증.pdf"
+"사진/2025_제주/커피 (1).jpg"
+"사진/2025_제주/커피.jpg"
+
+---- Size 29.27 KiB (29976) - 2 files
+"다운로드/사진  최종 .jpg"
+"사진/2025_제주/바다_3.jpg"
+-------------------------------MESSAGES--------------------------------
+Properly saved to file ⁨12⁩ cache entries.
+---------------------------END OF MESSAGES-----------------------------

@@ -1,0 +1,209 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 (미리보기 포함 전체). 숫자는 실제 시연 결과(../results.json), 사진은 시연에 쓴 실제 사진(../anim/img). 폴더·파일은 시연용 가상 자료
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+const GUI = (typeof GUI_SHOTS !== 'undefined') ? GUI_SHOTS : [];
+const FILES = ['고양이.jpg', '고양이_글자.jpg', '고양이_작게.jpg', '고양이_저화질.jpg', '고양이_밝게.jpg', '고양이_흑백.jpg', '고양이_살짝자름.jpg', '로켓.jpg', '로켓_돌림.jpg',
+  '커피.jpg', '바다_1.jpg', '바다_2.jpg', '정리결과_요약.png', ...GUI.map(g => g[0])];
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImgs('../anim/img', FILES)]).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const M = 120, FW = W - 240;
+// 깜빡임 방지: 자막을 전체 시간 기준으로 이어 붙임. 다음 자막까지 0.6초 안이면 상자를 끄지 않고 글만 겹쳐 바꿈, 상자 너비도 부드럽게
+const CAP = []; CH.forEach(c => c.cues.forEach(q => CAP.push([c.t0 + q[0], c.t0 + q[1], q[2]])));
+CAP.forEach((q, i) => { const n = CAP[i + 1]; q.join = !!n && n[0] - q[1] < .6; if (q.join) q[1] = n[0]; });
+const capSize = s => tw(s, 38, 700) > 1780 ? 32 : 38, capW = s => Math.min(tw(s, capSize(s), 700) + 80, 1880);
+function caption(t) {
+  const i = CAP.findIndex(q => t >= q[0] && t < q[1]); if (i < 0) return;
+  const q = CAP[i], p = CAP[i - 1], joinPrev = p && p.join, k = joinPrev ? ease(prog(t, q[0], q[0] + .3)) : 1;
+  const a = (joinPrev ? 1 : prog(t, q[0], q[0] + .2)) * (q.join ? 1 : 1 - prog(t, q[1] - .15, q[1]));
+  const w = joinPrev ? lerp(capW(p[2]), capW(q[2]), k) : capW(q[2]);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a);
+  if (joinPrev && k < 1) text(p[2], W / 2, 992, capSize(p[2]), INK, 700, 'center', a * (1 - k));
+  text(q[2], W / 2, 992, capSize(q[2]), INK, 700, 'center', a * k);
+}
+function tag(c, lt, a = 1) {
+  if (!c.tag) return; const w = tw(c.tag, 28, 800) + 48;
+  box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)', A = 1) {
+  if (A <= 0) return; ctx.save(); ctx.globalAlpha *= A; term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.7); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(cut(s, size, w - 60, 600), x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+  ctx.restore();
+}
+function fileCard(x, y, w, name, folder, a, color = BLUE, size = 30) {
+  if (a <= 0) return; box(x, y, w, 76, 16, '#161b22', color, a, 2);
+  const ext = name.split('.').pop().toUpperCase().slice(0, 4); box(x + 14, y + 14, 70, 48, 10, color, null, a * .9);
+  text(ext, x + 49, y + 38, 20, '#0d1117', 900, 'center', a, MONO);
+  text(cut(name, size, w - 120, 800), x + 100, y + 30, size, INK, 800, 'left', a); if (folder) text(folder, x + 100, y + 60, 20, SUB, 600, 'left', a);
+}
+const lr = (lt, a, b) => app(lt, a) * (1 - prog(lt, b - .5, b)); // a에 나타나 b에 사라짐 (0.5초 흐려짐)
+const D = R.dup_all, RF = R.delete_ref;
+const DRAW = {
+  preview(lt) {
+    // 장면 3개, 장면마다 7초 이상 (GUIDE 5장 미리보기)
+    const A = lr(lt, 0, 7.6), B = prog(lt, 7.1, 7.6) * (1 - prog(lt, 14.4, 14.9)), Cc = prog(lt, 14.4, 14.9);
+    if (A > 0) { ctx.save(); ctx.globalAlpha *= A;
+      [['보고서_최종.txt', '문서/회사'], ['보고서_최종(1).txt', '다운로드'], ['보고서_최종_진짜최종.txt', '바탕화면'], ['보고서_최종_최종2.txt', '문서/백업']].forEach(([n, f], i) => fileCard(W / 2 - 420, 120 + i * 100, 840, n, f, app(lt, .3 + i * .8), GOLD));
+      text('이 파일들, 내용이 모두 같다면?', W / 2, 640, 70, GOLD, 900, 'center', app(lt, 4)); text('czkawka', W / 2, 750, 46, SUB, 800, 'center', app(lt, 4.6), MONO); ctx.restore(); }
+    if (B > 0) { ctx.save(); ctx.globalAlpha *= B; const lb = lt - 7.3;
+      stat(M + 160, 180, 700, 300, '똑같은 파일', `${Math.round(D.files * ease(prog(lb, .5, 2.5)))}개 · ${(D.mib * ease(prog(lb, .5, 2.5))).toFixed(1)}MB`, 1, GOLD, 34, 70);
+      stat(M + 920, 180, 600, 300, '걸린 시간', D.sec + '초', app(lb, 1.2), GREEN, 34, 80);
+      pill("시연용 가상 'PC 정리 전' 폴더 · 파일 41개 · 146.7MB", W / 2, 620, 34, SUB, app(lb, 2.2)); ctx.restore(); }
+    if (Cc > 0) { ctx.save(); ctx.globalAlpha *= Cc; const lc = lt - 14.6;
+      ['고양이.jpg', '고양이_글자.jpg', '고양이_흑백.jpg', '고양이_작게.jpg'].forEach((n, i) => pic(n, M + i * FW / 4, 140, FW / 4 - 30, 300, app(lc, .2 + i * .6)));
+      ['빈 폴더 3개', '임시 파일 3개', '위치 정보가 든 사진 4장'].forEach((s, i) => pill(s, M + 260 + i * 560, 600, 36, [GREEN, GREEN, RED][i], app(lc, 2 + i * .6))); ctx.restore(); }
+  },
+  title(lt) {
+    text('czkawka', W / 2, 200, 150, INK, 800, 'center', app(lt, .2), MONO);
+    text('츠카프카 · 폴란드어로 "딸꾹질"', W / 2, 310, 40, SUB, 700, 'center', app(lt, .5));
+    text('일반인 쓸모 ★★★★☆', W / 2, 430, 60, GOLD, 800, 'center', app(lt, 4));
+    text(`⭐ 약 3.5만 · 명령어판 MIT · 화면판(Krokiet) GPL-3.0 · czkawka_cli ${R.version}`, W / 2, 520, 32, SUB, 600, 'center', app(lt, 4.5));
+    ['똑같은 파일', '비슷한 사진', '비슷한 영상', '빈 폴더', '큰 파일', '사진 위치 정보'].forEach((s, i) => pill(s, M + 140 + (i % 3) * 560, 680 + Math.floor(i / 3) * 110, 36, [GOLD, BLUE, BLUE, GREEN, GREEN, RED][i], app(lt, 8 + i * .5)));
+  },
+  what(lt) {
+    if (lt < 7.8) text("파일 '지문' 감식반", W / 2, 450, 100, GOLD, 900, 'center', app(lt, .3) * (1 - prog(lt, 7.2, 7.8)));
+    if (lt > 7.5) { const a = app(lt, 7.6), g = ease(prog(lt, 11, 12.5));
+      const L = [['보고서_최종.txt', 'A'], ['보고서_최종(1).txt', 'A'], ['보고서_수정본.txt', 'B'], ['보고서_최종_진짜최종.txt', 'A']];
+      L.forEach(([n, fp], i) => { const x = M + 40, y = 140 + i * 110, c = fp === 'A' ? GOLD : RED; fileCard(x, y, 640, n, '', app(lt, 7.8 + i * .8), c);
+        const fa = app(lt, 10 + i * .2); pill(`지문 ${fp}`, x + 760, y + 38, 30, c, fa); });
+      if (g > 0) { box(M + 900, 140, 360, 420, 22, 'rgba(242,193,78,.06)', GOLD, a * g, 3); text('지문 A', M + 1080, 200, 40, GOLD, 900, 'center', a * g); text('= 똑같은 파일 3개', M + 1080, 270, 32, INK, 800, 'center', a * g);
+        text('이름은 달라도', M + 1080, 340, 28, SUB, 700, 'center', a * g); text('내용이 같음', M + 1080, 385, 28, SUB, 700, 'center', a * g); }
+      if (lt > 16) { pic('고양이.jpg', M + 1330, 140, 300, 200, app(lt, 16.2)); pic('고양이_작게.jpg', M + 1330, 380, 300, 200, app(lt, 17));
+        text('닮은 정도 비교', M + 1480, 620, 32, BLUE, 800, 'center', app(lt, 17.6)); } }
+    if (lt > 23) pill('2020년 시작 · ⭐ 약 3.5만 · 광고 없음 · 인터넷 접속 안 함', W / 2, 840, 34, BLUE, app(lt, 23));
+  },
+  install(lt) {
+    termLines(M, 130, FW, 470, [['note', ':: Windows: github.com/qarmin/czkawka/releases 에서 내려받기', .3], ['note', '::   windows_krokiet_on_windows_skia_opengl.exe  (화면 프로그램)', 1.2],
+      ['$', 'winget install --id qarmin.czkawka.cli', 8.3, 1.6], ['note', ':: (Windows 실행 확인 전)', 10.5],
+      ['$', 'cargo install czkawka_cli --locked     (시연: 리눅스)', 16.3, 1.6], ['ok', `Installed package \`czkawka_cli v${R.version}\` (executable \`czkawka_cli\`)`, 19], ['note', ':: 만들기(빌드) 8분 18초 · CPU 2개', 19.5]], lt, 26);
+    if (lt > 23) { stat(M, 650, FW / 3 - 30, 220, '버전', R.version, app(lt, 23), GOLD); stat(M + FW / 3, 650, FW / 3 - 30, 220, '프로그램 파일', '1개 · 43MB', app(lt, 23.5), BLUE, 28, 50); stat(M + FW * 2 / 3, 650, FW / 3 - 30, 220, '인터넷', '연결 안 함', app(lt, 24), GREEN, 28, 50); }
+  },
+  dup(lt) {
+    const L = [['강의자료.zip', '다운로드'], ['강의자료 (1).zip', '다운로드'], ['강의자료.zip', '바탕화면'], ['설치파일_v2.exe', '다운로드'], ['설치파일_v2 (1).exe', '다운로드'], ['로켓발사_원본 - 복사본.mp4', '바탕화면'], ['영수증.pdf', '다운로드'], ['커피.jpg', '사진/2025_제주']];
+    if (lt < 8.2) { L.forEach(([n, f], i) => fileCard(M + (i % 2) * (FW / 2 + 10), 140 + Math.floor(i / 2) * 100, FW / 2 - 10, n, f, app(lt, .3 + i * .5) * (1 - prog(lt, 7.6, 8.2)), BLUE));
+      pill(`파일 ${R.src.files}개 · ${R.src.mb}MB (시연용 가상 자료)`, W / 2, 620, 36, SUB, app(lt, 4.5) * (1 - prog(lt, 7.6, 8.2))); }
+    if (lt > 7.8) { termLines(M, 130, FW / 2 - 20, 420, [['$', 'czkawka_cli dup -d C:\\정리전', 8, 1.2], ['', `Found ${R.dup_default.files} duplicated files in ${R.dup_default.groups} groups`, 9.5], ['ok', `which takes ${R.dup_default.mib} MiB  (${R.dup_default.sec}초)`, 9.8]], lt, 24, '명령 프롬프트 (cmd)', app(lt, 7.8));
+      const G = D.groups_list.slice(0, 4), cols = [GOLD, GOLD, BLUE, RED];
+      G.forEach((g, i) => { const y = 130 + i * 190, aa = app(lt, 16 + (i < 2 ? 0 : i === 2 ? 1.5 : 7.5) + (i % 2) * .8); box(M + FW / 2 + 20, y, FW / 2 - 20, 170, 16, '#161b22', cols[i], aa, 2);
+        g.slice(0, 3).forEach((p, j) => text(cut(p, 26, FW / 2 - 80, 700), M + FW / 2 + 50, y + 40 + j * 44, 26, j === 0 ? INK : SUB, 700, 'left', aa, MONO)); });
+      stat(M, 600, FW / 4 - 20, 200, '복사본', `${R.dup_default.files}개`, app(lt, 10.5), GOLD); stat(M + FW / 4, 600, FW / 4 - 20, 200, '용량', `${R.dup_default.mib.toFixed(1)}MB`, app(lt, 11), GOLD); }
+  },
+  small(lt) {
+    stat(M, 140, FW / 2 - 30, 260, '기본 설정 (8KB 미만 건너뜀)', `${R.dup_default.files}개 · ${R.dup_default.groups}묶음`, app(lt, .3), RED, 30, 64);
+    ['보고서_최종.txt', '보고서_최종(1).txt', '보고서_최종_진짜최종.txt', '보고서_최종_최종2.txt'].forEach((n, i) => fileCard(M, 440 + i * 100, FW / 2 - 30, n, '2.73KB · 기본 설정에서 빠짐', app(lt, 2 + i * .6), RED));
+    stat(M + FW / 2 + 30, 140, FW / 2 - 30, 260, '-m 1 (작은 파일 포함)', `${D.files}개 · ${D.groups}묶음`, app(lt, 8.5), GREEN, 30, 64);
+    if (lt > 9) text('보고서 4개도 한 묶음으로', M + FW * 3 / 4 + 15, 450, 36, GREEN, 800, 'center', app(lt, 9.5));
+    if (lt > 16) { termLines(M + FW / 2 + 30, 520, FW / 2 - 30, 300, [['$', 'czkawka_cli dup -d C:\\정리전 -s NAME', 16.3, 1.4], ['', `이름이 같은 파일 ${R.dup_name.found}묶음 (강의자료.zip)`, 18], ['note', ':: 이름만 같으면 내용은 다를 수 있음', 19]], lt, 24, '명령 프롬프트 (cmd)', app(lt, 16)); }
+  },
+  image(lt) {
+    pic('고양이.jpg', M, 130, 520, 360, app(lt, .3)); text('원본', M + 260, 530, 32, GOLD, 900, 'center', app(lt, .3));
+    const V = [['고양이_글자.jpg', '글자 넣음'], ['고양이_작게.jpg', '크기 절반'], ['고양이_저화질.jpg', '화질 25'], ['고양이_밝게.jpg', '밝게 25%'], ['고양이_흑백.jpg', '흑백'], ['고양이_살짝자름.jpg', '가장자리 자름']];
+    const st = [[1, 0, 0, 2, 2, 0], [1, 1, 1, 2, 2, 0], [1, 1, 1, 1, 1, 0]]; // 0 못 찾음, 1 원본과 같은 묶음, 2 다른 묶음 (results.json 기준)
+    const stage = lt < 8 ? -1 : lt < 15 ? 0 : lt < 23 ? 1 : 2, lab = ['기본 (차이 5)', '차이 15', '차이 15 + 돌림 포함'];
+    V.forEach(([n, l], i) => { const x = M + 600 + (i % 3) * 370, y = 120 + Math.floor(i / 3) * 330, aa = app(lt, .8 + i * .8);
+      pic(n, x, y, 340, 220, aa); text(l, x + 170, y + 248, 28, INK, 800, 'center', aa);
+      if (stage >= 0) { const s = st[stage][i], c = s === 1 ? GREEN : s === 2 ? BLUE : RED; box(x - 6, y - 6, 352, 232, 12, null, c, 1, 5); pill(s === 1 ? '○ 원본과 같은 묶음' : s === 2 ? '△ 다른 묶음' : '× 못 찾음', x + 170, y + 295, 22, c, 1); } });
+    if (stage >= 0) pill(`설정: ${lab[stage]}`, M + 260, 610, 32, GOLD, 1);
+    if (lt > 23) { pic('로켓.jpg', M, 680, 250, 180, app(lt, 23.3)); text('→', M + 290, 770, 50, SUB, 900, 'center', app(lt, 23.6)); pic('로켓_돌림.jpg', M + 330, 680, 190, 180, app(lt, 23.8));
+      text('90° 돌린 사진도 찾음', M + 260, 900, 28, GREEN, 800, 'center', app(lt, 24.5)); }
+  },
+  video(lt) {
+    const V = R.video.files;
+    V.forEach(([p, s, d, du], i) => { const x = M + i * (FW / 3), aa = app(lt, .3 + i * 1.2); pic('로켓.jpg', x + 40, 150, FW / 3 - 110, (FW / 3 - 110) * (i === 2 ? .5 : .667), aa);
+      text(p.split('/').pop(), x + FW / 6 - 15, 560, 28, INK, 800, 'center', aa); text(`${s} · ${d} · ${du}`, x + FW / 6 - 15, 605, 26, SUB, 700, 'center', aa, MONO); });
+    if (lt > 8) { box(M - 10, 120, FW + 0, 520, 22, null, BLUE, app(lt, 8.2), 4); pill(`3개 모두 한 묶음 · ${R.video.sec}초`, W / 2, 700, 40, BLUE, app(lt, 8.6)); }
+    if (lt > 16) pill('용량 차이 약 40배 (13.1MB ↔ 324KB) · 영상 비교에는 ffmpeg 필요', W / 2, 820, 32, SUB, app(lt, 16.2));
+  },
+  empty(lt) {
+    const tree = [['정리할것/', 0], ['빈폴더/', 1], ['더빈폴더/', 2]]; term(M, 130, 560, 380, '빈 폴더', app(lt, .3));
+    tree.forEach(([n, d], i) => text('▸ ' + n, M + 40 + d * 50, 220 + i * 60, 32, INK, 700, 'left', app(lt, .8 + i * .5)));
+    text('→ "정리할것" 하나로 알려 줌', M + 280, 440, 28, GREEN, 800, 'center', app(lt, 3));
+    stat(M + 620, 130, 420, 380, '빈 폴더', R.empty_folders.found + '개', app(lt, 2), GREEN, 32, 80);
+    stat(M + 1080, 130, 600, 380, '빈 파일 (0바이트)', R.empty_files.found + '개', app(lt, 8.3), GREEN, 32, 80);
+    if (lt > 9) text('새 텍스트 문서.txt · 메모.txt …', M + 1380, 450, 26, SUB, 700, 'center', app(lt, 9));
+    if (lt > 15) { ['설치파일.tmp', '영화자막.srt.crdownload', '정리.bak'].forEach((n, i) => fileCard(M + i * (FW / 3 + 5), 570, FW / 3 - 25, n, '임시 파일로 찾음', app(lt, 15.3 + i * .8), GREEN));
+      fileCard(M + FW / 3, 680, FW / 3 - 25, '~$보고서_최종.docx', '워드 임시 파일 모양 → 못 찾음', app(lt, 18.5), RED); }
+  },
+  bigext(lt) {
+    if (lt < 8.2) { term(M, 130, FW, 470, '큰 파일 5개 (czkawka_cli big -n 5)', app(lt, .3) * (1 - prog(lt, 7.6, 8.2)));
+      R.big.top.forEach(([s, p], i) => { const aa = app(lt, 1 + i * .8) * (1 - prog(lt, 7.6, 8.2)); text(s, M + 60, 230 + i * 70, 34, GOLD, 800, 'left', aa, MONO); text(p, M + 340, 230 + i * 70, 32, INK, 700, 'left', aa, MONO); }); }
+    if (lt > 7.8) { const a = app(lt, 7.8);
+      [['영수증.pdf', '이름은 PDF → 속은 JPG 사진'], ['로켓사진.jpg', '이름은 JPG → 속은 PNG 그림']].forEach(([n, s], i) => { fileCard(M, 140 + i * 130, 760, n, s, a * app(lt, 8.2 + i * .8), GOLD); });
+      if (lt > 16) [['망가진압축.zip', '○ 깨진 파일로 찾음', GREEN], ['깨진사진.jpg', '× 앞 1/3만 남은 사진 — 못 찾음', RED], ['영수증.pdf · 로켓사진.jpg', '△ 확장자만 틀렸는데 "깨짐"으로 표시', BLUE]].forEach(([n, s, c], i) => {
+        const aa = app(lt, 16.2 + (i ? 6.8 + (i - 1) * .8 : 0)); box(M + 860, 140 + i * 150, FW - 860, 120, 18, '#161b22', c, aa, 2); text(n, M + 900, 180 + i * 150, 30, INK, 800, 'left', aa); text(s, M + 900, 225 + i * 150, 26, c, 800, 'left', aa); });
+      stat(M, 440, 760, 230, '확장자가 틀린 파일', R.ext.found + '개', app(lt, 9.5), GOLD, 30, 70); }
+  },
+  exif(lt) {
+    pic('커피.jpg', M, 140, 560, 380, app(lt, .3)); text('커피.jpg (시연용 위치 정보를 넣은 사진)', M + 280, 560, 26, SUB, 700, 'center', app(lt, .3));
+    term(M + 620, 140, FW - 620, 380, '사진 속 정보 (EXIF)', app(lt, 1.5));
+    [['GPSLatitude / GPSLongitude', '위치 (가상 좌표)'], ['DateTimeOriginal', '찍은 날짜 2025:07:15'], ['Make / Model', '기종 VirtualCam']].forEach(([k, v], i) => { const aa = app(lt, 2.5 + i * .8), gone = app(lt, 23.3 + i * .3);
+      text(k, M + 660, 240 + i * 80, 28, gone > 0 ? SUB : GOLD, 700, 'left', aa, MONO); text(v, M + 1180, 240 + i * 80, 28, INK, 700, 'left', aa * (1 - gone)); if (gone > 0) text('지움', M + 1180, 240 + i * 80, 30, GREEN, 900, 'left', gone); });
+    if (lt > 8) stat(M, 620, 520, 220, '위치 정보가 든 사진', R.exif.found + '장', app(lt, 8.2), RED, 30, 70);
+    if (lt > 15) termLines(M + 560, 600, FW - 560, 280, [['$', 'czkawka_cli exif-remover -d C:\\사진 -F', 15.2, 1.5], ['ok', '커피.czkawka_cleaned_exif.jpg  ← 새 사진 (원본은 그대로)', 17.2]], lt, 24, '명령 프롬프트 (cmd)', app(lt, 15));
+    if (lt > 25) pill('새 사진: 위치 없음 · 날짜 없음 · 그림 픽셀은 원본과 같음 (4장 모두)', W / 2, 920 - 40, 30, GREEN, app(lt, 25));
+  },
+  delete(lt) {
+    termLines(M, 130, FW / 2 - 20, 360, [['$', 'czkawka_cli dup -d C:\\정리전 -m 1 -D AEN -Q', .5, 2], ['', 'Would delete: 바탕화면\\강의자료.zip ...', 8.3], ['err', 'Would delete: 사진\\2025_제주\\커피.jpg  ← 원본!', 9.2]], lt, 22);
+    if (lt > 8) box(M + FW / 2 + 20, 130, FW / 2 - 20, 360, 18, 'rgba(255,123,114,.07)', RED, app(lt, 9.5), 2);
+    if (lt > 9.5) { text("'가장 최근 파일만 남기기'(AEN)", M + FW * 3 / 4 + 10, 210, 32, RED, 900, 'center', app(lt, 9.8));
+      text('복사본이 더 최근이면', M + FW * 3 / 4 + 10, 290, 30, INK, 700, 'center', app(lt, 10.4)); text('원본 폴더 파일이 지워질 수 있음', M + FW * 3 / 4 + 10, 340, 30, INK, 700, 'center', app(lt, 10.8)); }
+    if (lt > 16) termLines(M, 530, FW / 2 - 20, 330, [['$', '... -r C:\\정리전\\사진 -r C:\\정리전\\문서\\회사 -r C:\\정리전\\동영상 -Q', 16.3, 2.2], ['ok', `지울 목록 ${RF.would.length}개 — 원본 폴더 파일은 0개`, 19]], lt, 22, '명령 프롬프트 (cmd)', app(lt, 16));
+    if (lt > 24) { stat(M + FW / 2 + 20, 530, FW / 4 - 30, 330, '-y 휴지통으로', `${RF.would.length}개`, app(lt, 24.3), GREEN, 30, 70);
+      stat(M + FW * 3 / 4, 530, FW / 4, 330, '폴더 용량', `${RF.before_mb} → ${RF.after_mb}MB`, app(lt, 25.5), GOLD, 30, 44); }
+  },
+  gui(lt) {
+    if (GUI.length) { const i = lt < 8 ? 0 : lt < 16 ? Math.min(1, GUI.length - 1) : GUI.length - 1, p = i > 0 ? (lt < 16 ? 8 : 16) : 0;
+      GUI.forEach((g, j) => { const a = j === i ? app(lt, p + .2) : j === i - 1 ? 1 - prog(lt, p, p + .5) : 0; if (a > 0) pic(g[0], M + 60, 120, FW - 120, 720, a, true); });
+      const g = GUI[i]; if (g && g[1]) pill(g[1], W / 2, 890, 28, BLUE, app(lt, p + .5)); }
+    else { box(M + 200, 200, FW - 400, 480, 24, '#161b22', BLUE, app(lt, .3), 2); text('Krokiet', W / 2, 330, 90, INK, 900, 'center', app(lt, .5), MONO);
+      text('명령어 없이 마우스로 쓰는 화면 프로그램', W / 2, 450, 40, SUB, 700, 'center', app(lt, 1)); text('windows_krokiet_on_windows_skia_opengl.exe', W / 2, 560, 30, GOLD, 700, 'center', app(lt, 1.5), MONO);
+      pill('이번 시연: 명령어판(czkawka_cli)으로만 · 화면 프로그램은 실행하지 않음', W / 2, 720, 30, RED, app(lt, 8.3)); }
+    if (lt > 16) pill('예전 Czkawka GTK 화면 프로그램은 12.0이 마지막 · 명령어판과 같은 엔진', W / 2, GUI.length ? 70 + 0 : 830, 30, GOLD, app(lt, 16.3));
+  },
+  speed(lt) {
+    const B = R.big5000;
+    stat(M, 150, FW / 3 - 30, 260, '파일 수', Math.round(5000 * ease(prog(lt, .5, 2.5))).toLocaleString() + '개', app(lt, .3), INK, 30, 64);
+    stat(M + FW / 3, 150, FW / 3 - 30, 260, '폴더 용량', (B.mb / 1024 * ease(prog(lt, 1, 3))).toFixed(2) + 'GB', app(lt, .8), INK, 30, 64);
+    stat(M + FW * 2 / 3, 150, FW / 3 - 30, 260, '복사본 찾기', B.first_sec + '초', app(lt, 2.5), GREEN, 30, 64);
+    pill(`복사본 ${B.found[0]}개 · ${(+B.found[2]).toFixed(0)}MB 찾음 (방금 만든 파일이라 읽기가 빠른 조건)`, W / 2, 480, 30, SUB, app(lt, 4));
+    if (lt > 8) { box(M + 100, 560, FW - 200, 120, 20, '#161b22', BLUE, app(lt, 8.2), 2); text('① 크기가 같은 파일끼리만 → ② 앞부분 비교 → ③ 전체 내용 지문 비교', W / 2, 620, 34, INK, 800, 'center', app(lt, 8.5)); }
+    if (lt > 16) stat(M + FW / 4, 720, FW / 2, 190, '비슷한 영상 (영상 3개)', R.video.sec + '초', app(lt, 16.2), RED, 28, 56);
+  },
+  cons(lt) {
+    const L = ["① '가장 최근 파일만 남기기'는 원본 폴더 파일도 지울 수 있음", '② 기본은 작은 파일(8KB · 사진 16KB 미만)을 건너뜀', '③ 서로 다른 그림 2장을 비슷한 사진으로 묶기도 함', '④ 앞부분만 남은 사진을 깨진 파일로 못 찾음', '⑤ 명령어 결과는 영어로만 나옴'];
+    L.forEach((s, i) => { const at = [0.3, 7, 13, 19, 25][i]; box(M + 150, 130 + i * 155, FW - 300, 125, 16, '#161b22', '#30363d', app(lt, at), 2); text(s, W / 2, 192 + i * 155, 38, INK, 800, 'center', app(lt, at)); });
+  },
+  use(lt) {
+    const L = [['1', '다운로드 · 바탕화면 복사본 찾아 공간 확보', .3, BLUE], ['2', '휴대폰에서 옮긴 사진 중 비슷한 사진 정리', 8, GREEN], ['⚠', '지우기 전에 백업 · 미리 보기 · 휴지통으로', 16, RED]];
+    L.forEach(([ic, s, at, c], i) => { box(M + 100, 170 + i * 220, FW - 200, 170, 18, '#161b22', c, app(lt, at), 2); text(ic, M + 190, 255 + i * 220, 60, c, 900, 'center', app(lt, at)); text(s, M + 270, 255 + i * 220, 42, INK, 800, 'left', app(lt, at)); });
+  },
+  end(lt) {
+    text('czkawka', W / 2, 240, 130, INK, 900, 'center', app(lt, .2), MONO);
+    text('복사본 · 비슷한 사진 · 빈 폴더를 찾아 주는 무료 정리 도구', W / 2, 360, 46, SUB, 700, 'center', app(lt, .4));
+    text('일반인 쓸모 ★★★★☆', W / 2, 455, 56, GOLD, 900, 'center', app(lt, .6));
+    pill('Windows: Krokiet 프로그램 또는 czkawka_cli · 주소와 명령은 설명란에', W / 2, 570, 34, GREEN, app(lt, .8));
+    text('정보 제공용 · 2026-11-11 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 690, 26, SUB, 500, 'center', app(lt, 1));
+    text('지우기 전 미리 보기·백업 필수 · 지운 파일은 되살리지 못할 수 있음 · 시연용 가상 자료', W / 2, 730, 26, SUB, 500, 'center', app(lt, 1));
+  }
+};
+// 깜빡임 방지: 장이 바뀔 때 앞 장 마지막 모습이 사라지는 동안 새 장이 나타남(크로스페이드 0.6초)
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const ci = Math.max(0, CH.findIndex(c => t >= c.t0 && t < c.t0 + c.dur)), c = CH[ci], lt = t - c.t0, k = ci === 0 ? 1 : ease(prog(lt, 0, .6));
+  if (k < 1) { const p = CH[ci - 1]; ctx.save(); ctx.globalAlpha = 1 - k; DRAW[p.id](p.dur - .001); ctx.restore(); tag(p, p.dur, 1 - k); }
+  ctx.save(); ctx.globalAlpha = k; DRAW[c.id](lt); ctx.restore();
+  tag(c, lt, k); caption(t);
+}
+</script></body></html>

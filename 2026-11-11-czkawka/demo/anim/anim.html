@@ -1,0 +1,104 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 55초 과정 애니메이션 (장면 5개, 장면마다 9~12.5초, 다 나타난 뒤 2.5초 이상 멈춤 — GUIDE 5장)
+// 숫자는 실제 시연 결과(../results.json), 사진은 시연에 쓴 실제 사진(img/). 폴더·파일은 시연용 가상 자료
+const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const T = { c0: 10.5, c1: 23, c2: 35.5, c3: 46, end: 55 }, TOTAL = T.end * FPS;
+let READY = false;
+const NAMES = ['고양이.jpg', '고양이_글자.jpg', '고양이_작게.jpg', '고양이_저화질.jpg', '고양이_밝게.jpg', '고양이_흑백.jpg', '고양이_살짝자름.jpg'];
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImgs('img', NAMES)]).then(() => READY = true);
+// 깜빡임 방지: 앞 장면이 사라지는 동안 다음 장면이 같이 나타남(빈 화면을 거치지 않음)
+const fade = (t, a, b) => (a <= 0 ? 1 : prog(t, a - .3, a + .3)) * (1 - prog(t, b - .3, b + .3));
+const M = VERT ? 60 : 100, FW = W - 2 * M;
+// 파일 카드: 종류 표시 + 이름 + 폴더
+function fileCard(x, y, w, name, folder, a, color = BLUE, size = 30) {
+  if (a <= 0) return; box(x, y, w, 76, 16, '#161b22', color, a, 2);
+  const ext = name.split('.').pop().toUpperCase().slice(0, 4); box(x + 14, y + 14, 70, 48, 10, color, null, a * .9);
+  text(ext, x + 49, y + 38, 20, '#0d1117', 900, 'center', a, MONO);
+  text(cut(name, size, w - 120, 800), x + 100, y + 30, size, INK, 800, 'left', a); if (folder) text(folder, x + 100, y + 60, 20, SUB, 600, 'left', a);
+}
+function sceneIntro(t) {
+  const a = fade(t, 0, T.c0); if (a <= 0) return;
+  text("시연용 가상 'PC 정리 전' 폴더", W / 2, VERT ? 170 : 70, VERT ? 44 : 40, SUB, 800, 'center', a);
+  const L = [['강의자료.zip', '다운로드'], ['강의자료 (1).zip', '다운로드'], ['보고서_최종_진짜최종.txt', '바탕화면'], ['로켓발사_원본 - 복사본.mp4', '바탕화면'],
+    ['새 텍스트 문서.txt', '바탕화면 · 0바이트'], ['고양이_흑백.jpg', '사진/카톡받은사진'], ['설치파일.tmp', '다운로드'], ['영수증.pdf', '다운로드']];
+  L.forEach(([n, f], i) => { const aa = a * prog(t, .3 + i * .7, .7 + i * .7), cw = VERT ? FW : 820;
+    const x = VERT ? M : (i % 2 ? W / 2 + 20 : W / 2 - 20 - cw), y = VERT ? 240 + i * 96 : 120 + Math.floor(i / 2) * 100;
+    fileCard(x, y, cw, n, f, aa, [GOLD, GOLD, GOLD, GOLD, GREEN, BLUE, GREEN, RED][i]); });
+  const cy = VERT ? 1120 : 610, nf = Math.round(R.src.files * ease(prog(t, 5.6, 7.1))), mb = (R.src.mb * ease(prog(t, 5.6, 7.1))).toFixed(1);
+  text(`파일 ${nf}개 · ${mb}MB`, W / 2, cy, VERT ? 64 : 60, INK, 900, 'center', a * prog(t, 5.5, 5.9));
+  text('쓸데없는 복사본은 몇 MB입니까?', W / 2, cy + (VERT ? 120 : 110), VERT ? 66 : 76, GOLD, 900, 'center', a * prog(t, 6.5, 7));
+  text('czkawka (츠카프카)', W / 2, cy + (VERT ? 230 : 210), 46, SUB, 800, 'center', a * prog(t, 6.9, 7.3), MONO);
+}
+function sceneDup(t) {
+  const a = fade(t, T.c0, T.c1); if (a <= 0) return; const lt = t - T.c0;
+  text('① 이름이 달라도 내용이 같으면 한 묶음', W / 2, VERT ? 170 : 70, VERT ? 46 : 52, INK, 900, 'center', a);
+  const L = [['보고서_최종.txt', '문서/회사'], ['보고서_최종(1).txt', '다운로드'], ['보고서_최종_진짜최종.txt', '바탕화면'], ['보고서_최종_최종2.txt', '문서/백업'], ['보고서_수정본.txt', '문서/회사']];
+  const g = ease(prog(lt, 5.5, 7)), cw = VERT ? 760 : 620;
+  if (g > 0 && a > 0) { const gx = VERT ? M : M, gy = VERT ? 240 : 140, gw = VERT ? FW : cw + 80, gh = 4 * 96 + 90;
+    box(gx, gy, gw, gh, 22, 'rgba(242,193,78,.06)', GOLD, a * g, 3); text('한 묶음 · 4개 (2.73KB씩)', gx + gw / 2, gy + gh - 34, 30, GOLD, 900, 'center', a * g); }
+  L.forEach(([n, f], i) => { const aa = a * prog(lt, .5 + i * .8, .9 + i * .8), same = i < 4;
+    const x0 = VERT ? M + (i % 2) * 160 : M + (i % 3) * 580, y0 = VERT ? 240 + i * 130 : 160 + Math.floor(i / 3) * 210;
+    const x1 = VERT ? M + 40 : M + 40, y1 = VERT ? 260 + i * 96 : 160 + i * 96, x = same ? lerp(x0, x1, g) : (VERT ? M + 40 : M + cw + 260), y = same ? lerp(y0, y1, g) : (VERT ? lerp(y0, 860, g) : lerp(y0, 300, g));
+    fileCard(x, y, cw, n, f, aa, same ? GOLD : RED);
+    const fa = a * prog(lt, 4 + i * .1, 4.4 + i * .1); pill(same ? '내용 지문 A' : '내용 지문 B', x + cw - 110, y - 2, 20, same ? GOLD : RED, fa);
+    if (!same) text('내용이 달라서 제외', x + cw / 2, y + 112, 28, RED, 800, 'center', a * prog(lt, 6.5, 7)); });
+  const D = R.dup_all, sx = VERT ? M : M + cw + 160, sy = VERT ? 1260 : 520, sw = VERT ? FW / 2 - 15 : (FW - cw - 160) / 2 - 15;
+  stat(sx, sy, sw, 210, '똑같은 파일 (전체)', `${Math.round(D.files * ease(prog(lt, 8, 9.6)))}개 · ${(D.mib * ease(prog(lt, 8, 9.6))).toFixed(1)}MB`, a * prog(lt, 7.8, 8.2), GOLD, 28, 46);
+  stat(sx + sw + 30, sy, sw, 210, '걸린 시간', `${D.sec}초`, a * prog(lt, 8.4, 8.8), GREEN, 28, 56);
+  text(`${D.groups}묶음 · 작은 파일까지 찾으려면 -m 1`, VERT ? W / 2 : sx + sw + 15, sy + 260, 28, SUB, 700, 'center', a * prog(lt, 8.8, 9.2));
+}
+function sceneImage(t) {
+  const a = fade(t, T.c1, T.c2); if (a <= 0) return; const lt = t - T.c1;
+  text('② 고친 사진도 "비슷한 사진"으로 찾습니다', W / 2, VERT ? 170 : 70, VERT ? 46 : 52, INK, 900, 'center', a);
+  const ox = VERT ? M + 150 : M, oy = VERT ? 230 : 160, ow = VERT ? FW - 300 : 560, oh = VERT ? 420 : 380;
+  const o = pic('고양이.jpg', ox, oy, ow, oh, a * prog(lt, .3, .7), true); text('원본', ox + ow / 2, oy + oh + 34, 30, GOLD, 900, 'center', a * prog(lt, .3, .7));
+  const V = [['고양이_글자.jpg', '글자 넣음', 1], ['고양이_작게.jpg', '크기 절반', 1], ['고양이_저화질.jpg', '화질 25', 1], ['고양이_밝게.jpg', '밝게 25%', 1], ['고양이_흑백.jpg', '흑백', 1], ['고양이_살짝자름.jpg', '가장자리 자름', 0]];
+  const cw = VERT ? (FW - 40) / 2 : 360, chh = VERT ? 230 : 220, gx = VERT ? M : M + ow + 80, gy = VERT ? 760 : 140;
+  V.forEach(([n, lab, ok], i) => { const aa = a * prog(lt, 1 + i * .8, 1.4 + i * .8), x = gx + (i % (VERT ? 2 : 3)) * (cw + 40), y = gy + Math.floor(i / (VERT ? 2 : 3)) * (chh + 110);
+    pic(n, x, y, cw, chh, aa, true); text(lab, x + cw / 2, y + chh + 32, 28, INK, 800, 'center', aa);
+    const k = a * prog(lt, 6.2 + i * .15, 6.6 + i * .15); if (k > 0) { box(x - 6, y - 6, cw + 12, chh + 12, 12, null, ok ? GREEN : RED, k, 5);
+      pill(ok ? '○ 찾음' : '× 못 찾음', x + cw / 2, y + chh + 76, 24, ok ? GREEN : RED, k); } });
+  const by = VERT ? 1830 : 960;
+  pill(`설정: 차이 15 + 돌림 포함 · 폴더 전체 검사 ${R.image_rot.sec}초 · 가장자리를 자른 사진은 못 찾음`, W / 2, by, VERT ? 26 : 32, BLUE, a * prog(lt, 7.6, 8));
+}
+function sceneMore(t) {
+  const a = fade(t, T.c2, T.c3); if (a <= 0) return; const lt = t - T.c2;
+  text('③ 빈 폴더 · 임시 파일 · 사진 속 위치 정보까지', W / 2, VERT ? 170 : 70, VERT ? 42 : 52, INK, 900, 'center', a);
+  const C = [['빈 폴더', R.empty_folders.found + '개', '폴더 안 빈 폴더까지', GREEN], ['빈 파일 (0바이트)', R.empty_files.found + '개', '새 텍스트 문서.txt 등', GREEN], ['임시 파일', R.temp.found + '개', '.tmp · .crdownload · .bak', GREEN],
+    ['확장자가 틀린 파일', R.ext.found + '개', '영수증.pdf → 실제는 JPG', RED], ['위치 정보가 든 사진', R.exif.found + '장', 'GPS · 찍은 날짜 · 기종', RED], ['비슷한 영상', R.video.files.length + '개', `크기만 줄인 영상도 · ${R.video.sec}초`, BLUE]];
+  const cols = VERT ? 2 : 3, cw = (FW - (cols - 1) * 30) / cols, ch = VERT ? 280 : 260;
+  C.forEach(([k, v, s, c], i) => { const x = M + (i % cols) * (cw + 30), y = (VERT ? 250 : 140) + Math.floor(i / cols) * (ch + 30), aa = a * prog(lt, .4 + i * .8, .8 + i * .8);
+    stat(x, y, cw, ch, k, v, aa, c, VERT ? 30 : 30, 64); text(s, x + cw / 2, y + ch - 30, 24, SUB, 700, 'center', aa); });
+  const py = VERT ? 1280 : 760, A = a * prog(lt, 5.4, 5.8);
+  text('지우기 전에 꼭', W / 2, py, VERT ? 40 : 40, GOLD, 900, 'center', A);
+  const P = [['-Q', '미리 보기 (지우지 않고 목록만)'], ['-y', '휴지통으로 보내기'], ['-r', '원본 폴더는 건드리지 않기']];
+  P.forEach(([o, s], i) => { const aa = a * prog(lt, 6 + i * .8, 6.4 + i * .8);
+    if (VERT) { box(M, py + 60 + i * 120, FW, 96, 20, '#161b22', BLUE, aa, 2); text(o, M + 70, py + 108 + i * 120, 40, BLUE, 900, 'center', aa, MONO); text(s, M + 140, py + 108 + i * 120, 34, INK, 800, 'left', aa); }
+    else { const bw = (FW - 60) / 3, x = M + i * (bw + 30); box(x, py + 60, bw, 110, 20, '#161b22', BLUE, aa, 2); text(o, x + 70, py + 115, 40, BLUE, 900, 'center', aa, MONO); text(s, x + 130, py + 115, 30, INK, 800, 'left', aa); } });
+}
+function sceneEnd(t) {
+  const a = prog(t, T.c3 - .3, T.c3 + .3); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; const lt = t - T.c3;
+  const cy = VERT ? 420 : 170;
+  text('czkawka', W / 2, cy, 120, INK, 900, 'center', 1, MONO);
+  text('복사본·비슷한 사진·빈 폴더를 찾아 주는 무료 정리 도구', W / 2, cy + (VERT ? 120 : 105), VERT ? 36 : 44, SUB, 700);
+  text('일반인 쓸모 ★★★★☆', W / 2, cy + (VERT ? 220 : 190), VERT ? 60 : 54, GOLD, 900);
+  const L = ['지우기 전에 미리 보기(-Q)로 목록 먼저 확인', "'가장 최근 파일만 남기기'는 원본 폴더 파일도 지울 수 있음", '사진은 위치 정보를 지운 새 파일로 올리기'];
+  box(VERT ? M : 300, cy + (VERT ? 300 : 250), VERT ? FW : W - 600, VERT ? 400 : 280, 18, 'rgba(255,123,114,.07)', RED, prog(lt, .6, 1), 2);
+  L.forEach((s, i) => text('· ' + s, W / 2, cy + (VERT ? 380 : 310) + i * (VERT ? 110 : 80), VERT ? 32 : 36, INK, 700, 'center', prog(lt, 1 + i * .8, 1.4 + i * .8)));
+  pill('Windows: Krokiet 프로그램 또는 czkawka_cli · 설명란에', W / 2, cy + (VERT ? 830 : 610), VERT ? 30 : 36, GREEN, prog(lt, 3.6, 4));
+  const d1 = '정보 제공용 · 2026-11-11 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '지우기 전 미리 보기·백업 필수 · 지운 파일은 되살리지 못할 수 있음 · 시연용 가상 자료';
+  if (VERT) { text(d1, W / 2, 1600, 28, SUB, 500); text(d2, W / 2, 1644, 26, SUB, 500); }
+  else { text(d1, W / 2, H - 92, 26, SUB, 500); text(d2, W / 2, H - 52, 26, SUB, 500); }
+  ctx.restore();
+}
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneDup(t); sceneImage(t); sceneMore(t); sceneEnd(t);
+}
+</script></body></html>

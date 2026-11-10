@@ -1,0 +1,32 @@
+Results of searching ["정리전"] with reference paths [], excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [], reference paths: [])
+5 images which have similar friends
+
+Found 6 images which have similar friends
+"사진/카톡받은사진/고양이_글자.jpg" - 902x600 - 100.17 KiB - Original
+"사진/카톡받은사진/고양이_흑백.jpg" - 902x600 - 84.47 KiB - Original
+"사진/2025_제주/고양이.jpg" - 902x600 - 131.17 KiB - Original
+"사진/카톡받은사진/고양이_밝게.jpg" - 902x600 - 110.09 KiB - Original
+"사진/카톡받은사진/고양이_작게.jpg" - 451x300 - 33.54 KiB - Medium
+"사진/카톡받은사진/고양이_저화질.jpg" - 902x600 - 25.78 KiB - Medium
+
+Found 2 images which have similar friends
+"사진/2025_제주/바다_1.jpg" - 1200x800 - 46.32 KiB - Original
+"사진/2025_제주/바다_2.jpg" - 1200x800 - 43.62 KiB - Medium
+
+Found 2 images which have similar friends
+"다운로드/사진  최종 .jpg" - 1200x800 - 29.27 KiB - Original
+"사진/2025_제주/바다_3.jpg" - 1200x800 - 29.27 KiB - Original
+
+Found 3 images which have similar friends
+"다운로드/로켓사진.jpg" - 1280x854 - 940.52 KiB - Original
+"사진/2025_제주/로켓.jpg" - 1280x854 - 210.53 KiB - Original
+"사진/카톡받은사진/로켓_돌림.jpg" - 854x1280 - 137.51 KiB - Very High
+
+Found 2 images which have similar friends
+"사진/2025_제주/커피 (1).jpg" - 1200x800 - 277.35 KiB - Original
+"사진/2025_제주/커피.jpg" - 1200x800 - 277.35 KiB - Original
+
+-------------------------------MESSAGES--------------------------------
+Properly saved to file ⁨17⁩ cache entries.
+---------------------------END OF MESSAGES-----------------------------

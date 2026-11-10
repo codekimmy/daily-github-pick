@@ -1,0 +1,15 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+Found 4 files with EXIF data.
+
+
+File: "사진/2025_제주/바다_1.jpg" - 46.32 KiB - 1794351401 - ["DateTimeOriginal", "GPSLatitude", "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef", "Make", "Model"]
+
+File: "사진/2025_제주/바다_2.jpg" - 43.62 KiB - 1794351401 - ["DateTimeOriginal", "GPSLatitude", "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef", "Make", "Model"]
+
+File: "사진/2025_제주/커피 (1).jpg" - 277.35 KiB - 1794351401 - ["DateTimeOriginal", "GPSLatitude", "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef", "Make", "Model"]
+
+File: "사진/2025_제주/커피.jpg" - 277.35 KiB - 1794351401 - ["DateTimeOriginal", "GPSLatitude", "GPSLatitudeRef", "GPSLongitude", "GPSLongitudeRef", "Make", "Model"]
+-------------------------------MESSAGES--------------------------------
+Properly saved to file ⁨18⁩ cache entries.
+---------------------------END OF MESSAGES-----------------------------

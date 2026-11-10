@@ -51,7 +51,7 @@
 |---|---|---|---|---|---|---|---|---|
 | ⭐ ✅ Day 6 | marp-team/marp-cli | 메모장 글로 발표 슬라이드 PDF·PPTX | 일본 | 3.9천 | npm `@marp-team/marp-cli` | 3쪽 PDF 4초, 수정 가능한 PPTX 4.6초, 한글 OK (`--no-stdin` 필수) | 텍스트 10줄이 5초 만에 PPT | ★4 |
 | ⭐ ✅ Day 8 | tfeldmann/organize | 규칙대로 폴더 자동 정리 | 독일 | 3.2천 | pip `organize-tool` | 0.8초, 한글 파일명 OK, 중복도 알려 줌 (11/4 재확인: 3.3.0, 27개 0.39초, 내용으로 영수증 PDF 찾기 OK, 스캔 PDF·하위 폴더 중복은 못 잡음) | 다운로드 폴더 1초 정리 | ★4 |
-| ⭐ | qarmin/czkawka | 중복·비슷한 파일 찾아 용량 확보 | 폴란드 | 3.5만 | crates `czkawka_cli` (빌드 13분) | 0.1초에 중복 2그룹 | '최종_진짜최종' 찾기 | ★4 |
+| ⭐ ✅ Day 15 | qarmin/czkawka | 중복·비슷한 파일 찾아 용량 확보 | 폴란드 | 3.5만 | crates `czkawka_cli` (빌드 13분) | 0.1초에 중복 2그룹 (11/11 재확인: 12.0.2, 빌드 8분 18초, 41개 중 복사본 10개·79.7MB 0.16초, 기본은 8KB 미만 건너뜀, 비슷한 사진 차이 15+돌림에서 고친 사진 6장 중 5장·다른 그림 오탐 1건, AEN 자동 지우기가 원본 폴더 파일 포함 → -r 필요, 화면 프로그램 krokiet은 cargo 빌드가 15분 넘게 끝나지 않아 중단(영상 렌더링과 CPU를 나눠 씀)) | '최종_진짜최종' 찾기 | ★4 |
 | ✅ Day 12 | microsoft/markitdown | PDF·워드·엑셀·PPT를 텍스트로 | 미국 MS | 19만 | pip `markitdown[all]` | docx 1.9초(표·목록 유지), PDF 2.7초 (11/8 재확인: 0.1.9, 문서 하나 0.8~1.05초, 100쪽 PDF 9.78초, 스캔 PDF·사진 0자, 엑셀 빈칸 NaN, HWP 변환기 없음) | 문서를 ChatGPT용 글로 | ★4 |
 |  | ocrmypdf/OCRmyPDF | 스캔 PDF를 검색되는 PDF로 | 미국 | 3.5만 | pip `ocrmypdf` (venv 권장) | 한글 영수증 7.4초, 일부 글자 깨짐 | 영수증 PDF가 Ctrl+F로 검색 | ★4 |
 |  | simonhaenisch/md-to-pdf | 마크다운을 보고서 PDF로 | 독일 | 2천 | npm `md-to-pdf` | 4.1초, 한글 OK | 메모가 보고서처럼 | ★3 |
@@ -63,7 +63,7 @@
 | ⭐ | ORB-HD/deface | 사진·영상 속 얼굴 자동 블러 | 독일 하이델베르크대 | 1.6천 | pip `deface` (모델 내장) | 0.8초, 얼굴만 정확히 블러 | 단톡방 올리기 전 모자이크 | ★5 |
 | ⭐ ✅ Day 4 | dropbox/zxcvbn | 내 비밀번호가 몇 초 만에 뚫리는지 | 미국 Dropbox | 1.6만 | pip `zxcvbn` | password1 '1초 미만' / 긴 문장 '수백 년' | 내 비번은 몇 초? | ★5 |
 | ⭐ ✅ Day 10 | beancount/fava | 텍스트 가계부를 차트 대시보드로 | 독일 | 2.6천 | pip `fava` | 가상 9개월 가계부 → 월별 막대그래프 화면 (11/6 재확인: 1.30.16, 453건 검사 0.13초·화면 0.6초, 한국어 화면 OK, 계정 이름은 영어 대문자로 시작해야 함, 10년치 6,475건 0.69초) | 메모장 가계부가 대시보드로 | ★4 |
-|  | thampiman/reverse-geocoder | 사진 GPS → 동네 이름 (오프라인) | 개인 | 1.9천 | pip `reverse_geocoder` | 가짜 남산 좌표 → Seoul, 0.6초 | 사진 한 장으로 사는 동네가 드러난다 | ★4 |
+|  | thampiman/reverse-geocoder | 사진 GPS → 동네 이름 (오프라인) | 개인 | 1.9천 | pip `reverse_geocoder` | 가짜 남산 좌표 → Seoul, 0.6초  (11/11 재확인: 1.5.1, 한국 지명 153곳뿐 · Enjitsu·Neietsu 같은 옛 일본식 표기 섞임, 해운대 → Kijang) | 사진 한 장으로 사는 동네가 드러난다 | ★4 |
 |  | RapidAI/RapidOCR | CPU에서 도는 OCR | 중국 | 8.4천 | pip `rapidocr_onnxruntime` | 영문·숫자 영수증 정확, **한글 못 읽음** | 영수증 → 가계부 | ★3 |
 |  | str4d/rage (원본 age) | 파일을 열쇠로 잠그는 암호화 | 뉴질랜드 | 3.7천 | crates `rage` (빌드 4.5분) | 한글 일기 암호화·복원 | 비밀 일기 잠그기 | ★4 |
 |  | heuer/segno · redacted/XKCD-password-generator | 와이파이 QR · 외우기 쉬운 비밀번호 | 독일·개인 | 800·1.4천 | pip `segno`·`xkcdpass` | 성공 | zxcvbn 편과 묶기 | ★3 |
@@ -93,4 +93,5 @@
 - **GUI 설치형이거나 클론해서 빌드해야 함**: Stirling-PDF, PhotoCraft, Concat, Umi-OCR, VoiceStudio, ComfyUI
 - **사람 얼굴이 나온 CC0 사진을 구할 수 없음 (11/7)**: ORB-HD/deface(얼굴 블러) — 위키미디어·NASA 사진 서버 차단, scikit-image에는 우주인 1장뿐. 얼굴 사진을 운영자가 제공하면 가능
 - **기타**: pixelsort(Pillow 11과 호환 안 됨), @squoosh/cli(Node 22에서 크래시), pdfly(OpenSSL 인식 실패), pdf2docx(한글 띄어쓰기 사라짐), PyBoy(게임 ROM 없음)
+- **화면 프로그램 빌드가 너무 오래 걸림 (11/11)**: krokiet(crates, Slint 화면) — `cargo install krokiet` 15분 넘게(다른 작업과 CPU를 나눠 씀) 끝나지 않아 중단. 명령어판 czkawka_cli는 8분 18초
 - **설치가 보안 확인에서 거부됨 (11/4)**: xevrion/hatchzip (crates, 10월 22일 등록된 새 패키지라 `cargo install` 거부), 같은 날 venv 안 `pip install`도 한 번 거부됨 → 전역 `pip install --break-system-packages`로는 설치됨

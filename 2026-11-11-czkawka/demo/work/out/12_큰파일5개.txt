@@ -1,0 +1,11 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+5 the biggest files.
+
+
+24.00 MiB (25167284) - "다운로드/강의자료 (1).zip"
+24.00 MiB (25167284) - "다운로드/강의자료.zip"
+24.00 MiB (25167284) - "바탕화면/강의자료.zip"
+18 MiB (18874368) - "다운로드/설치파일_v2 (1).exe"
+18 MiB (18874368) - "다운로드/설치파일_v2.exe"
+

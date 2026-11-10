@@ -1,0 +1,4 @@
+work/정리전/
+work/_*/
+__pycache__/
+voice/*.mp3

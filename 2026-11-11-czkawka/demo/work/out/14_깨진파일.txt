@@ -1,0 +1,9 @@
+Results of searching ["정리전"] with excluded paths [] and excluded items []
+(Before optimizations - included paths: ["정리전"], excluded paths: [])
+Found 3 broken files.
+"다운로드/로켓사진.jpg" - Format error decoding Jpeg: Error parsing image. Illegal start bytes:8950
+"다운로드/망가진압축.zip" - invalid Zip archive: Could not find EOCD
+"다운로드/영수증.pdf" - couldn't parse input: invalid file header
+-------------------------------MESSAGES--------------------------------
+Properly saved to file ⁨24⁩ cache entries.
+---------------------------END OF MESSAGES-----------------------------

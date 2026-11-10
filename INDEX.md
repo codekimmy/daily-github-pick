@@ -19,3 +19,4 @@
 | 12 | 2026-11-08 | [microsoft/markitdown](https://github.com/microsoft/markitdown) | 워드·엑셀·PDF의 포장을 벗겨 AI가 읽기 좋은 글만 꺼내 주는 무료 '포장 뜯개' | 문서·AI 활용 | ★★★★☆ | 약 19.4만 | [바로가기](2026-11-08-markitdown/) |
 | 13 | 2026-11-09 | [antiboredom/videogrep](https://github.com/antiboredom/videogrep) | 자막에서 낱말을 찾아 그 장면만 이어 붙여 주는 무료 '영상용 Ctrl+F 가위' | 영상·자막 | ★★★☆☆ | 약 3,500 | [바로가기](2026-11-09-videogrep/) |
 | 14 | 2026-11-10 | [amueller/word_cloud](https://github.com/amueller/word_cloud) | 글에서 많이 나온 낱말을 크게 그려 주는 무료 '낱말 인기투표 개표판' | 글·시각화 | ★★★☆☆ | 약 1.05만 | [바로가기](2026-11-10-wordcloud/) |
+| 15 | 2026-11-11 | [qarmin/czkawka](https://github.com/qarmin/czkawka) | 이름이 달라도 내용이 같은 복사본·비슷한 사진·빈 폴더를 찾아 주는 무료 '파일 지문 감식반' | 파일정리·생산성 | ★★★★☆ | 약 3.5만 | [바로가기](2026-11-11-czkawka/) |

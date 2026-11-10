@@ -24,7 +24,7 @@ YYYY-MM-DD-이름/
   blog.md          티스토리 소개글 (복붙용)
   youtube-long.md  롱폼 8~12분 대본 + 장면 지시
   shorts.md        숏폼 45~60초 대본 + 자막
-  media/           terminal.gif, 과정 애니메이션(가로·세로 mp4 + gif), 캡처
+  media/           terminal.gif, 과정 애니메이션(가로·세로 mp4 + gif), 캡처, 썸네일 — blog.md에 넣는 이미지는 모두 여기에 둔다 (demo/ 안 그림도 복사, 2026-11-10 운영자 요청)
   demo/            직접 만든 코드·스크립트
 ```
 

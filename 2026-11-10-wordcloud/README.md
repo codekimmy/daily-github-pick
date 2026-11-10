@@ -57,9 +57,9 @@
 | 막힌 점 ⑤ | 크기는 **나온 횟수**일 뿐입니다. 'ㅋㅋㅋ', '생각'처럼 많이 나왔지만 중요하지 않은 말이 크게 나올 수 있습니다 |
 | 막힌 점 ⑥ | Windows에서는 실행하지 않았습니다(리눅스 시연). 아래 Windows 명령과 `.bat`은 실행 확인 전입니다 |
 
-![과정 애니메이션](media/wc-anim.gif)
+![가상 단톡방 말풍선 → 조사가 붙어 흩어진 '제주도'가 75번으로 모이는 장면 → 낱말이 큰 것부터 놓이는 구름 → 하트·말풍선·노을색 그림 순으로 바뀌는 wordcloud 과정 애니메이션](media/wc-anim.gif)
 
-![터미널](media/terminal.gif)
+![명령 프롬프트에서 wordcloud_cli 명령으로 0.8초 만에 그림을 만들고, 예제 카톡구름.py로 낱말 순위(제주도 75·흑돼지 51)를 출력하는 터미널 화면](media/terminal.gif)
 
 - **업로드용: `media/wc-long-voice-bgm.mp4`(롱폼 6분 58초, 16개 장, 실제 결과 그림으로 구성, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `wc-long-voice.mp4`, 음성 없는 원본 `wc-long.mp4`), `media/wc-shorts-voice-bgm.mp4`(숏폼 54.5초, 세로, 자막 + 음성 + 배경음악 · 음악 없는 버전 `wc-shorts-voice.mp4`, 원본 `wc-anim-vertical.mp4`)**
 - 과정 애니메이션: `media/wc-anim.mp4`(가로 54.5초), `media/wc-anim-vertical.mp4`(세로 54.5초) — `demo/results.json` 숫자와 wordcloud가 실제로 정한 낱말 자리(`layout_`)로 그림

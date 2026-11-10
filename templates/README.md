@@ -27,7 +27,7 @@
 | 핵심 수치 | |
 | 막힌 점 | |
 
-![터미널](media/terminal.gif)
+![{대체 텍스트: 무엇이 보이는지 + 핵심 숫자, 명사형으로 끝냄 (GUIDE 5-2장)}](media/terminal.gif)
 
 ## Windows에서 따라하기 (cmd)
 ```cmd

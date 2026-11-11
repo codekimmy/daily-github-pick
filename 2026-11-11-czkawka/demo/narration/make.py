@@ -6,6 +6,11 @@ from pathlib import Path
 here = Path(__file__).parent; day = here.parent.parent
 src = (here.parent / "long/script.js").read_text(encoding="utf-8")
 S = json.loads(src[src.index("{"): src.rindex("}") + 1])
+# 음성 길이에 맞춘 시간(voice/retime.py → long/timing.js)이 있으면 그 시간을 씀
+tj = here.parent / "long/timing.js"
+if tj.exists():
+    TM = json.loads(tj.read_text(encoding="utf-8").split("=", 1)[1].rstrip().rstrip(";"))
+    for c, t in zip(S["chapters"], TM): c["dur"], c["cues"] = t["dur"], t["cues"]
 
 # 롱폼: 장별 cue (미리보기도 첫 장으로 들어 있음, 읽을 문장이 있는 것만)
 long_cues, t0 = [], 0
@@ -20,6 +25,13 @@ SHORTS = [(0.0, 10.5, '시연용 가상 폴더에 파일 사십한 개가 있습
           (23.0, 35.5, '글자를 넣거나 크기를 줄인 사진도 비슷한 사진으로 찾습니다\n설정을 넓히자 고친 사진 여섯 장 중 다섯 장을 찾았습니다\n가장자리를 자른 사진은 못 찾았습니다'),
           (35.5, 46.0, '빈 폴더와 임시 파일, 위치 정보가 든 사진도 찾아 줍니다\n지우기 전에는 꼭 미리 보기로 확인하시기 바랍니다'),
           (46.0, 55.0, '자동 정리 규칙은 원본 폴더 파일까지 지울 수 있으니 주의하시기 바랍니다\n전체 영상은 관련 영상에서 확인하시기 바랍니다')]
+
+
+aj = here.parent / "anim/timing.js"
+SHORTS_LEN = 55.0
+if aj.exists():
+    B = json.loads(aj.read_text(encoding="utf-8").split("=", 1)[1].rstrip().rstrip(";"))["new"]
+    SHORTS = [(B[i], B[i + 1], s) for i, (_, _, s) in enumerate(SHORTS)]; SHORTS_LEN = B[-1]
 
 
 def ts(x): return f"{int(x // 60):02d}:{x % 60:04.1f}"
@@ -47,12 +59,12 @@ def write(name, title, video, length, cues):
     (day / f"narration-{name}.txt").write_text("﻿" + "\r\n".join(head + body + tail) + "\r\n", encoding="utf-8")
     (day / f"narration-{name}-text.txt").write_text("﻿" + "\r\n".join(l for _, _, r in cues for l in r.split("\n")) + "\r\n", encoding="utf-8")
     print(name, len(cues), "문장", ts(length))
-    for a, b, r in cues:  # 예상 쉼: 구간 길이 - 읽는 시간(6.3글자/초), 5초 넘으면 알림 (GUIDE 5-1)
-        n = len(re.sub(r"[\s,!?]", "", r)); rest = (b - a) - n / 6.3
-        if rest > 5.0: print(f"  쉼 김 {rest:.1f}초: {r[:30]}")
+    for a, b, r in cues:  # 예상 쉼: 구간 길이 - 읽는 시간(6.3글자/초), 2초 넘으면 알림 (GUIDE 5-1)
+        n = len(re.sub(r"[\s,!?]", "", r)); rest = ((b - a) - n / 6.3) / len(r.split("\n"))  # 문장 하나당 쉼
+        if rest > 2.0: print(f"  쉼 김 {rest:.1f}초: {r[:30]}")
 
 
 write("long", "롱폼", "cz-long.mp4", LONG_LEN, long_cues)
-write("shorts", "숏폼", "cz-anim-vertical.mp4", 55.0, SHORTS)
+write("shorts", "숏폼", "cz-anim-vertical.mp4", SHORTS_LEN, SHORTS)
 # 구간 목록 (음성 입힐 때 참고)
 (here / "cues.json").write_text(json.dumps({"long": long_cues, "shorts": SHORTS}, ensure_ascii=False, indent=0), encoding="utf-8")

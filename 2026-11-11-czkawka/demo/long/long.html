@@ -1,12 +1,15 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
-<script src="script.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+<script src="script.js"></script><script src="timing.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
 </head><body><canvas id="c"></canvas>
 <script>
 // 롱폼 (미리보기 포함 전체). 숫자는 실제 시연 결과(../results.json), 사진은 시연에 쓴 실제 사진(../anim/img). 폴더·파일은 시연용 가상 자료
 const W = 1920, H = 1080, FPS = 30;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+// 음성 길이에 맞춘 시간(timing.js, voice/retime.py)이 있으면 장·자막 시간을 바꾸고, 화면 애니메이션은 원래 시간으로 되돌려 그림(구간별로 늘이고 줄임)
+if (typeof TIMING !== 'undefined') SCRIPT.chapters.forEach((c, i) => { const T = TIMING[i]; c.dur = T.dur; c.cues = T.cues; c.knots = T.knots; });
+const remap = (c, lt) => { const K = c.knots; if (!K) return lt; for (let i = 1; i < K.length; i++) if (lt <= K[i][0]) { const [a0, b0] = K[i - 1], [a1, b1] = K[i]; return a1 > a0 ? b0 + (b1 - b0) * (lt - a0) / (a1 - a0) : b1; } return K[K.length - 1][1]; };
 const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
 const TOTAL = Math.round(acc * FPS);
 let READY = false;
@@ -202,8 +205,8 @@ const DRAW = {
 function frame(f) {
   const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
   const ci = Math.max(0, CH.findIndex(c => t >= c.t0 && t < c.t0 + c.dur)), c = CH[ci], lt = t - c.t0, k = ci === 0 ? 1 : ease(prog(lt, 0, .6));
-  if (k < 1) { const p = CH[ci - 1]; ctx.save(); ctx.globalAlpha = 1 - k; DRAW[p.id](p.dur - .001); ctx.restore(); tag(p, p.dur, 1 - k); }
-  ctx.save(); ctx.globalAlpha = k; DRAW[c.id](lt); ctx.restore();
+  if (k < 1) { const p = CH[ci - 1]; ctx.save(); ctx.globalAlpha = 1 - k; DRAW[p.id](remap(p, p.dur - .001)); ctx.restore(); tag(p, p.dur, 1 - k); }
+  ctx.save(); ctx.globalAlpha = k; DRAW[c.id](remap(c, lt)); ctx.restore();
   tag(c, lt, k); caption(t);
 }
 </script></body></html>

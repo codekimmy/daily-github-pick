@@ -1,14 +1,18 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
 <style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
-<script src="data.js"></script><script src="engine.js"></script>
+<script src="data.js"></script><script src="timing.js"></script><script src="engine.js"></script>
 </head><body><canvas id="c"></canvas>
 <script>
 // 55초 과정 애니메이션 (장면 5개, 장면마다 9~12.5초, 다 나타난 뒤 2.5초 이상 멈춤 — GUIDE 5장)
 // 숫자는 실제 시연 결과(../results.json), 사진은 시연에 쓴 실제 사진(img/). 폴더·파일은 시연용 가상 자료
 const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30;
 const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
-const T = { c0: 10.5, c1: 23, c2: 35.5, c3: 46, end: 55 }, TOTAL = T.end * FPS;
+const T = { c0: 10.5, c1: 23, c2: 35.5, c3: 46, end: 55 };
+// 음성 길이에 맞춘 장면 경계(timing.js, voice/retime.py)가 있으면 장면마다 늘이고 줄여서 그림 (그림 안 시간은 원래 T 기준)
+const TM = typeof TIMING !== 'undefined' ? TIMING : { old: [0, 10.5, 23, 35.5, 46, 55], new: [0, 10.5, 23, 35.5, 46, 55] };
+const TOTAL = Math.round(TM.new[TM.new.length - 1] * FPS);
+const toOld = t => { const N = TM.new, O = TM.old; for (let i = 1; i < N.length; i++) if (t <= N[i]) return O[i - 1] + (O[i] - O[i - 1]) * (t - N[i - 1]) / (N[i] - N[i - 1]); return O[O.length - 1]; };
 let READY = false;
 const NAMES = ['고양이.jpg', '고양이_글자.jpg', '고양이_작게.jpg', '고양이_저화질.jpg', '고양이_밝게.jpg', '고양이_흑백.jpg', '고양이_살짝자름.jpg'];
 Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImgs('img', NAMES)]).then(() => READY = true);
@@ -98,7 +102,7 @@ function sceneEnd(t) {
   ctx.restore();
 }
 function frame(f) {
-  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const t = toOld(f / FPS); ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
   sceneIntro(t); sceneDup(t); sceneImage(t); sceneMore(t); sceneEnd(t);
 }
 </script></body></html>

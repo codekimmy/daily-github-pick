@@ -1,0 +1,638 @@
+{
+ "version": "0.15.0",
+ "effects": {
+  "beams": {
+   "frames_ko": 122,
+   "sec_ko": 2.0,
+   "calc_ko": 0.02,
+   "frames_en": 118,
+   "sec_en": 2.0,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       ▂▂▂▂▂▂▂▂▂▂▂▂▁▁▌▁▌▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁_____▍_▌______________________",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "binarypath": {
+   "frames_ko": 459,
+   "sec_ko": 7.7,
+   "calc_ko": 0.03,
+   "frames_en": 271,
+   "sec_en": 4.5,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "            되",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "blackhole": {
+   "frames_ko": 598,
+   "sec_ko": 10.0,
+   "calc_ko": 0.03,
+   "frames_en": 612,
+   "sec_en": 10.2,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "                                    하세",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "bouncyballs": {
+   "frames_ko": 86,
+   "sec_ko": 1.4,
+   "calc_ko": 0.0,
+   "frames_en": 91,
+   "sec_en": 1.5,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       좋은 하루 되세요",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "bubbles": {
+   "frames_ko": 166,
+   "sec_ko": 2.8,
+   "calc_ko": 0.01,
+   "frames_en": 167,
+   "sec_en": 2.8,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "                      '      다",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "burn": {
+   "frames_ko": 272,
+   "sec_ko": 4.5,
+   "calc_ko": 0.19,
+   "frames_en": 273,
+   "sec_en": 4.5,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "        .. ...",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "colorshift": {
+   "frames_ko": 528,
+   "sec_ko": 8.8,
+   "calc_ko": 0.02,
+   "frames_en": 528,
+   "sec_en": 8.8,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "crumble": {
+   "frames_ko": 197,
+   "sec_ko": 3.3,
+   "calc_ko": 0.02,
+   "frames_en": 226,
+   "sec_en": 3.8,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "decrypt": {
+   "frames_ko": 514,
+   "sec_ko": 8.6,
+   "calc_ko": 0.03,
+   "frames_en": 641,
+   "sec_en": 10.7,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "        Ű루 되Ű°",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "errorcorrect": {
+   "frames_ko": 139,
+   "sec_ko": 2.3,
+   "calc_ko": 0.0,
+   "frames_en": 154,
+   "sec_en": 2.6,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "expand": {
+   "frames_ko": 18,
+   "sec_ko": 0.3,
+   "calc_ko": 0.0,
+   "frames_en": 21,
+   "sec_en": 0.3,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "                  요세되  루하니은 좋도늘오",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "fireworks": {
+   "frames_ko": 1040,
+   "sec_ko": 17.3,
+   "calc_ko": 0.02,
+   "frames_en": 1203,
+   "sec_en": 20.1,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       좋합 하루 되세니                                   다",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "highlight": {
+   "frames_ko": 129,
+   "sec_ko": 2.1,
+   "calc_ko": 0.01,
+   "frames_en": 129,
+   "sec_en": 2.1,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "laseretch": {
+   "frames_ko": 174,
+   "sec_ko": 2.9,
+   "calc_ko": 0.38,
+   "frames_en": 190,
+   "sec_en": 3.2,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "matrix": {
+   "sec_ko": 16.2,
+   "sec_en": 16.2,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       ﾘｾﾀｱｶﾗﾊﾀ2ﾗｵｶｼ.\"ﾕ2ｱﾃﾊﾈﾗ|5\"ﾗｺﾐﾔ5*-ﾇﾆZ2ﾃｴｽ.+.ｺﾋｵﾇﾗﾐｷｹ2+ﾆｴﾃｾ_ｹﾜﾓ+ﾐｴ-ｿﾜ_:ｦﾑﾃﾃ_",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "time_based": true,
+   "final_ok_ko_box": true
+  },
+  "middleout": {
+   "frames_ko": 76,
+   "sec_ko": 1.3,
+   "calc_ko": 0.0,
+   "frames_en": 78,
+   "sec_en": 1.3,
+   "final_ok_ko": false,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       좋은니하루 되세요",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true,
+   "screen_ko": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요요"
+   ]
+  },
+  "orbittingvolley": {
+   "frames_ko": 133,
+   "sec_ko": 2.2,
+   "calc_ko": 0.01,
+   "frames_en": 190,
+   "sec_en": 3.2,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "                        하                                 █",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "overflow": {
+   "frames_ko": 9,
+   "sec_ko": 0.1,
+   "calc_ko": 0.0,
+   "frames_en": 9,
+   "sec_en": 0.1,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "pour": {
+   "frames_ko": 94,
+   "sec_ko": 1.6,
+   "calc_ko": 0.01,
+   "frames_en": 102,
+   "sec_en": 1.7,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "print": {
+   "frames_ko": 34,
+   "sec_ko": 0.6,
+   "calc_ko": 0.0,
+   "frames_en": 42,
+   "sec_en": 0.7,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       ███",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "rain": {
+   "frames_ko": 35,
+   "sec_ko": 0.6,
+   "calc_ko": 0.01,
+   "frames_en": 41,
+   "sec_en": 0.7,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       은 하    요",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "randomsequence": {
+   "frames_ko": 81,
+   "sec_ko": 1.4,
+   "calc_ko": 0.0,
+   "frames_en": 89,
+   "sec_en": 1.5,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "            되 요",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "rings": {
+   "frames_ko": 1398,
+   "sec_ko": 23.3,
+   "calc_ko": 0.12,
+   "frames_en": 1398,
+   "sec_en": 23.3,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "                                   일   도다",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "scattered": {
+   "frames_ko": 47,
+   "sec_ko": 0.8,
+   "calc_ko": 0.01,
+   "frames_en": 53,
+   "sec_en": 0.9,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "slice": {
+   "frames_ko": 16,
+   "sec_ko": 0.3,
+   "calc_ko": 0.0,
+   "frames_en": 16,
+   "sec_en": 0.3,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "slide": {
+   "frames_ko": 80,
+   "sec_ko": 1.3,
+   "calc_ko": 0.0,
+   "frames_en": 82,
+   "sec_en": 1.4,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "smoke": {
+   "frames_ko": 141,
+   "sec_ko": 2.4,
+   "calc_ko": 0.04,
+   "frames_en": 139,
+   "sec_en": 2.3,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       ░░░░░▒▒",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "spotlights": {
+   "frames_ko": 563,
+   "sec_ko": 9.4,
+   "calc_ko": 0.05,
+   "frames_en": 573,
+   "sec_en": 9.6,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "spray": {
+   "frames_ko": 177,
+   "sec_ko": 3.0,
+   "calc_ko": 0.01,
+   "frames_en": 185,
+   "sec_en": 3.1,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "                                  하        합      좋  요니            생 도",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "swarm": {
+   "frames_ko": 1053,
+   "sec_ko": 17.6,
+   "calc_ko": 0.02,
+   "frames_en": 902,
+   "sec_en": 15.0,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       좋은 하루 되세요",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "sweep": {
+   "frames_ko": 220,
+   "sec_ko": 3.7,
+   "calc_ko": 0.0,
+   "frames_en": 220,
+   "sec_en": 3.7,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       █루 되세요",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "synthgrid": {
+   "frames_ko": 121,
+   "sec_ko": 2.0,
+   "calc_ko": 0.01,
+   "frames_en": 123,
+   "sec_en": 2.0,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       ─루 되세요",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "thunderstorm": {
+   "sec_ko": 15.5,
+   "sec_en": 16.7,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "time_based": true,
+   "final_ok_ko_box": true
+  },
+  "unstable": {
+   "frames_ko": 225,
+   "sec_ko": 3.8,
+   "calc_ko": 0.01,
+   "frames_en": 226,
+   "sec_en": 3.8,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "        오합좋",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": false,
+   "screen_ko_box": [
+    "                                        루",
+    "              생일 축하합니다!",
+    "              오늘도 좋은 하루 되세요"
+   ]
+  },
+  "vhstape": {
+   "frames_ko": 675,
+   "sec_ko": 11.2,
+   "calc_ko": 0.03,
+   "frames_en": 672,
+   "sec_en": 11.2,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       ██ ███",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "waves": {
+   "frames_ko": 491,
+   "sec_ko": 8.2,
+   "calc_ko": 0.03,
+   "frames_en": 494,
+   "sec_en": 8.2,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": false,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "       ▁▁ ▁▁▁",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  },
+  "wipe": {
+   "frames_ko": 138,
+   "sec_ko": 2.3,
+   "calc_ko": 0.0,
+   "frames_en": 138,
+   "sec_en": 2.3,
+   "final_ok_ko": true,
+   "final_ok_en": true,
+   "final_ok_ko_fullwidth": true,
+   "screen_ko_fullwidth": [
+    "생일 축하합니다!",
+    "오늘도 좋은 하루 되세요"
+   ],
+   "final_ok_ko_box": true
+  }
+ },
+ "n_effects": 37,
+ "summary": {
+  "ok_ko": 36,
+  "ok_en": 37,
+  "ok_ko_fullwidth": 13,
+  "shortest": "overflow",
+  "longest": "rings",
+  "median_sec_ko": 2.8,
+  "under5": 25,
+  "over10": 7,
+  "fail_ko": [
+   "middleout"
+  ],
+  "ok_ko_box": 36
+ },
+ "length": {
+  "print": {
+   "2줄": 0.6,
+   "10줄": 3.2
+  },
+  "decrypt": {
+   "2줄": 8.6,
+   "10줄": 12.4
+  },
+  "fireworks": {
+   "2줄": 17.3,
+   "10줄": 19.4
+  },
+  "burn": {
+   "2줄": 4.5,
+   "10줄": 5.5
+  },
+  "slide": {
+   "2줄": 1.3,
+   "10줄": 1.8
+  }
+ },
+ "realtime": {
+  "decrypt": 9.6,
+  "burn": 5.0,
+  "fireworks": 13.9
+ },
+ "random_diff": {
+  "fireworks": 5,
+  "decrypt": 5,
+  "rain": 3,
+  "print": 1
+ },
+ "box_args": "--canvas-width 40 --canvas-height 10 --anchor-text c"
+}

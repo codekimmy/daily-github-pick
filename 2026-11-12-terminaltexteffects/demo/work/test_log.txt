@@ -1,0 +1,41 @@
+beams           한글   2.0초 영어   2.0초  마지막화면 한글:True 영어:True 가로전체 한글:False
+binarypath      한글   7.7초 영어   4.5초  마지막화면 한글:True 영어:True 가로전체 한글:False
+blackhole       한글  10.0초 영어  10.2초  마지막화면 한글:True 영어:True 가로전체 한글:False
+bouncyballs     한글   1.4초 영어   1.5초  마지막화면 한글:True 영어:True 가로전체 한글:False
+bubbles         한글   2.8초 영어   2.8초  마지막화면 한글:True 영어:True 가로전체 한글:False
+burn            한글   4.5초 영어   4.5초  마지막화면 한글:True 영어:True 가로전체 한글:False
+colorshift      한글   8.8초 영어   8.8초  마지막화면 한글:True 영어:True 가로전체 한글:True
+crumble         한글   3.3초 영어   3.8초  마지막화면 한글:True 영어:True 가로전체 한글:True
+decrypt         한글   8.6초 영어  10.7초  마지막화면 한글:True 영어:True 가로전체 한글:False
+errorcorrect    한글   2.3초 영어   2.6초  마지막화면 한글:True 영어:True 가로전체 한글:True
+expand          한글   0.3초 영어   0.3초  마지막화면 한글:True 영어:True 가로전체 한글:False
+fireworks       한글  17.3초 영어  20.1초  마지막화면 한글:True 영어:True 가로전체 한글:False
+highlight       한글   2.1초 영어   2.1초  마지막화면 한글:True 영어:True 가로전체 한글:True
+laseretch       한글   2.9초 영어   3.2초  마지막화면 한글:True 영어:True 가로전체 한글:True
+matrix          한글 3013.7초 영어 2557.3초  마지막화면 한글:True 영어:True 가로전체 한글:False
+middleout       한글   1.3초 영어   1.3초  마지막화면 한글:False 영어:True 가로전체 한글:False
+orbittingvolley 한글   2.2초 영어   3.2초  마지막화면 한글:True 영어:True 가로전체 한글:False
+overflow        한글   0.1초 영어   0.1초  마지막화면 한글:True 영어:True 가로전체 한글:True
+pour            한글   1.6초 영어   1.7초  마지막화면 한글:True 영어:True 가로전체 한글:True
+print           한글   0.6초 영어   0.7초  마지막화면 한글:True 영어:True 가로전체 한글:False
+rain            한글   0.6초 영어   0.7초  마지막화면 한글:True 영어:True 가로전체 한글:False
+randomsequence  한글   1.4초 영어   1.5초  마지막화면 한글:True 영어:True 가로전체 한글:False
+rings           한글  23.3초 영어  23.3초  마지막화면 한글:True 영어:True 가로전체 한글:False
+scattered       한글   0.8초 영어   0.9초  마지막화면 한글:True 영어:True 가로전체 한글:True
+slice           한글   0.3초 영어   0.3초  마지막화면 한글:True 영어:True 가로전체 한글:True
+slide           한글   1.3초 영어   1.4초  마지막화면 한글:True 영어:True 가로전체 한글:True
+smoke           한글   2.4초 영어   2.3초  마지막화면 한글:True 영어:True 가로전체 한글:False
+spotlights      한글   9.4초 영어   9.6초  마지막화면 한글:True 영어:True 가로전체 한글:True
+spray           한글   3.0초 영어   3.1초  마지막화면 한글:True 영어:True 가로전체 한글:False
+swarm           한글  17.6초 영어  15.0초  마지막화면 한글:True 영어:True 가로전체 한글:False
+sweep           한글   3.7초 영어   3.7초  마지막화면 한글:True 영어:True 가로전체 한글:False
+synthgrid       한글   2.0초 영어   2.0초  마지막화면 한글:True 영어:True 가로전체 한글:False
+thunderstorm    한글 2721.5초 영어 2536.1초  마지막화면 한글:True 영어:True 가로전체 한글:True
+unstable        한글   3.8초 영어   3.8초  마지막화면 한글:True 영어:True 가로전체 한글:False
+vhstape         한글  11.2초 영어  11.2초  마지막화면 한글:True 영어:True 가로전체 한글:False
+waves           한글   8.2초 영어   8.2초  마지막화면 한글:True 영어:True 가로전체 한글:False
+wipe            한글   2.3초 영어   2.3초  마지막화면 한글:True 영어:True 가로전체 한글:True
+실제 decrypt 9.6
+실제 burn 5.0
+실제 fireworks 13.9
+{"summary": {"ok_ko": 36, "ok_en": 37, "ok_ko_fullwidth": 13, "shortest": "overflow", "longest": "matrix", "median_sec_ko": 2.8}, "length": {"print": {"2줄": 0.6, "10줄": 3.2}, "decrypt": {"2줄": 8.6, "10줄": 12.4}, "fireworks": {"2줄": 17.3, "10줄": 19.4}, "matrix": {"2줄": 3246.6, "10줄": 784.4}, "burn": {"2줄": 4.5, "10줄": 5.5}, "slide": {"2줄": 1.3, "10줄": 1.8}}, "realtime": {"decrypt": 9.6, "burn": 5.0, "fireworks": 13.9}, "random_diff": {"fireworks": 5, "decrypt": 5, "rain": 3, "print": 1}}

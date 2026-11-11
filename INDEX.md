@@ -20,3 +20,4 @@
 | 13 | 2026-11-09 | [antiboredom/videogrep](https://github.com/antiboredom/videogrep) | 자막에서 낱말을 찾아 그 장면만 이어 붙여 주는 무료 '영상용 Ctrl+F 가위' | 영상·자막 | ★★★☆☆ | 약 3,500 | [바로가기](2026-11-09-videogrep/) |
 | 14 | 2026-11-10 | [amueller/word_cloud](https://github.com/amueller/word_cloud) | 글에서 많이 나온 낱말을 크게 그려 주는 무료 '낱말 인기투표 개표판' | 글·시각화 | ★★★☆☆ | 약 1.05만 | [바로가기](2026-11-10-wordcloud/) |
 | 15 | 2026-11-11 | [qarmin/czkawka](https://github.com/qarmin/czkawka) | 이름이 달라도 내용이 같은 복사본·비슷한 사진·빈 폴더를 찾아 주는 무료 '파일 지문 감식반' | 파일정리·생산성 | ★★★★☆ | 약 3.5만 | [바로가기](2026-11-11-czkawka/) |
+| 16 | 2026-11-12 | [ChrisBuilds/terminaltexteffects](https://github.com/ChrisBuilds/terminaltexteffects) | 명령 창 글자에 불꽃놀이·암호 해독 같은 움직임을 입히는 무료 '글자 무대 연출가' | 호기심·글자 효과 | ★★★☆☆ | 약 4,300 | [바로가기](2026-11-12-terminaltexteffects/) |

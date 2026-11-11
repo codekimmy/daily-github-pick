@@ -76,7 +76,7 @@
 |---|---|---|---|---|---|---|---|---|
 | ⭐ | svenstaro/genact | 아무것도 안 하면서 바쁜 척하는 가짜 작업 화면 | 독일 | 1.2만 | crates `genact` (윈도우 exe 있음) | 빌드 3분, 가짜 커널 컴파일 로그 | 상사 지나갈 때 켜두는 화면 | ★5 |
 | ⭐ | kitao/pyxel | pip 한 줄로 8비트 레트로 게임 | 일본 | 1.9만 | pip `pyxel` | 예제 플랫포머 게임 화면 확인(Xvfb) | 패미컴 감성 게임 | ★5 |
-| ⭐ | ChrisBuilds/terminaltexteffects | 글자가 해독·폭발하는 영화 효과 | 개인 | 4.3천 | pip `terminaltexteffects` | 14초 애니메이션 | 글자가 암호 해독되듯 | ★4 |
+| ⭐ ✅ Day 16 | ChrisBuilds/terminaltexteffects | 글자가 해독·폭발하는 영화 효과 | 개인 | 4.3천 | pip `terminaltexteffects` | 14초 애니메이션 (11/12 재확인: 0.15.0, 효과 37가지 0.1~23.3초·25개 5초 안, 한글 마지막 화면 기본·가로 40칸 무대 36/37 · 가로 전체 무대 13/37, middleout 끝 글자 겹침, 움직이는 동안 한글 줄 밀림, 영상 저장 기능 없음) | 글자가 암호 해독되듯 | ★4 |
 |  | unhappychoice/gitlogue | 코드 기록을 타이핑 영화처럼 재생 | 일본 | 5.2천 | crates `gitlogue` (빌드 7분) | 15초 녹화 | 8년 전 코드가 다시 타이핑된다 | ★4 |
 |  | shinshin86/oh-my-logo | 거대한 그라데이션 글자 로고 | 일본 | 1.6천 | npm `oh-my-logo` | 즉시 출력 | 내 이름을 Claude Code 로고처럼 | ★4 |
 |  | adamsky/globe · cowboy8625/rusty-rain | 터미널에서 도는 지구본 · 매트릭스 글자 비 | 개인 | 700·500 | crates `globe-cli`·`rusty-rain` | 회전(`-c 0.5 -g 0.5`)·글자 비 확인 | 글자로 만든 지구가 돈다 | ★4 |

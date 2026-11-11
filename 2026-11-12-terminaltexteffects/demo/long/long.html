@@ -1,0 +1,168 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="timing.js"></script><script src="../anim/data.js"></script><script src="../anim/fx.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 (미리보기 포함 전체). 효과 화면은 terminaltexteffects 가 만든 실제 프레임(../anim/fx.js), 숫자는 실제 시연 결과(../results.json). 인사 글은 시연용으로 직접 쓴 글
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+// 음성 길이에 맞춘 시간(timing.js, voice/retime.py)이 있으면 장·자막 시간을 바꾸고, 화면 애니메이션은 원래 시간으로 되돌려 그림(구간별로 늘이고 줄임)
+if (typeof TIMING !== 'undefined') SCRIPT.chapters.forEach((c, i) => { const T = TIMING[i]; c.dur = T.dur; c.cues = T.cues; c.knots = T.knots; });
+const remap = (c, lt) => { const K = c.knots; if (!K) return lt; for (let i = 1; i < K.length; i++) if (lt <= K[i][0]) { const [a0, b0] = K[i - 1], [a1, b1] = K[i]; return a1 > a0 ? b0 + (b1 - b0) * (lt - a0) / (a1 - a0) : b1; } return K[K.length - 1][1]; };
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`)]).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const M = 120, FW = W - 240;
+// 깜빡임 방지: 자막을 전체 시간 기준으로 이어 붙임. 다음 자막까지 0.6초 안이면 상자를 끄지 않고 글만 겹쳐 바꿈, 상자 너비도 부드럽게
+const CAP = []; CH.forEach(c => c.cues.forEach(q => CAP.push([c.t0 + q[0], c.t0 + q[1], q[2]])));
+CAP.forEach((q, i) => { const n = CAP[i + 1]; q.join = !!n && n[0] - q[1] < .6; if (q.join) q[1] = n[0]; });
+const capSize = s => tw(s, 38, 700) > 1780 ? 32 : 38, capW = s => Math.min(tw(s, capSize(s), 700) + 80, 1880);
+function caption(t) {
+  const i = CAP.findIndex(q => t >= q[0] && t < q[1]); if (i < 0) return;
+  const q = CAP[i], p = CAP[i - 1], joinPrev = p && p.join, k = joinPrev ? ease(prog(t, q[0], q[0] + .3)) : 1;
+  const a = (joinPrev ? 1 : prog(t, q[0], q[0] + .2)) * (q.join ? 1 : 1 - prog(t, q[1] - .15, q[1]));
+  const w = joinPrev ? lerp(capW(p[2]), capW(q[2]), k) : capW(q[2]);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a);
+  if (joinPrev && k < 1) text(p[2], W / 2, 992, capSize(p[2]), INK, 700, 'center', a * (1 - k));
+  text(q[2], W / 2, 992, capSize(q[2]), INK, 700, 'center', a * k);
+}
+function tag(c, lt, a = 1) {
+  if (!c.tag) return; const w = tw(c.tag, 28, 800) + 48;
+  box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)', A = 1) {
+  if (A <= 0) return; ctx.save(); ctx.globalAlpha *= A; term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.7); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(cut(s, size, w - 60, 600), x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+  ctx.restore();
+}
+const lr = (lt, a, b) => app(lt, a) * (1 - prog(lt, b - .5, b)); // a에 나타나 b에 사라짐 (0.5초 흐려짐)
+
+// 효과 재생: 장 안 a초부터, '끝 b초'까지 끝나도록 빠르기를 맞춤(실제 길이보다 길면 빨리 감기)
+function play(k, lt, a, b) { const L = fxLen(k), sp = Math.max(1, L / Math.max(.1, b - a)); return [Math.max(0, (lt - a) * sp), sp]; }
+const E = R.effects, SM = R.summary;
+const DRAW = {
+  preview(lt) {
+    // 장면 3개, 장면마다 7초 이상 (GUIDE 5장 미리보기)
+    const A = lr(lt, 0, 7.6), B = prog(lt, 7.1, 7.6) * (1 - prog(lt, 14.4, 14.9)), Cc = prog(lt, 14.4, 14.9);
+    if (A > 0) fxTerm('fw_bday', play('fw_bday', lt, .2, 6.6)[0], W / 2, 450, 26, A, 'tte fireworks');
+    if (B > 0) fxTerm('dec_title', play('dec_title', lt, 7.4, 13.6)[0], W / 2, 450, 26, B, 'tte decrypt');
+    if (Cc > 0) { const lc = lt - 14.6; [['beams_ko', 'beams'], ['blackhole_ko', 'blackhole'], ['waves_ko', 'waves'], ['burn_ko', 'burn'], ['synth_ko', 'synthgrid'], ['slide_ko', 'slide']].forEach(([k, n], i) =>
+      fxTerm(k, play(k, lc, .2 + i * .3, 6.5)[0], M + 260 + (i % 3) * 580, 250 + Math.floor(i / 3) * 400, 10, Cc * app(lc, i * .3), n)); }
+  },
+  title(lt) {
+    text('terminaltexteffects', W / 2, 200, 120, INK, 800, 'center', app(lt, .2), MONO);
+    text('줄여서 tte · 터미널 텍스트 이펙트', W / 2, 310, 40, SUB, 700, 'center', app(lt, .5));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 430, 60, GOLD, 800, 'center', app(lt, 4));
+    text(`⭐ 약 4,300 · MIT · 파이썬 · tte ${R.version}`, W / 2, 520, 32, SUB, 600, 'center', app(lt, 4.5));
+    ['불꽃놀이', '암호 해독', '불타기', '블랙홀', '물결', '…모두 37가지'].forEach((s, i) => pill(s, M + 140 + (i % 3) * 560, 680 + Math.floor(i / 3) * 110, 36, [GOLD, GREEN, RED, PURPLE, BLUE, SUB][i], app(lt, 8 + i * .5)));
+  },
+  what(lt) {
+    if (lt < 7.8) text('글자 무대 연출가', W / 2, 450, 110, GOLD, 900, 'center', app(lt, .3) * (1 - prog(lt, 7.2, 7.8)));
+    if (lt > 7.5) { const a = app(lt, 7.6), chars = [...'생일 축하합니다!'], cols = [PURPLE, BLUE, BLUE, GREEN, GREEN, GOLD, GOLD, RED, RED];
+      const g = ease(prog(lt, 9, 17)); box(M + 200, 620, FW - 400, 14, 7, '#30363d', null, a); text('무대', W / 2, 670, 28, SUB, 700, 'center', a);
+      chars.forEach((ch, i) => { if (ch === ' ') return; const fx = W / 2 - 360 + i * 90, fy = 560, sx = M + 80 + ((i * 397) % (FW - 160)), sy = 160 + ((i * 211) % 300);
+        const k = clamp(g * 1.4 - i * .05), x = lerp(sx, fx, ease(k)), y = lerp(sy, fy, ease(k)) - Math.sin(k * Math.PI) * 120;
+        if (k > 0 && k < 1) { ctx.save(); ctx.globalAlpha = a * .35; ctx.strokeStyle = cols[i]; ctx.setLineDash([6, 8]); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo((sx + fx) / 2, Math.min(sy, fy) - 160, fx, fy); ctx.stroke(); ctx.restore(); }
+        box(x - 38, y - 40, 76, 80, 14, '#161b22', k >= 1 ? cols[i] : '#30363d', a, 2); text(ch, x, y + 2, 50, k >= 1 ? cols[i] : INK, 800, 'center', a); });
+      text('배우 = 글자 하나하나', M + 260, 760, 34, INK, 800, 'center', app(lt, 8.5)); text('대본 = 움직일 길 + 바뀔 색', W / 2, 760, 34, INK, 800, 'center', app(lt, 10.5));
+      text('막이 내리면 = 원래 글 완성', W - M - 260, 760, 34, GREEN, 800, 'center', app(lt, 17)); }
+    if (lt > 23) pill('개발자 ChrisBuilds · 2023년 공개 · ⭐ 약 4,300 · 포크 98 · MIT', W / 2, 860, 32, BLUE, app(lt, 23) * (1 - prog(lt, 29.5, 30)));
+    if (lt > 29.5) pill('효과 37가지 · tte -i 글파일 효과이름', W / 2, 860, 36, GOLD, app(lt, 30));
+  },
+  install(lt) {
+    termLines(M, 130, FW, 470, [['note', ':: 1) python.org 에서 파이썬 설치 (설치 화면에서 Add python.exe to PATH 체크)', .3], ['$', 'pip install terminaltexteffects', 8.3, 1.6],
+      ['ok', `Successfully installed terminaltexteffects-${R.version}`, 10.3], ['$', 'tte --version', 16.3, 1], ['ok', `TerminalTextEffects ${R.version}`, 17.6], ['note', ':: 시연: 리눅스 · 설치 약 1초', 18.2]], lt, 26);
+    if (lt > 22.5) { stat(M, 650, FW / 3 - 30, 220, '버전', R.version, app(lt, 22.5), GOLD); stat(M + FW / 3, 650, FW / 3 - 30, 220, '설치 크기', '1.5MB', app(lt, 23), BLUE); stat(M + FW * 2 / 3, 650, FW / 3 - 30, 220, '함께 설치되는 패키지', '없음', app(lt, 23.5), GREEN, 28, 50); }
+  },
+  basic(lt) {
+    termLines(M, 130, FW / 2 - 20, 360, [['$', 'type 인사.txt', .5, 1], ['', '생일 축하합니다!', 1.8], ['', '오늘도 좋은 하루 되세요', 2.2], ['$', 'tte -i 인사.txt decrypt', 8.3, 1.6]], lt, 28);
+    if (lt > 9.8) fxTerm('dec_ko', play('dec_ko', lt, 10, 22)[0], M + FW * 3 / 4 + 10, 310, 15, app(lt, 9.8), 'tte decrypt');
+    if (lt > 22.5) { stat(M, 560, FW / 2 - 20, 240, '실제 걸린 시간 (초당 60장)', `${R.realtime.decrypt}초`, app(lt, 23), GOLD, 30, 70); stat(M + FW / 2 + 20, 560, FW / 2 - 20, 240, '영어 글로 실행', `${E.decrypt.sec_en}초`, app(lt, 23.6), BLUE, 30, 70); }
+  },
+  fire(lt) {
+    const A = 1 - prog(lt, 15.5, 16);
+    if (A > 0) fxTerm('fw_ko', play('fw_ko', lt, .5, 14)[0], W / 2, 400, 24, A * app(lt, .3), 'tte fireworks (기본 색)');
+    if (lt > 8) termLines(M, 700, FW, 220, [['$', 'tte -i 인사.txt fireworks --firework-colors ff6b9d ffd166 ffffff --final-gradient-stops ff6b9d ffd166', 8.3, 3]], lt, 22, '명령 프롬프트 (cmd)', app(lt, 8) * A + (lt > 15.5 ? 0 : 0));
+    if (lt > 15.5) { fxTerm('fw_bday', play('fw_bday', lt, 16, 22.5)[0], M + FW / 2 - 300 + 300, 400, 24, app(lt, 15.6), 'tte fireworks (분홍·노랑)'); }
+    if (lt > 23) { stat(M, 760, FW / 2 - 20, 170, '같은 효과 5번 실행', `길이 ${R.random_diff.fireworks}가지`, app(lt, 23), BLUE, 28, 50); stat(M + FW / 2 + 20, 760, FW / 2 - 20, 170, '실제 걸린 시간 (한 번)', `${R.realtime.fireworks}초`, app(lt, 23.5), GOLD, 28, 50); }
+  },
+  gallery(lt) {
+    const A = 1 - prog(lt, 7.5, 8.1);
+    if (A > 0) [['beams_ko', 'beams'], ['rain_ko', 'rain'], ['blackhole_ko', 'blackhole'], ['slide_ko', 'slide'], ['waves_ko', 'waves'], ['synth_ko', 'synthgrid']].forEach(([k, n], i) =>
+      fxTerm(k, play(k, lt, .3 + i * .5, 7)[0], M + 260 + (i % 3) * 580, 260 + Math.floor(i / 3) * 400, 10, A * app(lt, .3 + i * .5), `${n} · ${E[n].sec_ko}초`));
+    if (lt > 7.5) { const a = app(lt, 7.6), L = Object.entries(E).sort((x, y) => y[1].sec_ko - x[1].sec_ko), x0 = M + 260, rh = 19, top = 130, sc = (FW - 760) / 24;
+      L.forEach(([k, v], i) => { const y = top + i * rh, g = ease(prog(lt, 8 + i * .03, 9.5 + i * .03)), hi = i < 1 || i >= L.length - 1;
+        text(k, x0 - 12, y + rh / 2, 16, hi ? INK : SUB, 600, 'right', a, MONO); box(x0, y + 3, Math.max(3, v.sec_ko * sc * g), rh - 6, 3, v.time_based ? GOLD : BLUE, null, a);
+        if (hi) text(v.sec_ko + '초', x0 + v.sec_ko * sc * g + 10, y + rh / 2, 18, INK, 800, 'left', a); });
+      stat(W - M - 440, 140, 440, 200, '가장 짧음 · 가장 긺', `${E[SM.shortest].sec_ko}초 · ${E[SM.longest].sec_ko}초`, app(lt, 9.5), GOLD, 28, 50);
+      stat(W - M - 440, 370, 440, 200, '5초 안에 끝남', `${SM.under5}/37개`, app(lt, 16.2), GREEN, 28, 60);
+      stat(W - M - 440, 600, 440, 200, '가운데 값', `${SM.median_sec_ko}초`, app(lt, 17.2), BLUE, 28, 60);
+      text('노란 막대: 시계 기준으로 끝나는 효과(matrix·thunderstorm)', W - M - 220, 850, 20, SUB, 600, 'center', app(lt, 18));
+      if (lt > 32) pill(`영어 글: 마지막 화면 ${SM.ok_en}/37 정상`, W - M - 220, 900, 26, GREEN, app(lt, 32)); }
+  },
+  stage(lt) {
+    const A = 1 - prog(lt, 22.5, 23);
+    if (A > 0) { fxTerm('fw_narrow', play('fw_narrow', lt, .5, 15)[0], M + FW / 4, 380, 18, A * app(lt, .3), '기본 설정 (무대 = 글 크기)');
+      if (lt > 7.8) fxTerm('fw_ko', play('fw_ko', lt, 8, 15.5)[0], M + FW * 3 / 4, 380, 14, A * app(lt, 7.8), '--canvas-width 40 --canvas-height 10 --anchor-text c');
+      if (lt > 16) { stat(M, 690, FW / 2 - 20, 200, '넓은 무대 · 한글 마지막 화면', `${SM.ok_ko_box}/37 정상`, A * app(lt, 16), GREEN, 28, 56); stat(M + FW / 2 + 20, 690, FW / 2 - 20, 200, '가로 전체 무대(--canvas-width 0)', `${SM.ok_ko_fullwidth}/37 정상`, A * app(lt, 17.2), RED, 28, 56); } }
+    if (lt > 22.6) { termLines(M + 200, 200, FW - 400, 300, [['$', 'tte -i 인사.txt -R', 23.2, 1.2], ['note', ':: 37가지 중 하나를 무작위로 골라 실행', 24.6], ['$', 'tte -i 인사.txt -R --include-effects decrypt burn fireworks', 25.6, 2]], lt, 26, '명령 프롬프트 (cmd)', app(lt, 22.6));
+      pill('--include-effects : 고를 후보만 따로 정하기', W / 2, 620, 32, BLUE, app(lt, 29.8)); }
+  },
+  length(lt) {
+    fxTerm('burn_poem', play('burn_poem', lt, .4, 7.5)[0], M + 420, 470, 15, app(lt, .3), 'tte burn · 시연용 열 줄 글');
+    const L = R.length, rows = [['print (타자)', L.print, 8.2], ['decrypt (암호 해독)', L.decrypt, 9.2], ['burn (불타기)', L.burn, 16.2], ['slide (밀어 넣기)', L.slide, 17.2]];
+    if (lt > 25) pill('2줄 → 10줄일 때 늘어나는 정도는 효과마다 다름', M + 420, 880, 28, GOLD, app(lt, 25));
+    rows.forEach(([n, v, at], i) => { const y = 190 + i * 170, x = M + 900, a = app(lt, at); box(x, y, FW - 900, 140, 16, '#161b22', '#30363d', a, 2);
+      text(n, x + 30, y + 40, 30, INK, 800, 'left', a); text(`2줄 ${v['2줄']}초`, x + 30, y + 98, 34, SUB, 800, 'left', a); text('→', x + 300, y + 98, 34, SUB, 800, 'left', a); text(`10줄 ${v['10줄']}초`, x + 360, y + 98, 38, GOLD, 900, 'left', a); });
+  },
+  python(lt) {
+    const code = ['from terminaltexteffects.effects.effect_fireworks import Fireworks', 'name = input("누구에게 보낼 인사입니까? ")', 'effect = Fireworks(f"{name}님\\n생일 축하합니다!")', 'effect.effect_config.firework_colors = (분홍, 노랑, 흰색)', 'with effect.terminal_output() as terminal:', '    for frame in effect: terminal.print(frame)'];
+    term(M, 130, FW / 2 + 60, 460, '인사카드.py (예제 파일, 줄임)', app(lt, .3));
+    code.forEach((s, i) => text(cut(s, 21, FW / 2, 600), M + 30, 220 + i * 56, 21, i === 1 ? GOLD : INK, 600, 'left', app(lt, 1 + i * .5), MONO));
+    if (lt > 8) { termLines(M + FW / 2 + 100, 130, FW / 2 - 100, 200, [['$', 'python 인사카드.py', 8.3, 1], ['', '누구에게 보낼 인사입니까? 민지', 9.8]], lt, 24, '명령 프롬프트 (cmd)', app(lt, 8)); }
+    if (lt > 15.5) fxTerm('card', play('card', lt, 16, 22.5)[0], M + FW * 3 / 4 + 50, 560, 12, app(lt, 15.6), '실행 결과 · 10.9초');
+    if (lt > 23) pill('Windows용 예제 파일 인사효과.bat: 글 두 줄 + 효과 번호(1 불꽃놀이 2 암호 해독 3 불타기 4 무작위)', W / 2, 860, 28, GREEN, app(lt, 23));
+  },
+  record(lt) {
+    stat(M + 200, 150, FW - 400, 200, 'tte가 하는 일', '명령 창에 효과를 보여 주기만 함 (파일 저장 없음)', app(lt, .3), INK, 30, 44);
+    const S_ = [['1', '캡처 도구 열기', '시작 → 캡처 도구'], ['2', '녹화 → 명령 창 영역 선택', '녹화 시작'], ['3', 'tte 명령 실행 → 녹화 중지', 'mp4로 저장']];
+    S_.forEach(([n, a1, a2], i) => { const x = M + i * (FW / 3), aa = app(lt, 8.3 + i * .8); box(x + 10, 420, FW / 3 - 40, 220, 18, '#161b22', BLUE, aa, 2);
+      text(n, x + 70, 480, 50, BLUE, 900, 'center', aa); text(a1, x + 120, 480, 28, INK, 800, 'left', aa); text(a2, x + 120, 560, 26, SUB, 700, 'left', aa); });
+    text('Windows 11 캡처 도구 기준 (Windows 실행 확인 전)', W / 2, 680, 26, SUB, 600, 'center', app(lt, 10));
+    if (lt > 16) pill('시연: asciinema(녹화) → agg(GIF 변환) · 42.6초 GIF 0.67MB', W / 2, 790, 32, GOLD, app(lt, 16.2));
+    if (lt > 25) pill('녹화 파일 → 단톡방 · 발표 자료', W / 2, 880, 32, GREEN, app(lt, 25));
+  },
+  cons(lt) {
+    const L = ['① 가로 전체 무대: 한글 화면 37개 중 13개만 깨끗', '② middleout: 한글 끝 글자가 겹쳐 남음 (되세요요)', '③ 움직이는 동안 한글 줄이 오른쪽으로 밀려 보임', '④ 영상 파일 저장 기능 없음 · 파이썬 설치 필요', '⑤ 설명·도움말은 영어로만'];
+    L.forEach((s, i) => { const at = [0.3, 7, 13, 19, 25][i]; box(M + 150, 130 + i * 155, FW - 300, 125, 16, '#161b22', '#30363d', app(lt, at), 2); text(s, W / 2, 192 + i * 155, 38, INK, 800, 'center', app(lt, at)); });
+  },
+  use(lt) {
+    const L = [['1', '생일·새해 인사 글자 효과 → 녹화해 축하 영상으로', .3, PURPLE], ['2', '발표·영상 첫 화면 제목을 암호 해독처럼', 8, GREEN], ['⚠', '파이썬·프로그램은 공식 경로에서만 설치', 15, RED]];
+    if (lt > 22) pill('명령 · 예제 파일(인사효과.bat · 인사카드.py) → 설명란 링크', W / 2, 860, 30, BLUE, app(lt, 22));
+    L.forEach(([ic, s, at, c], i) => { box(M + 100, 170 + i * 220, FW - 200, 170, 18, '#161b22', c, app(lt, at), 2); text(ic, M + 190, 255 + i * 220, 60, c, 900, 'center', app(lt, at)); text(s, M + 270, 255 + i * 220, 42, INK, 800, 'left', app(lt, at)); });
+  },
+  end(lt) {
+    text('terminaltexteffects', W / 2, 220, 110, INK, 900, 'center', app(lt, .2), MONO);
+    text('명령 한 줄로 글자에 움직이는 효과를 입히는 무료 프로그램', W / 2, 340, 46, SUB, 700, 'center', app(lt, .4));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 435, 56, GOLD, 900, 'center', app(lt, .6));
+    pill('Windows: pip install terminaltexteffects · 명령과 예제 파일은 설명란에', W / 2, 550, 34, GREEN, app(lt, .8));
+    text('정보 제공용 · 2026-11-12 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 670, 26, SUB, 500, 'center', app(lt, 1));
+    text('파이썬·프로그램은 공식 경로에서만 설치 · 인사 글은 시연용으로 쓴 글', W / 2, 710, 26, SUB, 500, 'center', app(lt, 1));
+  }
+};
+// 깜빡임 방지: 장이 바뀔 때 앞 장 마지막 모습이 사라지는 동안 새 장이 나타남(크로스페이드 0.6초)
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const ci = Math.max(0, CH.findIndex(c => t >= c.t0 && t < c.t0 + c.dur)), c = CH[ci], lt = t - c.t0, k = ci === 0 ? 1 : ease(prog(lt, 0, .6));
+  if (k < 1) { const p = CH[ci - 1]; ctx.save(); ctx.globalAlpha = 1 - k; DRAW[p.id](remap(p, p.dur - .001)); ctx.restore(); tag(p, p.dur, 1 - k); }
+  ctx.save(); ctx.globalAlpha = k; DRAW[c.id](remap(c, lt)); ctx.restore();
+  tag(c, lt, k); caption(t);
+}
+</script></body></html>

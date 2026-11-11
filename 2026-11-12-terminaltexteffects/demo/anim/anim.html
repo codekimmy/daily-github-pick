@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="fx.js"></script><script src="timing.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 과정 애니메이션 (장면 5개). 효과 화면은 terminaltexteffects 가 만든 실제 프레임(fx.js), 숫자는 실제 시연 결과(../results.json)
+// 인사 글은 시연용으로 직접 쓴 글
+const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const T = { c0: 10, c1: 22, c2: 34, c3: 45, end: 54 };
+const TM = typeof TIMING !== 'undefined' ? TIMING : { old: [0, 10, 22, 34, 45, 54], new: [0, 10, 22, 34, 45, 54] };
+const TOTAL = Math.round(TM.new[TM.new.length - 1] * FPS);
+const toOld = t => { const N = TM.new, O = TM.old; for (let i = 1; i < N.length; i++) if (t <= N[i]) return O[i - 1] + (O[i] - O[i - 1]) * (t - N[i - 1]) / (N[i] - N[i - 1]); return O[O.length - 1]; };
+let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`)]).then(() => READY = true);
+const fade = (t, a, b) => (a <= 0 ? 1 : prog(t, a - .3, a + .3)) * (1 - prog(t, b - .3, b + .3));
+const M = VERT ? 60 : 100, FW = W - 2 * M;
+// 효과 재생: 장면 안 a초부터 시작해 '끝 - 2.5초'까지 끝나도록 빠르기를 맞춤(실제 길이보다 길면 빨리 감기, 화면에 배속 표시)
+function play(k, lt, a, b) { const L = fxLen(k), span = Math.max(.1, b - a), sp = Math.max(1, L / span); return [Math.max(0, (lt - a) * sp), sp]; }
+function sceneIntro(t) {
+  const a = fade(t, 0, T.c0); if (a <= 0) return;
+  text('시연용 인사 글 (인사.txt)', W / 2, VERT ? 200 : 80, VERT ? 44 : 40, SUB, 800, 'center', a);
+  const tw0 = VERT ? FW : 1100, th = VERT ? 520 : 420, tx = W / 2 - tw0 / 2, ty = VERT ? 260 : 130;
+  term(tx, ty, tw0, th, '명령 프롬프트 (cmd)', a);
+  text('C:\\> type 인사.txt', tx + 40, ty + 100, VERT ? 34 : 34, GREEN, 600, 'left', a * prog(t, .4, .8), MONO);
+  text('생일 축하합니다!', tx + 40, ty + 170, VERT ? 44 : 44, INK, 700, 'left', a * prog(t, 1.2, 1.6));
+  text('오늘도 좋은 하루 되세요', tx + 40, ty + 235, VERT ? 44 : 44, INK, 700, 'left', a * prog(t, 1.8, 2.2));
+  const cmd = 'C:\\> tte -i 인사.txt fireworks';
+  text(typed(cmd, t, 4.5, 6.3), tx + 40, ty + 330, VERT ? 34 : 34, GOLD, 600, 'left', a * prog(t, 4.4, 4.6), MONO);
+  const cy = VERT ? 1000 : 680;
+  text('그냥 글자 두 줄에', W / 2, cy, VERT ? 60 : 64, INK, 900, 'center', a * prog(t, 2.6, 3));
+  text('명령 한 줄을 붙이면?', W / 2, cy + (VERT ? 100 : 100), VERT ? 70 : 76, GOLD, 900, 'center', a * prog(t, 3.2, 3.6));
+  text('terminaltexteffects (tte)', W / 2, cy + (VERT ? 210 : 200), 44, SUB, 800, 'center', a * prog(t, 6.6, 7), MONO);
+}
+function sceneFire(t) {
+  const a = fade(t, T.c0, T.c1); if (a <= 0) return; const lt = t - T.c0;
+  text('① 글자를 쏘아 올렸다가 제자리에 내려앉힘', W / 2, VERT ? 200 : 70, VERT ? 44 : 50, INK, 900, 'center', a);
+  const [s, sp] = play('fw_bday', lt, .6, 9);
+  fxTerm('fw_bday', s, W / 2, VERT ? 700 : 450, VERT ? 18 : 24, a, 'tte fireworks (분홍·노랑 색 지정)');
+  if (sp > 1.05) pill(`${sp.toFixed(1)}배속`, VERT ? W - M - 90 : W / 2 + 560, VERT ? 1010 : 130, 26, SUB, a * prog(lt, .6, 1));
+  const cy = VERT ? 1180 : 870;
+  stat(VERT ? M : W / 2 - 620, cy, VERT ? FW / 2 - 15 : 600, 190, '실제 걸린 시간', `${R.realtime.fireworks}초`, a * prog(lt, 4, 4.4), GOLD, 28, 56);
+  stat(VERT ? M + FW / 2 + 15 : W / 2 + 20, cy, VERT ? FW / 2 - 15 : 600, 190, '같은 효과 5번 실행', `모양 ${R.random_diff.fireworks}가지`, a * prog(lt, 6, 6.4), BLUE, 28, 50);
+  if (VERT) text('색은 --firework-colors 로 직접 지정', W / 2, 1460, 34, SUB, 700, 'center', a * prog(lt, 7, 7.4));
+}
+function sceneTwo(t) {
+  const a = fade(t, T.c1, T.c2); if (a <= 0) return; const lt = t - T.c1;
+  text('② 같은 글, 효과 이름만 바꾸면', W / 2, VERT ? 200 : 70, VERT ? 48 : 52, INK, 900, 'center', a);
+  const J = [['dec_ko', 'decrypt · 암호 해독', R.effects.decrypt.sec_ko], ['burn_ko', 'burn · 불타기', R.effects.burn.sec_ko]];
+  J.forEach(([k, lab, sec], i) => { const aa = a * prog(lt, .3 + i * 1, .7 + i * 1), [s] = play(k, lt, .5 + i * 1, 9);
+    const cx = VERT ? W / 2 : W / 2 + (i ? 470 : -470), cy = VERT ? 560 + i * 600 : 470, cw = VERT ? 18 : 17;
+    fxTerm(k, s, cx, cy, cw, aa, lab); pill(`초당 60장 기준 ${sec}초`, cx, cy + (VERT ? 260 : 250), 28, GOLD, aa * prog(lt, 2.5 + i, 2.9 + i)); });
+}
+function sceneStats(t) {
+  const a = fade(t, T.c2, T.c3); if (a <= 0) return; const lt = t - T.c2, S_ = R.summary;
+  text('③ 효과 37가지를 같은 인사 글로 모두 실행', W / 2, VERT ? 200 : 70, VERT ? 44 : 52, INK, 900, 'center', a);
+  const C = [['효과', `${Math.round(37 * ease(prog(lt, .4, 2)))}가지`, INK], ['5초 안에 끝남', `${S_.under5}개`, GREEN], ['가장 긴 효과', `${R.effects[S_.longest].sec_ko}초`, GOLD], ['한글 마지막 화면 정상', `${S_.ok_ko}/37`, GREEN]];
+  const cols = 2, cw = (FW - 30) / 2, ch = VERT ? 260 : 220;
+  C.forEach(([k, v, c], i) => { const x = M + (i % cols) * (cw + 30), y = (VERT ? 280 : 140) + Math.floor(i / cols) * (ch + 30);
+    stat(x, y, cw, ch, k, v, a * prog(lt, .3 + i * .9, .7 + i * .9), c, 30, 64); });
+  const wy = VERT ? 920 : 690, A = a * prog(lt, 5, 5.4);
+  box(M, wy, FW, VERT ? 330 : 230, 20, 'rgba(255,123,114,.07)', RED, A, 2);
+  text('가로 전체 무대(--canvas-width 0)에서는', W / 2, wy + (VERT ? 70 : 60), VERT ? 38 : 40, INK, 800, 'center', A);
+  text(`한글 화면 ${S_.ok_ko_fullwidth}/37만 깨끗하게 끝남`, W / 2, wy + (VERT ? 150 : 125), VERT ? 54 : 56, RED, 900, 'center', A);
+  text('→ 무대를 가로 40칸으로 정하면 36/37', W / 2, wy + (VERT ? 240 : 190), VERT ? 36 : 36, GREEN, 800, 'center', a * prog(lt, 6.5, 6.9));
+}
+function sceneEnd(t) {
+  const a = prog(t, T.c3 - .3, T.c3 + .3); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; const lt = t - T.c3;
+  const cy = VERT ? 400 : 160;
+  text('terminaltexteffects', W / 2, cy, VERT ? 76 : 100, INK, 900, 'center', 1, MONO);
+  text('명령 창 글자에 움직이는 효과를 입히는 무료 프로그램', W / 2, cy + (VERT ? 110 : 100), VERT ? 36 : 44, SUB, 700);
+  text('일반인 쓸모 ★★★☆☆', W / 2, cy + (VERT ? 210 : 185), VERT ? 60 : 54, GOLD, 900);
+  const L = ['영상 파일은 만들지 않음 → 화면 녹화가 필요', '한글은 무대를 가로 40칸으로 (--canvas-width 40)', 'middleout 효과는 한글 끝 글자가 겹침'];
+  box(VERT ? M : 300, cy + (VERT ? 290 : 245), VERT ? FW : W - 600, VERT ? 400 : 280, 18, 'rgba(255,123,114,.07)', RED, prog(lt, .6, 1), 2);
+  L.forEach((s, i) => text('· ' + s, W / 2, cy + (VERT ? 370 : 305) + i * (VERT ? 110 : 80), VERT ? 32 : 36, INK, 700, 'center', prog(lt, 1 + i * .8, 1.4 + i * .8)));
+  pill('Windows: pip install terminaltexteffects · 설명란에', W / 2, cy + (VERT ? 820 : 600), VERT ? 30 : 36, GREEN, prog(lt, 3.6, 4));
+  const d1 = '정보 제공용 · 2026-11-12 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '파이썬·프로그램은 공식 경로에서만 설치 · 인사 글은 시연용으로 쓴 글';
+  if (VERT) { text(d1, W / 2, 1600, 28, SUB, 500); text(d2, W / 2, 1644, 26, SUB, 500); }
+  else { text(d1, W / 2, H - 92, 26, SUB, 500); text(d2, W / 2, H - 52, 26, SUB, 500); }
+  ctx.restore();
+}
+function frame(f) {
+  const t = toOld(f / FPS); ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneFire(t); sceneTwo(t); sceneStats(t); sceneEnd(t);
+}
+</script></body></html>

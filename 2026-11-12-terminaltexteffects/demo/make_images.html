@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="anim/fx.js"></script><script src="anim/data.js"></script><script src="anim/engine.js"></script></head><body><canvas id="c"></canvas><script>
+// 블로그·README용 그림 (숫자는 results.json, 효과 화면은 tte 실제 프레임). make_images.py 가 하나씩 찍음
+const cv = document.getElementById('c'); let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`)]).then(() => READY = true);
+function setup(w, h) { cv.width = w; cv.height = h; setCtx(cv.getContext('2d'), 1); ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, w, h); }
+function screenBox(x, y, w, h, title, lines, color, bad) { // 마지막 화면(글만) 상자
+  term(x, y, w, h, title, 1); lines.forEach((l, i) => text(l, x + 30, y + 100 + i * 46, 30, i === bad ? RED : color, 700, 'left', 1, MONO)); }
+const IMGS = {
+  bars() { // 효과 37가지 재생 시간 (한글 인사 2줄, 초당 60장 기준)
+    const E = Object.entries(R.effects).sort((a, b) => b[1].sec_ko - a[1].sec_ko), W = 1600, rowH = 26, top = 150, H = top + E.length * rowH + 110; setup(W, H);
+    text('terminaltexteffects 효과 37가지 — 끝날 때까지 걸리는 시간', 60, 60, 40, INK, 900, 'left'); text('같은 인사 글 2줄 · 초당 60장 기준 · matrix·thunderstorm은 실제 실행 시간', 60, 108, 26, SUB, 600, 'left');
+    const x0 = 300, max = 24, sc = (W - x0 - 160) / max;
+    for (let s = 0; s <= 20; s += 5) { const x = x0 + s * sc; ctx.fillStyle = '#21262d'; ctx.fillRect(x, top - 6, 1, E.length * rowH); text(s + '초', x, top + E.length * rowH + 24, 22, SUB, 600); }
+    E.forEach(([k, v], i) => { const y = top + i * rowH, w = Math.max(3, v.sec_ko * sc); text(k, x0 - 16, y + rowH / 2 - 2, 21, INK, 600, 'right', 1, MONO);
+      box(x0, y + 4, w, rowH - 10, 4, v.time_based ? GOLD : BLUE, null, 1); if (i < 7 || i >= E.length - 3) text(v.sec_ko + '초', x0 + w + 10, y + rowH / 2 - 2, 20, SUB, 700, 'left'); });
+    box(W - 520, top + 560, 470, 150, 16, '#161b22', '#30363d', 1, 2);
+    text(`5초 안에 끝남: ${R.summary.under5}개`, W - 285, top + 600, 28, INK, 800); text(`10초 이상: ${R.summary.over10}개 · 가운데 값 ${R.summary.median_sec_ko}초`, W - 285, top + 645, 24, SUB, 700);
+    box(W - 500, top + 680, 18, 14, 3, GOLD, null, 1); text('시계 기준으로 끝나는 효과', W - 472, top + 687, 20, SUB, 600, 'left');
+    text('2026-11-12 클라우드 시연 결과 · tte 0.15.0', W - 60, H - 30, 20, SUB, 500, 'right');
+  },
+  korean() { // 한글 마지막 화면 비교
+    setup(1600, 900); text('한글 글은 끝까지 깨끗하게 남을까? — 마지막 화면 비교', 800, 60, 40, INK, 900);
+    const e = R.effects; const P = [['① 기본 무대 (글 크기)', `정상 ${R.summary.ok_ko}/37`, ['생일 축하합니다!', '오늘도 좋은 하루 되세요'], GREEN, -1, 'tte -i 인사.txt burn'],
+      ['② 넓은 무대 40칸×10줄', `정상 ${R.summary.ok_ko_box}/37`, ['생일 축하합니다!', '오늘도 좋은 하루 되세요'], GREEN, -1, '--canvas-width 40 --canvas-height 10'],
+      ['③ 가로 전체 무대', `정상 ${R.summary.ok_ko_fullwidth}/37`, e.burn.screen_ko_fullwidth, RED, 1, '--canvas-width 0 (burn)'],
+      ['④ middleout (기본 무대)', '끝 글자가 겹침', e.middleout.screen_ko, RED, 1, 'tte -i 인사.txt middleout']];
+    P.forEach(([t, s, L, c, bad, cmd], i) => { const x = 60 + (i % 2) * 760, y = 120 + Math.floor(i / 2) * 380;
+      text(t, x + 10, y + 20, 30, INK, 800, 'left'); pill(s, x + 600, y + 20, 26, c, 1);
+      screenBox(x, y + 55, 720, 260, cmd, L, '#f2c14e', bad); });
+    text('터미널 80칸 · 37가지 효과 모두 같은 인사 글 · 2026-11-12 클라우드 시연 결과 (영어 글은 기본 무대 37/37 정상)', 800, 870, 22, SUB, 600);
+  },
+  gallery() { // 효과 6가지 진행 중 모습
+    setup(1600, 980); text('같은 인사 글, 효과 6가지 — 움직이는 도중 모습', 800, 56, 40, INK, 900);
+    const G = [['fw_ko', 9.3, 'fireworks · 불꽃놀이'], ['dec_ko', 6.2, 'decrypt · 암호 해독'], ['burn_ko', 1.3, 'burn · 불타기'], ['blackhole_ko', 7.3, 'blackhole · 블랙홀'], ['waves_ko', 5.5, 'waves · 물결'], ['synth_ko', 1.6, 'synthgrid · 격자']];
+    G.forEach(([k, s, lab], i) => { const cx = 280 + (i % 3) * 520, cy = 290 + Math.floor(i / 3) * 430; fxTerm(k, s, cx, cy, 9.6, 1, lab); });
+    text('2026-11-12 클라우드 시연 결과 · terminaltexteffects 0.15.0 실제 프레임', 800, 950, 22, SUB, 600);
+  },
+  thumb() {
+    setup(1280, 720); fxTerm('blackhole_ko', 7.3, 640, 290, 14.5, 1, 'tte blackhole');
+    text('명령 한 줄로 움직이는 인사 글자', 640, 560, 76, GOLD, 900); text('효과 37가지 · 무료 terminaltexteffects', 640, 650, 40, INK, 800);
+  }
+};
+</script></body></html>

@@ -10,6 +10,7 @@ from pathlib import Path
 
 H = Path(__file__).parent; D = H.parent
 CPS, GAP, JOIN, LEAD = 6.3, 0.9, 0.6, 0.3   # 초당 글자 · 문장 뒤 쉼 · 한 구간 안 문장 사이 · 장 첫 자막 전
+# ※ Day 15는 쉼 0.9초로 만든 영상에 운영자가 녹음하며 쉼을 0.3초씩 더함. 다음 날부터는 GAP 1.4, JOIN 1.1 로 쓴다 (GUIDE 5-1)
 MIN_CUE, END_HOLD = 3.0, 7.0                # 자막 하나 최소 길이 · 마지막 장 마지막 구간(엔딩 화면) 최소 길이
 measured = json.load(open(sys.argv[1], encoding="utf-8")) if len(sys.argv) > 1 else {}
 

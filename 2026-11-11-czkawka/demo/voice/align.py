@@ -1,5 +1,5 @@
 """음성 파일(대본 전체를 이어 읽은 것)을 문장별로 잘라, 롱폼 영상의 구간 시간(cues.json)에 맞춰 놓는다.
-사용: python3 align.py <음성.mp3> <영상.mp4> <출력.mp4> [long|shorts]  (기본 long)
+사용: python3 align.py <음성.mp3> <영상.mp4> <출력.mp4> [long|shorts] [구간별 늦출 초 0,0.4,…]  (기본 long)
 문장 경계: 무음 구간 후보 중에서, 문장 글자 수에 비례한 예상 길이와 가장 잘 맞는 조합을 동적 계획법으로 고름."""
 import json, re, subprocess, sys
 from pathlib import Path
@@ -7,6 +7,7 @@ from pathlib import Path
 mp3, video, out = sys.argv[1:4]
 here = Path(__file__).parent
 KIND = sys.argv[4] if len(sys.argv) > 4 else "long"
+OFF = [float(x) for x in sys.argv[5].split(",")] if len(sys.argv) > 5 else []  # 구간별로 소리를 늦출 초 (앞뒤 쉼을 고르게 할 때, 2026-11-11)
 cues = json.load(open(here.parent / "narration/cues.json", encoding="utf-8"))[KIND]
 n = len(cues)
 vdur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", video]))
@@ -52,7 +53,7 @@ json.dump(report, open(here / ("segments.json" if KIND == "long" else f"segments
 parts, labels = [], []
 for i, ((s, e), (a, b, t)) in enumerate(zip(segs, cues)):
     s0, e0 = max(0, s - 0.05), min(dur, e + 0.08)
-    parts.append(f"[0:a]atrim={s0:.3f}:{e0:.3f},asetpts=PTS-STARTPTS,afade=t=in:d=0.02,afade=t=out:st={e0 - s0 - 0.03:.3f}:d=0.03,adelay={int((a + 0.15) * 1000)}:all=1[a{i}]")
+    parts.append(f"[0:a]atrim={s0:.3f}:{e0:.3f},asetpts=PTS-STARTPTS,afade=t=in:d=0.02,afade=t=out:st={e0 - s0 - 0.03:.3f}:d=0.03,adelay={int((a + 0.15 + (OFF[i] if i < len(OFF) else 0)) * 1000)}:all=1[a{i}]")
     labels.append(f"[a{i}]")
 filt = ";".join(parts) + ";" + "".join(labels) + f"amix=inputs={n}:normalize=0,aformat=sample_rates=44100:channel_layouts=stereo,apad[out]"
 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", mp3, "-i", video, "-filter_complex", filt, "-map", "1:v", "-map", "[out]",

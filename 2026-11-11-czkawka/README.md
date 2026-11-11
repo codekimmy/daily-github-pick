@@ -66,8 +66,8 @@
 
 ![가상 PC 정리 전 폴더 41개 파일·146.7MB를 czkawka로 검사한 요약 카드, 똑같은 파일 10개·79.7MB, 비슷한 사진 15장, 빈 폴더 3개, 위치 정보 사진 4장 등 8가지 결과 그림](media/정리결과_요약.png)
 
-- **업로드용: `media/cz-long-voice-bgm.mp4`(롱폼 5분 25초, 17개 장, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `cz-long-voice.mp4`, 음성 없는 원본 `cz-long.mp4`), `media/cz-anim-vertical.mp4`(숏폼 51.6초, 세로, 자막 포함)**
-- 과정 애니메이션: `media/cz-anim.mp4`(가로 55초), `media/cz-anim-vertical.mp4`(세로 51.6초, 숏폼 음성 길이에 맞춤) — `demo/results.json` 숫자와 시연에 쓴 실제 사진으로 그림
+- **업로드용: `media/cz-long-voice-bgm.mp4`(롱폼 5분 25초, 17개 장, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `cz-long-voice.mp4`, 음성 없는 원본 `cz-long.mp4`), `media/cz-shorts-voice-bgm.mp4`(숏폼 47.6초, 세로, 자막 + 음성 + 잔잔한 배경음악 · 음악 없는 버전 `cz-shorts-voice.mp4`, 음성 없는 원본 `cz-anim-vertical.mp4`)**
+- 과정 애니메이션: `media/cz-anim.mp4`(가로 55초), `media/cz-anim-vertical.mp4`(세로 47.6초, 숏폼 음성 길이에 맞춤) — `demo/results.json` 숫자와 시연에 쓴 실제 사진으로 그림
 - 썸네일: `media/thumbnail.jpg`
 
 ## Windows에서 따라하기

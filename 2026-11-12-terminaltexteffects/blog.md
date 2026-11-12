@@ -61,11 +61,16 @@ tte는 **'글자 무대 연출가'**입니다.
 
 **③ 한글은 무대 크기가 중요합니다** — 효과가 끝난 뒤 마지막 화면에 원래 글만 깨끗하게 남았는지 확인했습니다.
 
-| 무대 설정 | 한글 인사 글 정상 |
-|---|---|
-| 기본 (무대 = 글 크기) | **36/37** (middleout은 끝 글자가 겹쳐 "되세요요") |
-| 넓은 무대 `--canvas-width 40 --canvas-height 10 --anchor-text c` | **36/37** (unstable은 글자 조각이 남음) |
-| 가로 전체 무대 `--canvas-width 0` | **13/37** |
+<table style="border-collapse: collapse; width: 100%; border: 1px solid #bbbbbb;" border="1" data-ke-align="alignLeft">
+<thead>
+<tr><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">무대 설정</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">한글 인사 글 정상</th></tr>
+</thead>
+<tbody>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">기본 (무대 = 글 크기)</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><b>36/37</b> (middleout은 끝 글자가 겹쳐 "되세요요")</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">넓은 무대 <code>--canvas-width 40 --canvas-height 10 --anchor-text c</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><b>36/37</b> (unstable은 글자 조각이 남음)</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">가로 전체 무대 <code>--canvas-width 0</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><b>13/37</b></td></tr>
+</tbody>
+</table>
 
 영어 글은 기본 무대에서 37/37 모두 정상이었습니다. 또 글자가 움직이는 동안에는 한글이 섞인 줄이 오른쪽으로 밀려 보였습니다.
 
@@ -73,14 +78,19 @@ tte는 **'글자 무대 연출가'**입니다.
 
 **④ 그 밖의 시연 결과**
 
-| 항목 | 결과 |
-|---|---|
-| 설치 | `pip install` 약 1초 · 1.5MB · 함께 설치되는 패키지 없음 |
-| 색 바꾸기 | 불꽃 색·마지막 글자 색을 분홍·노랑으로 지정 성공 |
-| 같은 효과 5번 실행 | 불꽃놀이·암호 해독은 길이 5가지(실행마다 무작위), 타자 효과는 항상 같음 |
-| 글 2줄 → 10줄 | 타자 0.6 → 3.2초 · 암호 해독 8.6 → 12.4초 · 불타기 4.5 → 5.5초 |
-| 무작위 효과 `-R` | 37가지 중 하나를 골라 실행, `--include-effects`로 후보만 정하기 가능 |
-| 파이썬 예제 | 이름 '민지'를 넣은 인사 불꽃놀이 10.9초 |
+<table style="border-collapse: collapse; width: 100%; border: 1px solid #bbbbbb;" border="1" data-ke-align="alignLeft">
+<thead>
+<tr><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">항목</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">결과</th></tr>
+</thead>
+<tbody>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">설치</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>pip install</code> 약 1초 · 1.5MB · 함께 설치되는 패키지 없음</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">색 바꾸기</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">불꽃 색·마지막 글자 색을 분홍·노랑으로 지정 성공</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">같은 효과 5번 실행</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">불꽃놀이·암호 해독은 길이 5가지(실행마다 무작위), 타자 효과는 항상 같음</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">글 2줄 → 10줄</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">타자 0.6 → 3.2초 · 암호 해독 8.6 → 12.4초 · 불타기 4.5 → 5.5초</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">무작위 효과 <code>-R</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">37가지 중 하나를 골라 실행, <code>--include-effects</code>로 후보만 정하기 가능</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">파이썬 예제</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">이름 '민지'를 넣은 인사 불꽃놀이 10.9초</td></tr>
+</tbody>
+</table>
 
 [이미지: terminal.gif | 대체 텍스트: 명령 프롬프트에서 tte 버전 0.15.0 확인 → 인사 글 출력 → 암호 해독 → 분홍·노랑 불꽃놀이 → 불타기 효과 순으로 실행되는 terminaltexteffects 터미널 화면]
 

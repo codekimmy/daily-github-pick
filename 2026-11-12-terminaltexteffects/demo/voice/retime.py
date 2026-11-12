@@ -16,6 +16,9 @@ MIN_CUE, END_HOLD = 3.0, 7.0                # 자막 하나 최소 길이 · 마
 measured = json.load(open(sys.argv[1], encoding="utf-8")) if len(sys.argv) > 1 else {}
 # 셋째 값: 롱폼 문장 뒤 쉼(초). 실제 음성이 어림보다 빨라 롱폼이 5분보다 짧아질 때만 2초 안에서 늘림 (Day 16: 1.8초)
 GAP_LONG = float(sys.argv[2]) if len(sys.argv) > 2 else GAP
+# 넷째·다섯째 값: 숏폼 장면 끝 쉼(초) · 엔딩 장면 최소 길이(초). 음성이 짧아 숏폼이 45초보다 짧아질 때 엔딩 화면을 늘려 맞춤 (Day 16: 1.8 · 11.5)
+GAP_SHORTS = float(sys.argv[3]) if len(sys.argv) > 3 else GAP
+END_SHORTS = float(sys.argv[4]) if len(sys.argv) > 4 else 9.0
 
 
 def speak(text):  # 말하는 시간 어림
@@ -47,8 +50,8 @@ SH = eval(mk[mk.index("SHORTS = [") + 9: mk.index("]\n", mk.index("SHORTS = ["))
 MS = measured.get("shorts"); T_OLD = [0, 10, 22, 34, 45, 54]
 t, bounds = 0.0, [0.0]
 for i, (_, _, txt) in enumerate(SH):
-    d = (MS[i] if MS else speak(txt)) + GAP + LEAD
-    d = max(d, 9.0 if i == len(SH) - 1 else 6.0)   # 장면 최소 6초, 엔딩 9초
+    d = (MS[i] if MS else speak(txt)) + GAP_SHORTS + LEAD
+    d = max(d, END_SHORTS if i == len(SH) - 1 else 6.0)   # 장면 최소 6초, 엔딩 9초(기본)
     t += d; bounds.append(round(t, 2))
 (D / "anim/timing.js").write_text("const TIMING = " + json.dumps({"old": T_OLD, "new": bounds}) + ";\n", encoding="utf-8")
 print("숏폼", bounds)

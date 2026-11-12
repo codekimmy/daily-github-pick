@@ -9,7 +9,7 @@
 | `인사카드.py` | 파이썬 예제: 이름을 물어본 뒤 이름 넣은 생일 인사를 분홍·노랑 불꽃놀이로 (리눅스에서 실행 확인, 10.9초) |
 | `tools_win/인사효과.bat` | Windows용: 인사 글 두 줄과 효과 번호를 물어본 뒤 넓은 무대로 효과 보여 주기 (실행 확인 전) |
 | `demo.sh` | 터미널 녹화용 (`tools/record_terminal.sh demo/demo.sh media/terminal.gif`) |
-| `make_images.html` · `make_images.py` | `media/효과길이.png`, `media/한글화면비교.png`, `media/효과모음.png`, `media/thumbnail.jpg` |
+| `make_images.html` · `make_images.py` | `media/효과길이.png`, `media/한글화면비교.png`, `media/효과모음.png`, `media/thumbnail.jpg`, 숏폼용 세로 `media/thumbnail-shorts.jpg` |
 | `anim/` | 과정 애니메이션: `prep.py`(tte 실제 프레임 → `fx.js`, 숫자 → `data.js`) → `render.py 1920 1080 …` / `render.py 1080 1920 …` |
 | `long/` | 롱폼: `script.js`(장·자막·대본) + `long.html` → `render_long.py 프레임폴더 [시작 끝]` → `compose.py 프레임폴더 출력.mp4` |
 | `voice/retime.py` | 대본 말하는 시간 + 쉼 1.4초로 장·자막 시간 다시 짜기 → `long/timing.js`, `anim/timing.js` |

@@ -37,6 +37,13 @@ const IMGS = {
     G.forEach(([k, s, lab], i) => { const cx = 280 + (i % 3) * 520, cy = 290 + Math.floor(i / 3) * 430; fxTerm(k, s, cx, cy, 9.6, 1, lab); });
     text('2026-11-12 클라우드 시연 결과 · terminaltexteffects 0.15.0 실제 프레임', 800, 950, 22, SUB, 600);
   },
+  thumbShorts() { // 숏폼 썸네일 (세로 1080×1920, 글자는 가운데 안전 영역에)
+    setup(1080, 1920);
+    text('인사 글자가', 540, 330, 118, INK, 900); text('흩어졌다 모입니다', 540, 480, 118, GOLD, 900);
+    fxTerm('blackhole_ko', 7.3, 540, 960, 18.5, 1, 'tte blackhole');
+    pill('명령 한 줄 · 효과 37가지 · 무료', 540, 1400, 54, GREEN, 1);
+    text('terminaltexteffects', 540, 1560, 66, SUB, 800, 'center', 1, MONO);
+  },
   thumb() {
     setup(1280, 720); fxTerm('blackhole_ko', 7.3, 640, 290, 14.5, 1, 'tte blackhole');
     text('명령 한 줄로 움직이는 인사 글자', 640, 560, 76, GOLD, 900); text('효과 37가지 · 무료 terminaltexteffects', 640, 650, 40, INK, 800);

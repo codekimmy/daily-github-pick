@@ -25,6 +25,8 @@
 python.org에서 파이썬을 설치한 뒤 명령 프롬프트에 pip install terminaltexteffects 를 입력하면 설치됩니다. 인사 글은 메모장에 저장해서 tte -i 인사.txt fireworks 처럼 실행하시기 바랍니다. 한글은 --canvas-width 40 --canvas-height 10 --anchor-text c 를 붙이면 시연에서 가장 깨끗했습니다. 예제 파일은 전체 영상 설명란 링크에 있습니다!
 ```
 
+**썸네일**: `media/thumbnail-shorts.jpg` (세로 1080×1920, 유튜브 앱에서 쇼츠 올릴 때 썸네일로 지정)
+
 **영상**: `media/tte-shorts-voice-bgm.mp4` (45.2초, 자막 + 운영자 음성 + 잔잔한 배경음악 · 음악 없는 버전 `media/tte-shorts-voice.mp4`, 음성 없는 원본 `media/tte-anim-vertical.mp4`)
 
 ---

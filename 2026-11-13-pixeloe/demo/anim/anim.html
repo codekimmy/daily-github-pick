@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="data.js"></script><script src="timing.js"></script><script src="engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 과정 애니메이션 (장면 5개). 그림은 PixelOE 가 만든 실제 결과(../out/), 숫자는 실제 시연 결과(../results.json)
+// 사진은 scikit-image 견본 사진(고양이·커피, CC0)
+const q = new URLSearchParams(location.search), W = +q.get('w') || 1920, H = +q.get('h') || 1080, VERT = H > W, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+const T = { c0: 10, c1: 22, c2: 34, c3: 45, end: 54 };
+const TM = typeof TIMING !== 'undefined' ? TIMING : { old: [0, 10, 22, 34, 45, 54], new: [0, 10, 22, 34, 45, 54] };
+const TOTAL = Math.round(TM.new[TM.new.length - 1] * FPS);
+const toOld = t => { const N = TM.new, O = TM.old; for (let i = 1; i < N.length; i++) if (t <= N[i]) return O[i - 1] + (O[i] - O[i - 1]) * (t - N[i - 1]) / (N[i] - N[i - 1]); return O[O.length - 1]; };
+let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImages('../')]).then(() => READY = true);
+const fade = (t, a, b) => (a <= 0 ? 1 : prog(t, a - .3, a + .3)) * (1 - prog(t, b - .3, b + .3));
+const M = VERT ? 60 : 100, FW = W - 2 * M, P = R.photos, C = R.cli;
+const fmt = n => n.toLocaleString('en-US');
+function sceneIntro(t) {
+  const a = fade(t, 0, T.c0); if (a <= 0) return;
+  const r = VERT ? [M, 260, FW, 640] : [M, 120, 1000, 666];
+  pic('고양이', ...r, a * prog(t, .1, .5), true);
+  text('시연용 공개 사진 (고양이.png · 451×300)', r[0] + r[2] / 2, r[1] + r[3] + 40, 30, SUB, 700, 'center', a * prog(t, .6, 1));
+  const cx = VERT ? W / 2 : 1560, cy = VERT ? 1160 : 360;
+  text('평범한 사진 한 장에', cx, cy, VERT ? 64 : 60, INK, 900, 'center', a * prog(t, 1.5, 1.9));
+  text('명령 한 줄을 붙이면?', cx, cy + 100, VERT ? 72 : 66, GOLD, 900, 'center', a * prog(t, 2.6, 3));
+  const tx = VERT ? M : 1140, tw0 = VERT ? FW : 680, ty = VERT ? 1360 : 560;
+  term(tx, ty, tw0, 170, '명령 프롬프트 (cmd)', a * prog(t, 3.8, 4.2));
+  text(typed('pixeloe.pixelize 고양이.png -S 64', t, 4.4, 6.4), tx + 30, ty + 110, VERT ? 32 : 26, GREEN, 600, 'left', a * prog(t, 4.2, 4.5), MONO);
+  text('PixelOE', cx, VERT ? 1640 : 840, 56, SUB, 800, 'center', a * prog(t, 6.8, 7.2), MONO);
+}
+function sceneSweep(t) {
+  const a = fade(t, T.c0, T.c1); if (a <= 0) return; const lt = t - T.c0, S = P['고양이'].sizes['64'];
+  text('① 사진이 도트 그림(픽셀 아트)으로', W / 2, VERT ? 200 : 70, VERT ? 52 : 52, INK, 900, 'center', a);
+  const r = VERT ? [M, 280, FW, 640] : [M + 60, 130, 1060, 706];
+  const k = ease(prog(lt, 1, 5.5)); sweep('고양이', '고양이_크기64', ...r, k, a);
+  if (k > 0 && k < 1) pill('바꾸는 중', r[0] + r[2] * k, r[1] + r[3] + 40, 26, GOLD, a);
+  const n = Math.round(S.dots[0] * S.dots[1] * ease(prog(lt, 1, 5.5)));
+  const sx = VERT ? M : 1260, sw = VERT ? FW / 2 - 15 : 560, sy = VERT ? 1040 : 160, sh = 220;
+  stat(sx, sy, sw, sh, '점 개수', `${S.dots[0]}×${S.dots[1]} = ${fmt(n)}점`, a * prog(lt, 1, 1.4), GOLD, 28, VERT ? 40 : 44);
+  stat(VERT ? M + FW / 2 + 15 : sx, VERT ? sy : sy + sh + 40, sw, sh, '바꾸는 데 걸린 시간', `${S.sec.toFixed(2)}초`, a * prog(lt, 6, 6.4), GREEN, 28, 60);
+  text('외곽선은 굵게 남기고, 칸마다 색 하나', VERT ? W / 2 : sx + sw / 2, VERT ? 1360 : sy + 2 * sh + 120, VERT ? 38 : 30, INK, 800, 'center', a * prog(lt, 7, 7.4));
+}
+function sceneCompare(t) {
+  const a = fade(t, T.c1, T.c2); if (a <= 0) return; const lt = t - T.c1, d = P['고양이'].compare96.dots;
+  text('② 보통 모자이크와 같은 점 개수로 비교', W / 2, VERT ? 200 : 70, VERT ? 46 : 52, INK, 900, 'center', a);
+  const Z = [0.3, 0.32, 0.42, 0.42], L = [['고양이_모자이크96', '보통 모자이크', '칸 평균 색 → 눈 테두리가 번짐', SUB], ['고양이_pixeloe96', 'PixelOE', '외곽선 살림 → 눈 테두리가 검은 점 줄로', GOLD]];
+  L.forEach(([n, lab, sub, c], i) => { const aa = a * prog(lt, .4 + i * 1.6, .8 + i * 1.6);
+    const x = VERT ? M + 80 : M + i * (FW / 2 + 20), y = VERT ? 290 + i * 690 : 150, w = VERT ? FW - 160 : FW / 2 - 20, h = VERT ? 520 : 620;
+    zoom(n, ...Z, x, y, w, h, aa, false, c);
+    text(lab, x + w / 2, y + h + 50, VERT ? 44 : 44, c, 900, 'center', aa); text(sub, x + w / 2, y + h + (VERT ? 104 : 100), VERT ? 32 : 30, INK, 700, 'center', aa * prog(lt, 3.5 + i * 1, 3.9 + i * 1)); });
+  pill(`둘 다 ${d[0]}×${d[1]}점 · 고양이 눈 부분 확대`, W / 2, VERT ? 1720 : 1010, VERT ? 30 : 28, BLUE, a * prog(lt, 6.5, 6.9));
+}
+function sceneStats(t) {
+  const a = fade(t, T.c2, T.c3); if (a <= 0) return; const lt = t - T.c2, S = P['고양이'].sizes;
+  text('③ 시연 숫자', W / 2, VERT ? 200 : 70, VERT ? 52 : 52, INK, 900, 'center', a);
+  const Cd = [['점 64 기준 바꾸기', `${S['64'].sec.toFixed(2)}초`, GREEN], ['점 256 기준 (가장 자세히)', `${S['256'].sec.toFixed(2)}초`, GOLD], ['4000×2667 큰 사진', `${R.big['4000'].sec.toFixed(2)}초`, BLUE], ['--colors 8 결과 색', `${fmt(C['커피_점64_색8'].uniq)}가지`, RED]];
+  const cw = (FW - 30) / 2, ch = VERT ? 250 : 200;
+  Cd.forEach(([k, v, c], i) => stat(M + (i % 2) * (cw + 30), (VERT ? 280 : 130) + Math.floor(i / 2) * (ch + 30), cw, ch, k, v, a * prog(lt, .3 + i * 1, .7 + i * 1), c, 28, VERT ? 58 : 58));
+  const wy = VERT ? 880 : 620, A = a * prog(lt, 5, 5.4);
+  box(M, wy, FW, VERT ? 360 : 300, 20, 'rgba(255,123,114,.07)', RED, A, 2);
+  text('주의: 설치가 무겁습니다', W / 2, wy + 60, VERT ? 44 : 44, RED, 900, 'center', A);
+  text('함께 설치되는 torch 등 약 5GB · 설치 8분 23초 (리눅스 시연)', W / 2, wy + (VERT ? 140 : 135), VERT ? 32 : 36, INK, 800, 'center', a * prog(lt, 6, 6.4));
+  text('--colors 8 로 정해도 딱 8색이 되지는 않음', W / 2, wy + (VERT ? 220 : 210), VERT ? 32 : 36, INK, 800, 'center', a * prog(lt, 7, 7.4));
+  if (VERT) text('(원래 3,088가지 → 2,182가지)', W / 2, wy + 290, 30, SUB, 700, 'center', a * prog(lt, 7.4, 7.8));
+}
+function sceneEnd(t) {
+  const a = prog(t, T.c3 - .3, T.c3 + .3); if (a <= 0) return; ctx.save(); ctx.globalAlpha = a; const lt = t - T.c3;
+  const cy = VERT ? 330 : 140;
+  text('PixelOE', W / 2, cy, VERT ? 96 : 100, INK, 900, 'center', 1, MONO);
+  text('사진을 외곽선 살린 도트 그림으로 바꾸는 무료 프로그램', W / 2, cy + (VERT ? 110 : 100), VERT ? 34 : 44, SUB, 700);
+  text('일반인 쓸모 ★★★☆☆', W / 2, cy + (VERT ? 210 : 185), VERT ? 60 : 54, GOLD, 900);
+  const L = ['설치가 무거움 (torch 등 약 5GB)', '--colors 는 색을 줄이지만 정확한 개수는 아님', '원본 사진은 그대로 두고 새 파일로 저장'];
+  box(VERT ? M : 300, cy + (VERT ? 290 : 245), VERT ? FW : W - 600, VERT ? 400 : 280, 18, 'rgba(255,123,114,.07)', RED, prog(lt, .6, 1), 2);
+  L.forEach((s, i) => text('· ' + s, W / 2, cy + (VERT ? 370 : 305) + i * (VERT ? 110 : 80), VERT ? 32 : 36, INK, 700, 'center', prog(lt, 1 + i * .8, 1.4 + i * .8)));
+  pill('Windows: pip install pixeloe · 설명란에', W / 2, cy + (VERT ? 820 : 600), VERT ? 32 : 36, GREEN, prog(lt, 3.6, 4));
+  const d1 = '정보 제공용 · 2026-11-13 클라우드 시연 결과(운영자 직접 검증 아님)', d2 = '원본 사진은 따로 보관 · 사진은 공개 견본 사진(CC0) · 프로그램은 공식 경로에서만 설치';
+  if (VERT) { text(d1, W / 2, 1600, 28, SUB, 500); text(d2, W / 2, 1644, 24, SUB, 500); }
+  else { text(d1, W / 2, H - 92, 26, SUB, 500); text(d2, W / 2, H - 52, 26, SUB, 500); }
+  ctx.restore();
+}
+function frame(f) {
+  const t = toOld(f / FPS); ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  sceneIntro(t); sceneSweep(t); sceneCompare(t); sceneStats(t); sceneEnd(t);
+}
+</script></body></html>

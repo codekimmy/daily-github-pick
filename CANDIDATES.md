@@ -18,7 +18,7 @@
 | ⭐ ✅ Day 7 | x-hw/amazing-qr | 내 사진·GIF를 배경으로 한 QR코드 | 중국 | 1.1만 | pip `amzqr` | 0.14초, 스캔 성공, 움직이는 QR도 됨 (11/3 재확인: 0.1.0, 그림 QR은 zxing 11/11·OpenCV 0/11, 한글 불가) | 이 그림이 QR이라고? | ★5 |
 | ⭐ ✅ Day 11 | guofei9987/blind_watermark | 눈에 안 보이는 워터마크 | 중국 | 1.5만 | pip `blind-watermark` | 1.4초, JPEG 재압축 후에도 문자 추출 (11/7 재확인: 0.4.4, 넣기 0.18초·꺼내기 0.12초, 15가지 망가뜨리기 중 10가지 통과, JPG 화질 30·밝기·돌림·자름은 실패, 명령어 --pwd는 다른 번호로도 꺼내짐) | 사진 도용 잡는 투명 도장 | ★4 |
 |  | MemeCrafters/meme-generator | 밈 템플릿 300종에 글·얼굴 합성 | 중국 | 1천 | pip `meme_generator` | 0.2~0.5초, 한글 짤·쓰다듬기 GIF. 템플릿 받으려면 config의 resource_url을 raw.githubusercontent로 변경 | 내 사진으로 짤 1초 | ★4 |
-|  | KohakuBlueleaf/PixelOE | AI 없이 사진을 도트 그림으로 | 대만 | 542 | pip `pixeloe` | 5.2초 | 내 사진이 16비트 게임 속으로 | ★4 |
+| ✅ Day 17 | KohakuBlueleaf/PixelOE | AI 없이 사진을 도트 그림으로 | 대만 | 542 | pip `pixeloe` | 5.2초 (11/13 재확인: 1.0.0, 설치 8분 23초·torch 등 약 5GB(리눅스는 그래픽카드용 부품까지), 기본값 2.5초·-S 64 0.11초·-S 256 2.33초, 4000px 사진도 0.48초, 같은 점 개수 모자이크보다 테두리 남음, --colors 8 → 2,182색(정확한 개수 아님), 새 명령 pixeloe.slang은 Visual Studio C++ 도구 오류로 실패) | 내 사진이 16비트 게임 속으로 | ★4 |
 |  | visioncortex/vtracer | 그림을 확대해도 안 깨지는 SVG로 | 홍콩 | 7.4천 | pip `vtracer` (파이썬으로 호출) | 0.23초, path 36개 | 로고 무한 확대 | ★4 |
 | ✅ Day 14 | amueller/word_cloud | 글에서 많이 나온 단어 구름 그림 | 독일 | 1만 | pip `wordcloud` | 0.6초, 한글은 Noto CJK 글꼴 지정 (11/10 재확인: 1.9.6, 글꼴 없으면 □, 조사 붙은 말 따로 셈 → kiwipiepy 명사만으로 해결, 그림 0.5초·6만 줄 명사 고르기 19.7초, 첫 설치 matplotlib 내려받기 멈춤 1회) | 카톡 대화로 워드클라우드 | ★4 |
 |  | TotallyNotChase/glitch-this | 사진을 고장 난 TV 효과 GIF로 | 개인 | 1.8천 | pip `glitch-this` | 2.6초 | 레트로 TV 고장 효과 | ★3 |

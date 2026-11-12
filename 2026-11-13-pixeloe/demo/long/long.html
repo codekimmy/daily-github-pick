@@ -1,0 +1,163 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="script.js"></script><script src="timing.js"></script><script src="../anim/data.js"></script><script src="../anim/engine.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 롱폼 (미리보기 포함 전체). 그림은 PixelOE 가 만든 실제 결과(../out/, ../photos/도트그림/), 숫자는 실제 시연 결과(../results.json)
+// 사진은 scikit-image 견본 사진(고양이·커피, CC0)
+const W = 1920, H = 1080, FPS = 30;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; setCtx(cv.getContext('2d'), 1);
+// 음성 길이에 맞춘 시간(timing.js, voice/retime.py)이 있으면 장·자막 시간을 바꾸고, 화면 애니메이션은 원래 시간으로 되돌려 그림(구간별로 늘이고 줄임)
+if (typeof TIMING !== 'undefined') SCRIPT.chapters.forEach((c, i) => { const T = TIMING[i]; c.dur = T.dur; c.cues = T.cues; c.knots = T.knots; });
+const remap = (c, lt) => { const K = c.knots; if (!K) return lt; for (let i = 1; i < K.length; i++) if (lt <= K[i][0]) { const [a0, b0] = K[i - 1], [a1, b1] = K[i]; return a1 > a0 ? b0 + (b1 - b0) * (lt - a0) / (a1 - a0) : b1; } return K[K.length - 1][1]; };
+const CH = SCRIPT.chapters; let acc = 0; CH.forEach(c => { c.t0 = acc; acc += c.dur; });
+const TOTAL = Math.round(acc * FPS);
+let READY = false;
+Promise.all([document.fonts.load(`800 40px ${F}`), document.fonts.load(`500 20px ${MONO}`), loadImages('../')]).then(() => READY = true);
+const app = (lt, a, d = 0.5) => prog(lt, a, a + d);
+const M = 120, FW = W - 240, P = R.photos, C = R.cli, fmt = n => n.toLocaleString('en-US');
+// 깜빡임 방지: 자막을 전체 시간 기준으로 이어 붙임. 다음 자막까지 0.6초 안이면 상자를 끄지 않고 글만 겹쳐 바꿈, 상자 너비도 부드럽게
+const CAP = []; CH.forEach(c => c.cues.forEach(q => CAP.push([c.t0 + q[0], c.t0 + q[1], q[2]])));
+CAP.forEach((q, i) => { const n = CAP[i + 1]; q.join = !!n && n[0] - q[1] < .6; if (q.join) q[1] = n[0]; });
+const capSize = s => tw(s, 38, 700) > 1780 ? 32 : 38, capW = s => Math.min(tw(s, capSize(s), 700) + 80, 1880);
+function caption(t) {
+  const i = CAP.findIndex(q => t >= q[0] && t < q[1]); if (i < 0) return;
+  const q = CAP[i], p = CAP[i - 1], joinPrev = p && p.join, k = joinPrev ? ease(prog(t, q[0], q[0] + .3)) : 1;
+  const a = (joinPrev ? 1 : prog(t, q[0], q[0] + .2)) * (q.join ? 1 : 1 - prog(t, q[1] - .15, q[1]));
+  const w = joinPrev ? lerp(capW(p[2]), capW(q[2]), k) : capW(q[2]);
+  box(W / 2 - w / 2, 952, w, 80, 16, 'rgba(1,4,9,.92)', null, a);
+  if (joinPrev && k < 1) text(p[2], W / 2, 992, capSize(p[2]), INK, 700, 'center', a * (1 - k));
+  text(q[2], W / 2, 992, capSize(q[2]), INK, 700, 'center', a * k);
+}
+function tag(c, lt, a = 1) {
+  if (!c.tag) return; const w = tw(c.tag, 28, 800) + 48;
+  box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a);
+}
+function termLines(x, y, w, h, lines, lt, size = 26, title = '명령 프롬프트 (cmd)', A = 1) {
+  if (A <= 0) return; ctx.save(); ctx.globalAlpha *= A; term(x, y, w, h, title, 1);
+  lines.forEach(([kind, s, at, dur], i) => {
+    const yy = y + 90 + i * (size * 1.7); if (lt < at - .1) return;
+    if (kind === '$') { text('C:\\>', x + 30, yy, size, GREEN, 600, 'left', 1, MONO); text(typed(s, lt, at, at + (dur || 1.4)), x + 30 + tw('C:\\> ', size, 600, MONO), yy, size, INK, 600, 'left', 1, MONO); }
+    else text(cut(s, size, w - 60, 600), x + 30, yy, size, kind === 'ok' ? GREEN : kind === 'note' ? GOLD : kind === 'err' ? RED : SUB, 600, 'left', app(lt, at, .3), MONO);
+  });
+  ctx.restore();
+}
+const lr = (lt, a, b) => app(lt, a) * (1 - prog(lt, b - .5, b)); // a에 나타나 b에 사라짐 (0.5초 흐려짐)
+// 사진 + 아래 이름표
+function labeled(n, x, y, w, h, lab, sub, col, a, smooth = false) { const r = pic(n, x, y, w, h, a, smooth); text(lab, x + w / 2, r[1] + r[3] + 40, 34, col, 900, 'center', a); if (sub) text(sub, x + w / 2, r[1] + r[3] + 86, 26, SUB, 700, 'center', a); return r; }
+const DRAW = {
+  preview(lt) {
+    // 장면 3개, 장면마다 7초 이상 (GUIDE 5장 미리보기)
+    const A = lr(lt, 0, 7.6), B = prog(lt, 7.1, 7.6) * (1 - prog(lt, 14.4, 14.9)), Cc = prog(lt, 14.4, 14.9);
+    if (A > 0) sweep('고양이', '고양이_크기64', M + 300, 110, FW - 600, 800, ease(prog(lt, 1, 5.5)), A);
+    if (B > 0) { pic('커피', M, 160, FW / 2 - 30, 640, B, true); pic('cli_커피_점64_색8', M + FW / 2 + 30, 160, FW / 2 - 30, 640, B * app(lt, 8.5)); }
+    if (Cc > 0) { const lc = lt - 14.6; zoom('고양이_모자이크96', .3, .32, .42, .42, M, 140, FW / 2 - 30, 640, Cc, false, SUB); zoom('고양이_pixeloe96', .3, .32, .42, .42, M + FW / 2 + 30, 140, FW / 2 - 30, 640, Cc * app(lc, 1), false, GOLD);
+      text('보통 모자이크', M + FW / 4, 840, 36, SUB, 900, 'center', Cc); text('PixelOE', M + FW * 3 / 4 + 30, 840, 36, GOLD, 900, 'center', Cc * app(lc, 1)); }
+  },
+  title(lt) {
+    text('PixelOE', W / 2, 200, 130, INK, 800, 'center', app(lt, .2), MONO);
+    text('픽셀오이 · Pixel + Outline Expansion(외곽선 넓히기)', W / 2, 315, 40, SUB, 700, 'center', app(lt, .5));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 430, 60, GOLD, 900, 'center', app(lt, 4));
+    text(`⭐ 584 · Apache-2.0 · 파이썬 · pixeloe ${R.version}`, W / 2, 520, 32, SUB, 600, 'center', app(lt, 4.5));
+    ['고양이', '고양이_크기64', '커피', 'cli_커피_점64_색8'].forEach((n, i) => pic(n, M + 60 + i * 430, 600, 380, 254, app(lt, 8 + i * .6), i % 2 === 0));
+  },
+  what(lt) {
+    const r = [M, 130, 900, 600];
+    const A = app(lt, .3); pic('고양이', ...r, A, true); grid(fitRect(IMG['고양이'], ...r), 24, A * app(lt, 2));
+    text('타일 장인', M + 1260, 200, 96, GOLD, 900, 'center', A);
+    const steps = [['1', '윤곽선을 굵게 따라 그리기', '눈·코 테두리처럼 진한 선을 먼저 넓혀 둠', 8], ['2', '칸마다 타일 색 하나 고르기', '밝고 어두운 차이를 보고 대표 색을 고름', 16], ['3', '원래 사진 색에 다시 맞추기', '색이 엉뚱하게 바뀌지 않게', 19.5]];
+    steps.forEach(([n, a1, a2, at], i) => { const y = 300 + i * 150, aa = app(lt, at); box(M + 960, y, 760, 130, 16, '#161b22', i === 0 ? GOLD : i === 1 ? GREEN : BLUE, aa, 2);
+      text(n, M + 1010, y + 65, 56, i === 0 ? GOLD : i === 1 ? GREEN : BLUE, 900, 'center', aa); text(a1, M + 1060, y + 45, 32, INK, 800, 'left', aa); text(a2, M + 1060, y + 95, 24, SUB, 700, 'left', aa); });
+    if (lt > 12) { const k = ease(prog(lt, 16, 21)); sweep('고양이', '고양이_크기32', ...r, k, A * (1 - prog(lt, 22.5, 23))); }
+    if (lt > 23) pill('개발자 KohakuBlueleaf · 2024년 3월 공개 · ⭐ 584 · 포크 28 · Apache-2.0', W / 2, 820, 30, BLUE, app(lt, 23) * (1 - prog(lt, 29.5, 30)));
+    if (lt > 29.5) pill('AI 모델 내려받기 없음 · 계산만으로 바꿈 (그래픽카드 없어도 됨)', W / 2, 820, 32, GREEN, app(lt, 30));
+  },
+  install(lt) {
+    termLines(M, 130, FW, 470, [['note', ':: 1) python.org 에서 파이썬 3.10 이상 설치 (설치 화면에서 Add python.exe to PATH 체크)', .3], ['$', 'pip install pixeloe', 8.3, 1.2],
+      ['', 'Collecting torch ... torchvision ... kornia ... opencv-python ...', 9.8], ['ok', `Successfully installed pixeloe-${R.version} torch-2.15.0 ...`, 11], ['note', ':: 시연: 리눅스 · 설치 8분 23초', 16.3], ['$', 'pixeloe.pixelize -h', 28.3, 1]], lt, 26);
+    if (lt > 16.5) { stat(M, 650, FW / 3 - 30, 220, '설치 시간 (리눅스 시연)', '8분 23초', app(lt, 16.5), GOLD); stat(M + FW / 3, 650, FW / 3 - 30, 220, '함께 설치된 부품', '약 5GB', app(lt, 17.5), RED); stat(M + FW * 2 / 3, 650, FW / 3 - 30, 220, 'PixelOE 자체 (설치 후)', '0.8MB', app(lt, 23), GREEN); }
+  },
+  basic(lt) {
+    const A = 1 - prog(lt, 15.5, 16);
+    if (A > 0) labeled('고양이', M, 140, 760, 507, '고양이.png (공개 견본 사진, CC0)', '451×300 화소', INK, A * app(lt, .3), true);
+    termLines(M + 820, 140, FW - 820, 300, [['$', 'pixeloe.pixelize 고양이.png -O 결과.png', 8.3, 1.8], ['', '2496.45ms', 11.5]], lt, 24, '명령 프롬프트 (cmd)', A * app(lt, 8));
+    if (lt > 15.5) { labeled('cli_기본값', M, 140, 860, 573, '결과.png', '313×208점 → 1878×1248 화소', GOLD, app(lt, 15.6)); zoom('cli_기본값', .3, .35, .2, .2, M + 900, 160, 400, 400, app(lt, 17), false); text('눈 부분 확대', M + 1100, 610, 30, GOLD, 800, 'center', app(lt, 17)); }
+    if (lt > 23) { stat(M + 1340, 160, 340, 200, '바꾸는 시간', '2.5초', app(lt, 23), GOLD, 26, 56); stat(M + 1340, 390, 340, 200, '명령 전체', `약 ${Math.round(C['기본값'].wall_sec)}초`, app(lt, 23.6), BLUE, 26, 56); }
+  },
+  compare(lt) {
+    const A = 1 - prog(lt, 26.5, 27);
+    if (A > 0) { const L = [['고양이_모자이크96', '보통 모자이크', '칸 평균 색', SUB, 8.3], ['고양이_pixeloe96', 'PixelOE', '외곽선 살림', GOLD, 9.3]];
+      L.forEach(([n, lab, sub, c, at], i) => { const x = M + i * (FW / 2 + 30), aa = A * app(lt, at); pic(n, x, 130, FW / 2 - 30, 380, aa);
+        zoom(n, .3, .32, .42, .42, x + 60, 530, FW / 2 - 150, 330, aa * app(lt, 15 + i * 7), false, c); text(lab, x + (FW / 2 - 30) / 2, 905, 34, c, 900, 'center', aa); });
+      if (lt < 8.3) { pic('고양이', M + 400, 130, FW - 800, 600, app(lt, .3) * (1 - prog(lt, 7.8, 8.3)), true); }
+      pill(`둘 다 ${P['고양이'].compare96.dots[0]}×${P['고양이'].compare96.dots[1]}점`, W / 2, 110, 26, BLUE, A * app(lt, 8.5)); }
+    if (lt > 26.5) pic('커피_비교', M, 150, FW, 700, app(lt, 26.6));
+  },
+  size(lt) {
+    const S = P['고양이'].sizes, K = [32, 64, 128, 256];
+    K.forEach((s, i) => { const at = [0.5, 8, 15, 22][i], x = M + i * (FW / 4), aa = app(lt, at); const c = [RED, GOLD, GREEN, INK][i];
+      pic('고양이_크기' + s, x + 10, 160, FW / 4 - 40, 300, aa); text(`-S ${s}`, x + FW / 8, 520, 40, c, 900, 'center', aa);
+      text(`${S[s].dots[0]}×${S[s].dots[1]}점`, x + FW / 8, 580, 30, INK, 700, 'center', aa); text(`${S[s].sec.toFixed(2)}초`, x + FW / 8, 640, 44, c, 900, 'center', aa * app(lt, at + 1)); });
+    // 시간 막대
+    if (lt > 22) { const mx = S['256'].sec; K.forEach((s, i) => { const y = 720 + i * 46, g = ease(prog(lt, 22.5 + i * .4, 24 + i * .4)); text(`-S ${s}`, M + 100, y + 16, 24, SUB, 700, 'right', app(lt, 22));
+      box(M + 120, y, Math.max(4, (FW - 400) * S[s].sec / mx * g), 32, 6, [RED, GOLD, GREEN, INK][i], null, app(lt, 22)); }); }
+  },
+  colors(lt) {
+    labeled('커피', M, 140, FW / 3 - 30, 420, '원본 사진', '600×400 화소', INK, app(lt, .3), true);
+    labeled('cli_커피_점64', M + FW / 3, 140, FW / 3 - 30, 420, '-S 64 -P 8', `결과 색 ${fmt(C['커피_점64'].uniq)}가지`, SUB, app(lt, 8));
+    labeled('cli_커피_점64_색8', M + FW * 2 / 3, 140, FW / 3 - 30, 420, '--colors 8 추가', `결과 색 ${fmt(C['커피_점64_색8'].uniq)}가지`, GOLD, app(lt, 15));
+    if (lt > 22) pill('딱 8가지가 아님 → 줄인 뒤 원래 색 쪽으로 다시 맞추는 단계가 있음', W / 2, 780, 32, RED, app(lt, 22));
+    if (lt > 27) pill('정확한 색 수가 필요하면 그림 프로그램으로 한 번 더 줄이기', W / 2, 870, 28, SUB, app(lt, 27));
+  },
+  thick(lt) {
+    const T = P['고양이'].thick;
+    [0, 1, 2, 3].forEach((th, i) => { const at = [0.5, 8, 9, 10][i], x = M + i * (FW / 4), aa = app(lt, at), c = [SUB, GOLD, GREEN, INK][i];
+      zoom('고양이_두께' + th, .3, .32, .42, .42, x + 10, 160, FW / 4 - 40, 400, aa, false, c);
+      text(`-T ${th}` + (th === 0 ? ' (끔)' : th === 1 ? ' (기본)' : ''), x + FW / 8, 620, 38, c, 900, 'center', aa); text(`${T[th].sec.toFixed(2)}초`, x + FW / 8, 680, 34, INK, 800, 'center', aa); });
+    if (lt > 15) pill('두께를 올릴수록 눈 테두리 점 줄이 굵어짐', W / 2, 790, 32, GOLD, app(lt, 15));
+    if (lt > 22) pill('어느 두께가 알맞은지는 결과를 보고 고르기', W / 2, 875, 30, SUB, app(lt, 22));
+  },
+  big(lt) {
+    const B = R.big, L = [[600, '600×400'], [1920, '1920×1280'], [4000, '4000×2667']];
+    L.forEach(([w, lab], i) => { const s = .35 + .65 * w / 4000, x = M + i * (FW / 3), aa = app(lt, .5 + i * 1.2), bw = (FW / 3 - 60) * s, bh = bw * 2 / 3;
+      pic('커피', x + (FW / 3 - bw) / 2, 470 - bh, bw, bh, aa, true); text(lab + ' 화소', x + FW / 6, 520, 32, INK, 800, 'center', aa);
+      text(`${B[w].sec.toFixed(2)}초`, x + FW / 6, 600, 56, [SUB, GOLD, GREEN][i], 900, 'center', aa * app(lt, 8 + i * .8)); });
+    if (lt > 15) { box(M + 100, 690, FW - 200, 180, 18, '#161b22', BLUE, app(lt, 15), 2); text('먼저 사진을 점 개수(-S)에 맞는 크기로 줄인 뒤 계산', W / 2, 750, 36, INK, 800, 'center', app(lt, 15));
+      text('→ 걸리는 시간은 사진 크기가 아니라 점 개수가 정함', W / 2, 815, 34, BLUE, 800, 'center', app(lt, 17)); }
+  },
+  batch(lt) {
+    const A = 1 - prog(lt, 15.5, 16);
+    termLines(M, 130, FW, 330, [['$', 'python 도트변환.py photos', .5, 1.4], ['', '사진 2장, 점 개수 기준 96', 2.3], ['', '  고양이.png → 고양이_도트.png (117×78점) · 0.47초', 3], ['', '  커피.png → 커피_도트.png (117×78점) · 0.32초', 3.7], ['ok', '저장 폴더: photos\\도트그림', 4.4]], lt, 26, '명령 프롬프트 (cmd)', A);
+    if (A > 0 && lt > 8) { pill('원본 사진은 그대로 · 새 폴더 "도트그림"에 이름_도트.png, 이름_비교.png', W / 2, 560, 30, GREEN, A * app(lt, 8)); }
+    if (lt > 15.5) pic('고양이_비교', M, 130, FW, 560, app(lt, 15.6));
+    if (lt > 22) { box(M + 100, 720, FW - 200, 170, 18, '#161b22', GOLD, app(lt, 22), 2); text('도트그림.bat (Windows용 예제 파일)', W / 2, 770, 34, GOLD, 900, 'center', app(lt, 22));
+      text('사진을 실행 파일 위에 끌어다 놓기 → 크기 번호 1·2·3 → 사진 옆에 이름_도트128.png', W / 2, 835, 28, INK, 700, 'center', app(lt, 22.5)); }
+  },
+  cons(lt) {
+    const L = ['① 설치가 무거움: torch 등 약 5GB · 8분 23초 (리눅스 시연)', '② --colors 8 → 결과 색 2,182가지 (정확히 8가지 아님)', '③ 새 방식 pixeloe.slang: "Visual Studio C++ 도구 필요" 오류로 실패', '④ 결과 그림 크기가 원본과 다름 (451×300 → 1878×1248)', '⑤ 화면 프로그램 없음 · 도움말은 영어'];
+    L.forEach((s, i) => { const at = [0.3, 7, 13, 19, 25][i]; box(M + 100, 130 + i * 155, FW - 200, 125, 16, '#161b22', '#30363d', app(lt, at), 2); text(s, W / 2, 192 + i * 155, 36, INK, 800, 'center', app(lt, at)); });
+  },
+  use(lt) {
+    const L = [['1', '반려동물·음식 사진 → 도트 그림 프로필', .3, PURPLE], ['2', '도트 그림 게임·스티커의 밑그림', 8, GREEN], ['⚠', '원본은 따로 보관 · 다른 사람 사진은 동의 받기', 15, RED]];
+    if (lt > 22) pill('명령 · 예제 파일(도트그림.bat · 도트변환.py) → 설명란 링크', W / 2, 860, 30, BLUE, app(lt, 22));
+    L.forEach(([ic, s, at, c], i) => { box(M + 100, 170 + i * 220, FW - 200, 170, 18, '#161b22', c, app(lt, at), 2); text(ic, M + 190, 255 + i * 220, 60, c, 900, 'center', app(lt, at)); text(s, M + 270, 255 + i * 220, 42, INK, 800, 'left', app(lt, at)); });
+  },
+  end(lt) {
+    text('PixelOE', W / 2, 220, 120, INK, 900, 'center', app(lt, .2), MONO);
+    text('사진을 외곽선 살린 도트 그림으로 바꾸는 무료 프로그램', W / 2, 340, 46, SUB, 700, 'center', app(lt, .4));
+    text('일반인 쓸모 ★★★☆☆', W / 2, 435, 56, GOLD, 900, 'center', app(lt, .6));
+    pill('Windows: pip install pixeloe · 명령과 예제 파일은 설명란에', W / 2, 550, 34, GREEN, app(lt, .8));
+    text('정보 제공용 · 2026-11-13 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 670, 26, SUB, 500, 'center', app(lt, 1));
+    text('원본 사진은 따로 보관 · 사진은 공개 견본 사진(CC0) · 프로그램은 공식 경로에서만 설치', W / 2, 710, 26, SUB, 500, 'center', app(lt, 1));
+  }
+};
+// 깜빡임 방지: 장이 바뀔 때 앞 장 마지막 모습이 사라지는 동안 새 장이 나타남(크로스페이드 0.6초)
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = '#0d1117'; ctx.fillRect(0, 0, W, H);
+  const ci = Math.max(0, CH.findIndex(c => t >= c.t0 && t < c.t0 + c.dur)), c = CH[ci], lt = t - c.t0, k = ci === 0 ? 1 : ease(prog(lt, 0, .6));
+  if (k < 1) { const p = CH[ci - 1]; ctx.save(); ctx.globalAlpha = 1 - k; DRAW[p.id](remap(p, p.dur - .001)); ctx.restore(); tag(p, p.dur, 1 - k); }
+  ctx.save(); ctx.globalAlpha = k; DRAW[c.id](remap(c, lt)); ctx.restore();
+  tag(c, lt, k); caption(t);
+}
+</script></body></html>

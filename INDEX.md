@@ -21,3 +21,4 @@
 | 14 | 2026-11-10 | [amueller/word_cloud](https://github.com/amueller/word_cloud) | 글에서 많이 나온 낱말을 크게 그려 주는 무료 '낱말 인기투표 개표판' | 글·시각화 | ★★★☆☆ | 약 1.05만 | [바로가기](2026-11-10-wordcloud/) |
 | 15 | 2026-11-11 | [qarmin/czkawka](https://github.com/qarmin/czkawka) | 이름이 달라도 내용이 같은 복사본·비슷한 사진·빈 폴더를 찾아 주는 무료 '파일 지문 감식반' | 파일정리·생산성 | ★★★★☆ | 약 3.5만 | [바로가기](2026-11-11-czkawka/) |
 | 16 | 2026-11-12 | [ChrisBuilds/terminaltexteffects](https://github.com/ChrisBuilds/terminaltexteffects) | 명령 창 글자에 불꽃놀이·암호 해독 같은 움직임을 입히는 무료 '글자 무대 연출가' | 호기심·글자 효과 | ★★★☆☆ | 약 4,300 | [바로가기](2026-11-12-terminaltexteffects/) |
+| 17 | 2026-11-13 | [KohakuBlueleaf/PixelOE](https://github.com/KohakuBlueleaf/PixelOE) | 사진을 외곽선 살린 도트 그림(픽셀 아트)으로 바꿔 주는 무료 '타일 장인' | 사진·이미지 | ★★★☆☆ | 584 | [바로가기](2026-11-13-pixeloe/) |

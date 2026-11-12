@@ -113,7 +113,7 @@ tte fireworks -h
 |---|---|
 | `blog.md` · `youtube-long.md` · `shorts.md` | 티스토리 글 · 롱폼 대본 · 숏폼 대본 |
 | `narration-long.txt` · `narration-shorts.txt` (+ `-text.txt`) | 음성용 대본 (구간 시간 + 한글 읽기 / 문장만) |
-| `media/tte-long.mp4` | 롱폼 5:05 (1920×1080, 자막) |
+| `media/tte-long-voice-bgm.mp4` · `media/tte-long-voice.mp4` · `media/tte-long.mp4` | 롱폼 5:02 (1920×1080, 자막 + 운영자 음성 + 배경음악 / 음악 없음 / 음성 없음) |
 | `media/tte-anim.mp4` · `media/tte-anim-vertical.mp4` · `media/tte-anim.gif` | 과정 애니메이션 45.6초 (가로·세로·README용 GIF) |
 | `media/terminal.gif` · `media/효과모음.png` · `media/효과길이.png` · `media/한글화면비교.png` · `media/thumbnail.jpg` | 터미널 녹화 · 결과 그림 · 썸네일 |
 | `demo/` | 측정 스크립트·예제 파일·영상 만드는 코드 (`demo/README.md`) |

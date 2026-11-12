@@ -2,6 +2,7 @@
 대본(문장)을 먼저 정하고 → 문장마다 말하는 시간 + 짧은 쉼으로 자막 구간을 정한 뒤 → 화면 애니메이션을 그 구간에 맞춰 늘이고 줄인다.
 
 사용: python3 retime.py                 # 글자 수로 말하는 시간을 어림 (6.3글자/초)
+      python3 retime.py 길이.json 1.8   # 롱폼 문장 뒤 쉼을 1.8초로 (2초 이하, 롱폼 5분 이상을 지키려고 늘릴 때)
       python3 retime.py 길이.json       # 운영자 음성에서 잰 문장별 길이로 다시 짬 {"long": [초, ...], "shorts": [초, ...]} (구간 순서대로)
 결과: ../long/timing.js (롱폼 장·자막 시간 + 원래 시간으로 되돌리는 지점), ../anim/timing.js (숏폼 장면 경계)
       → 렌더링 다시(render_long.py, anim/render.py) → narration/make.py 로 대본 시간 갱신"""
@@ -13,6 +14,8 @@ CPS, GAP, JOIN, LEAD = 6.3, 1.4, 1.1, 0.3   # 초당 글자 · 문장 뒤 쉼 ·
 # GUIDE 5-1: 문장 뒤 쉼 1.4초, 한 구간 안 문장 사이 1.1초 (2026-11-11 운영자 요청)
 MIN_CUE, END_HOLD = 3.0, 7.0                # 자막 하나 최소 길이 · 마지막 장 마지막 구간(엔딩 화면) 최소 길이
 measured = json.load(open(sys.argv[1], encoding="utf-8")) if len(sys.argv) > 1 else {}
+# 셋째 값: 롱폼 문장 뒤 쉼(초). 실제 음성이 어림보다 빨라 롱폼이 5분보다 짧아질 때만 2초 안에서 늘림 (Day 16: 1.8초)
+GAP_LONG = float(sys.argv[2]) if len(sys.argv) > 2 else GAP
 
 
 def speak(text):  # 말하는 시간 어림
@@ -28,7 +31,7 @@ for ci, c in enumerate(S["chapters"]):
     cues = c.get("orig_cues", c["cues"]); odur = c.get("orig_dur", c["dur"])
     t, nc, knots = LEAD, [], [[0, 0]]
     for qi, q in enumerate(cues):
-        d = (ML[k] if ML else speak(q[3])) + GAP; k += 1
+        d = (ML[k] if ML else speak(q[3])) + GAP_LONG; k += 1
         last = ci == len(S["chapters"]) - 1 and qi == len(cues) - 1
         d = max(d, END_HOLD if last else MIN_CUE)
         knots += [[round(t, 3), q[0]], [round(t + d, 3), q[1]]]; nc.append([round(t, 2), round(t + d, 2), q[2], q[3]]); t += d

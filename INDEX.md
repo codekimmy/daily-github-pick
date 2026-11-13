@@ -23,3 +23,4 @@
 | 16 | 2026-11-12 | [ChrisBuilds/terminaltexteffects](https://github.com/ChrisBuilds/terminaltexteffects) | 명령 창 글자에 불꽃놀이·암호 해독 같은 움직임을 입히는 무료 '글자 무대 연출가' | 호기심·글자 효과 | ★★★☆☆ | 약 4,300 | [바로가기](2026-11-12-terminaltexteffects/) |
 | 17 | 2026-11-13 | [KohakuBlueleaf/PixelOE](https://github.com/KohakuBlueleaf/PixelOE) | 사진을 외곽선 살린 도트 그림(픽셀 아트)으로 바꿔 주는 무료 '타일 장인' | 사진·이미지 | ★★½☆☆ | 584 | [바로가기](2026-11-13-pixeloe/) |
 | 18 | 2026-11-14 | [timsainb/noisereduce](https://github.com/timsainb/noisereduce) | 녹음 속 선풍기·에어컨 같은 바탕 잡음을 줄여 주는 무료 '소리 거름망' | 소리·녹음 | ★★★☆☆ | 1,885 | [바로가기](2026-11-14-noisereduce/) |
+| 19 | 2026-11-14 | [Lightricks/LTX-2](https://github.com/Lightricks/LTX-2) | 글·사진·소리로 소리 붙은 영상을 만드는 무료 공개 영상 AI LTX-2.5, 그래픽카드 메모리 24GB↑ 권장 | 영상·AI 생성 | 사양체크 | 약 9,800 | [바로가기](2026-11-14-spec-LTX-2/) |

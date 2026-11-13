@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="engine.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// 썸네일 (직접 만든 사양 카드). ?kind=long → 1280×720, ?kind=shorts → 1080×1920 (글자는 위아래 250px 안쪽)
+const K = new URLSearchParams(location.search).get('kind') || 'long', V = K === 'shorts';
+const W = V ? 1080 : 1280, H = V ? 1920 : 720, cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+document.fonts.load(`900 40px ${F}`).then(() => {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  if (!V) {
+    pill('사양 체크', 170, 70, 30, GOLD); text('LTX-2.5', 70, 185, 120, INK, 900, 'left');
+    text('내 PC로 돌아갈까?', 70, 320, 84, GOLD, 900, 'left');
+    gpu(900, 120, 300, 150, '', 1);
+    [['VRAM', '24GB↑ 권장', GREEN], ['저장 공간', '100GB↑', BLUE], ['최소(앱)', '9GiB~10GB', RED]].forEach((r, i) => { const x = 70 + i * 390;
+      box(x, 450, 360, 190, 20, CARD, r[2], 1, 4); text(r[0], x + 180, 505, 34, SUB, 800); text(r[1], x + 180, 585, fit(r[1], 58, 330, 900), r[2], 900); });
+    text('공식 자료 기준 · 직접 실행하지 않음', 1210, 690, 22, '#6e7681', 600, 'right');
+  } else {
+    pill('사양 체크', W / 2, 330, 40, GOLD); text('LTX-2.5', W / 2, 500, 170, INK, 900);
+    text('영상 AI, 내 PC로', W / 2, 700, 92, INK, 900); text('돌아갈까?', W / 2, 820, 110, GOLD, 900);
+    ladder(80, 960, W - 160, 85, 6, 99, [0, 0, 0, 0, 0, 0], true);
+    text('공식 자료 기준 · 직접 실행하지 않음', W / 2, 1640, 32, SUB, 700);
+  }
+  READY = true;
+});
+</script></body></html>

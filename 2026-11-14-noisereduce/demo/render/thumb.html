@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// 썸네일: 실제 시연 결과 스펙트로그램(img/noisy.png, img/def.png) + 큰 글씨. ?kind=long → 1280×720, ?kind=shorts → 1080×1920 (글자는 위아래 250px 안쪽)
+const K = new URLSearchParams(location.search).get('kind') || 'long', V = K === 'shorts';
+const W = V ? 1080 : 1280, H = V ? 1920 : 720, cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+const IMG = {}; const load = k => new Promise(r => { const im = new Image(); im.onload = r; im.src = 'img/' + k + '.png'; IMG[k] = im; });
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), load('noisy'), load('def')]).then(() => {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  const strip = (k, x, y, w, h, lab, c) => { ctx.save(); rr(x, y, w, h, 14); ctx.clip(); ctx.drawImage(IMG[k], x, y, w, h); ctx.restore(); box(x, y, w, h, 14, null, c, 1, 4); pill(lab, x + 120, y + 30, 24, c); };
+  if (!V) {
+    text('녹음 속 선풍기 소리', 60, 80, 66, INK, 900, 'left'); text('0.32초 만에 줄이기', 60, 170, 80, GOLD, 900, 'left');
+    strip('noisy', 60, 250, 1160, 180, '잡음 섞인 녹음', RED); strip('def', 60, 460, 1160, 180, '잡음 줄인 뒤', GREEN);
+    text('noisereduce', 1220, 80, 44, BLUE, 900, 'right'); text('잡음 -29 → -58 dB', 1220, 160, 42, GREEN, 900, 'right');
+    text('2026-11-14 클라우드 시연 · 합성한 가상 녹음', 1220, 690, 20, '#6e7681', 600, 'right');
+  } else {
+    text('noisereduce', W / 2, 330, 64, BLUE, 900); text('녹음 속 선풍기 소리', W / 2, 460, 84, INK, 900); text('0.32초 만에 줄이기', W / 2, 580, 104, GOLD, 900);
+    strip('noisy', 60, 720, W - 120, 300, '잡음 섞인 녹음', RED); strip('def', 60, 1080, W - 120, 300, '잡음 줄인 뒤', GREEN);
+    text('말 없는 구간 잡음 -29 → -58 dB', W / 2, 1490, 54, GREEN, 900);
+    text('2026-11-14 클라우드 시연 · 합성한 가상 녹음', W / 2, 1620, 30, SUB, 700);
+  }
+  READY = true;
+});
+</script></body></html>

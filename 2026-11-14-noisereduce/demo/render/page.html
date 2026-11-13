@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<script src="timing.js"></script><script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// ?mode=long (1920×1080 롱폼) | ?mode=anim&w=1920&h=1080 / w=1080&h=1920 (숏폼 대본 과정 애니메이션)
+const Q = new URLSearchParams(location.search), MODE = Q.get('mode') || 'long';
+const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080), FPS = +(Q.get('fps') || 24), V = H > W;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+const CH = MODE === 'long' ? LONG : SHORTS;
+const END = CH[CH.length - 1].t0 + CH[CH.length - 1].dur + (MODE === 'long' ? 0 : 6);  // 과정 애니메이션은 끝에 엔딩 카드 6초
+const TOTAL = Math.round(END * FPS);
+const IMG = {}, imgP = ['noisy', 'def', 'smp', 'clean', 'o_noisy', 'o_def', 'k_noisy', 'k_def'].map(k => new Promise(r => { const im = new Image(); im.onload = r; im.src = 'img/' + k + '.png'; IMG[k] = im; }));
+let READY = false; Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), ...imgP]).then(() => READY = true);
+// 자막: 전체 시간 기준. 다음 자막까지 0.6초 안이면 상자를 끄지 않고 글만 겹쳐 바꿈 (깜빡임 방지)
+const CAP = []; CH.forEach(c => c.cues.forEach(q => CAP.push([c.t0 + q[0], c.t0 + q[1], q[2]])));
+CAP.forEach((q, i) => { const n = CAP[i + 1]; q.join = !!n && n[0] - q[1] < .6; if (q.join) q[1] = n[0]; });
+const CY = V ? 1600 : 992, CS = V ? 42 : 38, CMAX = V ? W - 80 : 1840;
+const capLines = s => wrap(s, CMAX - 60, CS, 700), capW = s => Math.min(Math.max(...capLines(s).map(l => tw(l, CS, 700))) + 70, CMAX);
+function caption(t) {
+  const i = CAP.findIndex(q => t >= q[0] && t < q[1]); if (i < 0) return;
+  const q = CAP[i], p = CAP[i - 1], jp = p && p.join, k = jp ? ease(prog(t, q[0], q[0] + .3)) : 1;
+  const a = (jp ? 1 : prog(t, q[0], q[0] + .2)) * (q.join ? 1 : 1 - prog(t, q[1] - .15, q[1]));
+  const n = Math.max(capLines(q[2]).length, jp ? capLines(p[2]).length : 1), h = 40 + n * CS * 1.3;
+  const w = jp ? lerp(capW(p[2]), capW(q[2]), k) : capW(q[2]);
+  box(W / 2 - w / 2, CY - h / 2, w, h, 16, 'rgba(1,4,9,.92)', null, a);
+  const draw = (s, al) => { const L = capLines(s); L.forEach((l, j) => text(l, W / 2, CY + (j - (L.length - 1) / 2) * CS * 1.3, CS, INK, 700, 'center', al)); };
+  if (jp && k < 1) draw(p[2], a * (1 - k)); draw(q[2], a * k);
+}
+function tag(c, a) { if (!c.tag || MODE !== 'long') return; const w = tw(c.tag, 28, 800) + 48; box(40, 30, w, 56, 28, 'rgba(88,166,255,.15)', BLUE, a, 2); text(c.tag, 40 + w / 2, 58, 28, BLUE, 800, 'center', a); }
+function drawCh(c, lt, a) {
+  if (a <= 0) return; ctx.save(); ctx.globalAlpha = a;
+  if (c === 'animEnd') endCard(null, lt, V ? { x: 40, y: 300, w: W - 80, h: 1200 } : { x: 0, y: 60, w: W, h: 880 }, V ? 72 : 64);
+  else if (MODE === 'long') { DRAW_LONG[c.id](c, lt); tag(c, 1); }
+  else DRAW_ANIM(c, lt, W, H);
+  ctx.restore();
+}
+function frame(f) {
+  const t = f / FPS; ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  if (V) { text('noisereduce · 잡음 줄이기', W / 2, 150, 40, SUB, 800, 'center'); }
+  let i = CH.findIndex(c => t >= c.t0 && t < c.t0 + c.dur); const last = CH[CH.length - 1];
+  if (i < 0) { // 과정 애니메이션 엔딩 카드 (앞 장과 0.6초 겹쳐 바꿈)
+    const lt = t - (last.t0 + last.dur), k = ease(prog(lt, 0, .6)); drawCh(last, last.dur, 1 - k); drawCh('animEnd', lt, k);
+  } else {
+    const c = CH[i], lt = t - c.t0, k = i > 0 ? ease(prog(lt, 0, .6)) : 1; // 장 바뀜: 검은 화면 없이 크로스페이드
+    if (k < 1) drawCh(CH[i - 1], CH[i - 1].dur, 1 - k); drawCh(c, lt, k);
+  }
+  caption(t);
+}
+</script></body></html>

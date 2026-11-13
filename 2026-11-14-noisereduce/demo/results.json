@@ -1,0 +1,174 @@
+{
+ "sr": 22050,
+ "len_s": 27.97,
+ "quiet_ratio": 0.311,
+ "clean": {
+  "quiet_db": -240.0,
+  "speech_db": -23.8,
+  "snr": Infinity
+ },
+ "cases": {
+  "선풍기": {
+   "before": {
+    "quiet_db": -29.0,
+    "speech_db": -22.6,
+    "snr": 3.6
+   },
+   "runs": {
+    "기본(stationary=False)": {
+     "quiet_db": -58.1,
+     "speech_db": -32.6,
+     "snr": 2.9,
+     "sec": 0.32
+    },
+    "고정 잡음(stationary=True)": {
+     "quiet_db": -67.8,
+     "speech_db": -31.2,
+     "snr": 3.6,
+     "sec": 0.26
+    },
+    "잡음 견본 지정": {
+     "quiet_db": -59.3,
+     "speech_db": -27.6,
+     "snr": 7.0,
+     "sec": 0.26
+    },
+    "덜 지우기 0.5": {
+     "quiet_db": -34.9,
+     "speech_db": -26.6,
+     "snr": 6.2,
+     "sec": 0.29
+    },
+    "덜 지우기 0.8": {
+     "quiet_db": -42.5,
+     "speech_db": -30.0,
+     "snr": 4.6,
+     "sec": 0.27
+    }
+   }
+  },
+  "쉬소리": {
+   "before": {
+    "quiet_db": -28.0,
+    "speech_db": -22.4,
+    "snr": 2.6
+   },
+   "runs": {
+    "기본(stationary=False)": {
+     "quiet_db": -51.9,
+     "speech_db": -30.9,
+     "snr": 3.8,
+     "sec": 0.29
+    },
+    "고정 잡음(stationary=True)": {
+     "quiet_db": -58.2,
+     "speech_db": -30.3,
+     "snr": 3.7,
+     "sec": 0.29
+    },
+    "잡음 견본 지정": {
+     "quiet_db": -56.0,
+     "speech_db": -24.7,
+     "snr": 13.8,
+     "sec": 0.26
+    },
+    "덜 지우기 0.5": {
+     "quiet_db": -33.8,
+     "speech_db": -26.1,
+     "snr": 6.1,
+     "sec": 0.23
+    },
+    "덜 지우기 0.8": {
+     "quiet_db": -40.9,
+     "speech_db": -28.9,
+     "snr": 5.4,
+     "sec": 0.24
+    }
+   }
+  },
+  "키보드": {
+   "before": {
+    "quiet_db": -29.7,
+    "speech_db": -22.9,
+    "snr": 4.7
+   },
+   "runs": {
+    "기본(stationary=False)": {
+     "quiet_db": -37.3,
+     "speech_db": -30.2,
+     "snr": 3.3,
+     "sec": 0.25
+    },
+    "고정 잡음(stationary=True)": {
+     "quiet_db": -37.2,
+     "speech_db": -30.6,
+     "snr": 2.4,
+     "sec": 0.29
+    },
+    "잡음 견본 지정": {
+     "quiet_db": -35.4,
+     "speech_db": -24.2,
+     "snr": 8.7,
+     "sec": 0.26
+    },
+    "덜 지우기 0.5": {
+     "quiet_db": -32.8,
+     "speech_db": -26.0,
+     "snr": 5.7,
+     "sec": 0.28
+    },
+    "덜 지우기 0.8": {
+     "quiet_db": -35.3,
+     "speech_db": -28.4,
+     "snr": 4.5,
+     "sec": 0.29
+    }
+   }
+  },
+  "옆사람말": {
+   "before": {
+    "quiet_db": -26.1,
+    "speech_db": -21.7,
+    "snr": 0.6
+   },
+   "runs": {
+    "기본(stationary=False)": {
+     "quiet_db": -34.4,
+     "speech_db": -30.3,
+     "snr": 2.0,
+     "sec": 0.29
+    },
+    "고정 잡음(stationary=True)": {
+     "quiet_db": -39.6,
+     "speech_db": -34.1,
+     "snr": 0.9,
+     "sec": 0.3
+    },
+    "잡음 견본 지정": {
+     "quiet_db": -35.7,
+     "speech_db": -29.7,
+     "snr": 1.7,
+     "sec": 0.27
+    },
+    "덜 지우기 0.5": {
+     "quiet_db": -29.6,
+     "speech_db": -25.3,
+     "snr": 2.9,
+     "sec": 0.31
+    },
+    "덜 지우기 0.8": {
+     "quiet_db": -32.3,
+     "speech_db": -28.1,
+     "snr": 2.7,
+     "sec": 0.32
+    }
+   }
+  }
+ },
+ "long": {
+  "10분 기본": 3.5,
+  "10분 고정 잡음": 3.0,
+  "60분 기본": 19.9,
+  "60분 고정 잡음": 18.9
+ }
+}

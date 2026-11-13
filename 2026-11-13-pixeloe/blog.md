@@ -13,7 +13,7 @@ terminal.gif → 명령 프롬프트에서 pixeloe 1.0.0 설치 확인 → 고�
 > **한 줄 요약** — 사진 파일 이름을 넣고 명령 한 줄을 입력하면, 사진이 작은 네모 점으로 이루어진 게임 속 그림(도트 그림)으로 바뀌는 무료 프로그램입니다. 보통 모자이크와 달리 눈·코 같은 테두리가 진한 점 줄로 남습니다.
 > ⭐ 별 584 · 오픈소스(누구나 무료로 쓰고 고칠 수 있게 공개된 프로그램) · Apache-2.0 라이선스 · 파이썬
 
-> **일반인 쓸모 ★★★☆☆** — 명령 한 줄로 사진이 도트 그림이 되고 AI 모델 내려받기도 없지만, 파이썬을 먼저 설치해야 하고 함께 설치되는 계산 도구(torch)가 커서 설치가 무겁습니다. 화면 프로그램 없이 명령어로만 씁니다.
+> **일반인 쓸모 ★★½☆☆ (2.5)** — 명령 한 줄로 사진이 도트 그림이 되고 AI 모델 내려받기도 없지만, 파이썬을 먼저 설치해야 하고 함께 설치되는 계산 도구(torch)가 커서 설치가 무겁습니다. 화면 프로그램 없이 명령어로만 쓰고, 사진을 도트 그림으로 바꿀 일도 프로필·취미 정도로 드뭅니다.
 > **이걸로 할 수 있는 것**
 > 1. 반려동물·음식 사진을 **옛날 게임 같은 도트 그림 프로필**로 바꾼다
 > 2. 도트 그림 게임·스티커·십자수 도안을 만들 때 **밑그림**으로 쓴다
@@ -89,7 +89,7 @@ PixelOE는 사진을 작은 타일로 다시 붙이는 **'타일 장인'**입니
 <tr><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">항목</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">결과</th></tr>
 </thead>
 <tbody>
-<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">설치</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>pip install pixeloe</code> 8분 23초, 함께 설치된 부품 약 5GB (리눅스는 그래픽카드용 부품까지 받음)</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">설치</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>pip install pixeloe</code> 8분 23초, 함께 설치되는 프로그램 약 5GB (리눅스는 그래픽카드용 파일까지 받음)</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">큰 사진</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">600·1920·4000 화소 너비 사진 모두 0.48~0.60초 (먼저 점 개수에 맞게 줄인 뒤 계산)</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">예제 파일</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">사진 2장을 한 번에 바꾸고 비교 그림까지, 장마다 0.3~0.5초</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">새 명령 <code>pixeloe.slang</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">"Visual Studio C++ 도구 필요" 오류로 실행 실패</td></tr>

@@ -58,7 +58,7 @@ const DRAW = {
   title(lt) {
     text('PixelOE', W / 2, 200, 130, INK, 800, 'center', app(lt, .2), MONO);
     text('픽셀오이 · Pixel + Outline Expansion(외곽선 넓히기)', W / 2, 315, 40, SUB, 700, 'center', app(lt, .5));
-    text('일반인 쓸모 ★★★☆☆', W / 2, 430, 60, GOLD, 900, 'center', app(lt, 4));
+    text('일반인 쓸모 ★★½☆☆', W / 2, 430, 60, GOLD, 900, 'center', app(lt, 4));
     text(`⭐ 584 · Apache-2.0 · 파이썬 · pixeloe ${R.version}`, W / 2, 520, 32, SUB, 600, 'center', app(lt, 4.5));
     ['고양이', '고양이_크기64', '커피', 'cli_커피_점64_색8'].forEach((n, i) => pic(n, M + 60 + i * 430, 600, 380, 254, app(lt, 8 + i * .6), i % 2 === 0));
   },
@@ -76,7 +76,7 @@ const DRAW = {
   install(lt) {
     termLines(M, 130, FW, 470, [['note', ':: 1) python.org 에서 파이썬 3.10 이상 설치 (설치 화면에서 Add python.exe to PATH 체크)', .3], ['$', 'pip install pixeloe', 8.3, 1.2],
       ['', 'Collecting torch ... torchvision ... kornia ... opencv-python ...', 9.8], ['ok', `Successfully installed pixeloe-${R.version} torch-2.15.0 ...`, 11], ['note', ':: 시연: 리눅스 · 설치 8분 23초', 16.3], ['$', 'pixeloe.pixelize -h', 28.3, 1]], lt, 26);
-    if (lt > 16.5) { stat(M, 650, FW / 3 - 30, 220, '설치 시간 (리눅스 시연)', '8분 23초', app(lt, 16.5), GOLD); stat(M + FW / 3, 650, FW / 3 - 30, 220, '함께 설치된 부품', '약 5GB', app(lt, 17.5), RED); stat(M + FW * 2 / 3, 650, FW / 3 - 30, 220, 'PixelOE 자체 (설치 후)', '0.8MB', app(lt, 23), GREEN); }
+    if (lt > 16.5) { stat(M, 650, FW / 3 - 30, 220, '설치 시간 (리눅스 시연)', '8분 23초', app(lt, 16.5), GOLD); stat(M + FW / 3, 650, FW / 3 - 30, 220, '함께 설치되는 프로그램', '약 5GB', app(lt, 17.5), RED); stat(M + FW * 2 / 3, 650, FW / 3 - 30, 220, 'PixelOE 자체 (설치 후)', '0.8MB', app(lt, 23), GREEN); }
   },
   basic(lt) {
     const A = 1 - prog(lt, 15.5, 16);
@@ -146,7 +146,7 @@ const DRAW = {
   end(lt) {
     text('PixelOE', W / 2, 220, 120, INK, 900, 'center', app(lt, .2), MONO);
     text('사진을 외곽선 살린 도트 그림으로 바꾸는 무료 프로그램', W / 2, 340, 46, SUB, 700, 'center', app(lt, .4));
-    text('일반인 쓸모 ★★★☆☆', W / 2, 435, 56, GOLD, 900, 'center', app(lt, .6));
+    text('일반인 쓸모 ★★½☆☆', W / 2, 435, 56, GOLD, 900, 'center', app(lt, .6));
     pill('Windows: pip install pixeloe · 명령과 예제 파일은 설명란에', W / 2, 550, 34, GREEN, app(lt, .8));
     text('정보 제공용 · 2026-11-13 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 670, 26, SUB, 500, 'center', app(lt, 1));
     text('원본 사진은 따로 보관 · 사진은 공개 견본 사진(CC0) · 프로그램은 공식 경로에서만 설치', W / 2, 710, 26, SUB, 500, 'center', app(lt, 1));

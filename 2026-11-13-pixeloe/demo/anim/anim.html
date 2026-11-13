@@ -70,7 +70,7 @@ function sceneEnd(t) {
   const cy = VERT ? 330 : 140;
   text('PixelOE', W / 2, cy, VERT ? 96 : 100, INK, 900, 'center', 1, MONO);
   text('사진을 외곽선 살린 도트 그림으로 바꾸는 무료 프로그램', W / 2, cy + (VERT ? 110 : 100), VERT ? 34 : 44, SUB, 700);
-  text('일반인 쓸모 ★★★☆☆', W / 2, cy + (VERT ? 210 : 185), VERT ? 60 : 54, GOLD, 900);
+  text('일반인 쓸모 ★★½☆☆', W / 2, cy + (VERT ? 210 : 185), VERT ? 60 : 54, GOLD, 900);
   const L = ['설치가 무거움 (torch 등 약 5GB)', '--colors 는 색을 줄이지만 정확한 개수는 아님', '원본 사진은 그대로 두고 새 파일로 저장'];
   box(VERT ? M : 300, cy + (VERT ? 290 : 245), VERT ? FW : W - 600, VERT ? 400 : 280, 18, 'rgba(255,123,114,.07)', RED, prog(lt, .6, 1), 2);
   L.forEach((s, i) => text('· ' + s, W / 2, cy + (VERT ? 370 : 305) + i * (VERT ? 110 : 80), VERT ? 32 : 36, INK, 700, 'center', prog(lt, 1 + i * .8, 1.4 + i * .8)));

@@ -53,7 +53,7 @@
 | ⭐ ✅ Day 8 | tfeldmann/organize | 규칙대로 폴더 자동 정리 | 독일 | 3.2천 | pip `organize-tool` | 0.8초, 한글 파일명 OK, 중복도 알려 줌 (11/4 재확인: 3.3.0, 27개 0.39초, 내용으로 영수증 PDF 찾기 OK, 스캔 PDF·하위 폴더 중복은 못 잡음) | 다운로드 폴더 1초 정리 | ★4 |
 | ⭐ ✅ Day 15 | qarmin/czkawka | 중복·비슷한 파일 찾아 용량 확보 | 폴란드 | 3.5만 | crates `czkawka_cli` (빌드 13분) | 0.1초에 중복 2그룹 (11/11 재확인: 12.0.2, 빌드 8분 18초, 41개 중 복사본 10개·79.7MB 0.16초, 기본은 8KB 미만 건너뜀, 비슷한 사진 차이 15+돌림에서 고친 사진 6장 중 5장·다른 그림 오탐 1건, AEN 자동 지우기가 원본 폴더 파일 포함 → -r 필요, 화면 프로그램 krokiet은 cargo 빌드가 15분 넘게 끝나지 않아 중단(영상 렌더링과 CPU를 나눠 씀)) | '최종_진짜최종' 찾기 | ★4 |
 | ✅ Day 12 | microsoft/markitdown | PDF·워드·엑셀·PPT를 텍스트로 | 미국 MS | 19만 | pip `markitdown[all]` | docx 1.9초(표·목록 유지), PDF 2.7초 (11/8 재확인: 0.1.9, 문서 하나 0.8~1.05초, 100쪽 PDF 9.78초, 스캔 PDF·사진 0자, 엑셀 빈칸 NaN, HWP 변환기 없음) | 문서를 ChatGPT용 글로 | ★4 |
-|  | ocrmypdf/OCRmyPDF | 스캔 PDF를 검색되는 PDF로 | 미국 | 3.5만 | pip `ocrmypdf` (venv 권장) | 한글 영수증 7.4초, 일부 글자 깨짐 | 영수증 PDF가 Ctrl+F로 검색 | ★4 |
+| ✅ Day 20 | ocrmypdf/OCRmyPDF | 스캔 PDF를 검색되는 PDF로 | 미국 | 3.5만 | pip `ocrmypdf` (venv 권장) | 한글 영수증 7.4초, 일부 글자 깨짐 (11/15 재확인: 17.14.1, Ghostscript 없이 작동, 기본 읽기는 한국어 문서 줄 빠짐 → `--tesseract-pagesegmode 4`로 가정통신문 100%, 표 안 글자 79.4%, `--deskew` 6도는 못 잡음) | 영수증 PDF가 Ctrl+F로 검색 | ★4 |
 |  | simonhaenisch/md-to-pdf | 마크다운을 보고서 PDF로 | 독일 | 2천 | npm `md-to-pdf` | 4.1초, 한글 OK | 메모가 보고서처럼 | ★3 |
 |  | rendercv/rendercv | 설정 파일 하나로 디자이너급 이력서 | 튀르키예 | 1.8만 | pip `rendercv<2` | 영문만 됨(한글 실패), 최신판은 다운로드 막힘 | 이력서 디자인 끝 | ★3 |
 

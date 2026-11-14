@@ -1,0 +1,34 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// 블로그·README용 결과 그림 (1600×1000). ?kind=compare | accuracy | rotate — 모두 실제 시연 결과(data.js)로 그림
+const K = new URLSearchParams(location.search).get('kind'), W = 1600, H = 1000, cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+const IMG = {}; const load = k => new Promise(r => { const im = new Image(); im.onload = r; im.src = 'img/' + k + '.png'; IMG[k] = im; });
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), ...['p1', 'p2', 'p3', 'up2', 'skew', 'deskew'].map(load)]).then(() => {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H); const foot = s => text(s, W / 2, 965, 22, '#6e7681', 600, 'center');
+  if (K === 'compare') {
+    const h = 760, w = h / A4;
+    text('처리 전 (스캔 PDF)', 400, 50, 40, RED, 900); page('p1', 400 - w / 2, 160, h); findBar(400 - 330, 80, 660, '관리비', '0건', false, 1, 26);
+    text('OCRmyPDF 처리 후', 1200, 50, 40, GREEN, 900); page('p1', 1200 - w / 2, 160, h); film(0, 1200 - w / 2, 160, h, 1); hits(0, 1200 - w / 2, 160, h, 1); findBar(1200 - 330, 80, 660, '관리비', '1/3 · 찾음', true, 1, 26);
+    foot('파란 상자 = 투명 글자가 붙은 자리 · 노란색 = 찾은 낱말 · 2026-11-15 클라우드 시연 · 직접 만든 가상 고지서');
+  }
+  if (K === 'accuracy') {
+    text('OCRmyPDF 설정별 글자 정확도 (띄어쓰기를 뺀 글자 비교)', W / 2, 60, 40, INK, 900);
+    const rows = [['영어만 (언어 지정 없음)', RES.eng, RED], ['-l kor+eng (기본 읽기)', RES.kor, GOLD], ['-l kor+eng + 줄 단위 (pagesegmode 4)', RES.kor4, GREEN]];
+    PG.forEach((p, j) => { text(p, 260, 190 + j * 260, 38, INK, 900, 'right');
+      rows.forEach(([lab, r, col], i) => { text(lab, 300, 140 + j * 260 + i * 52, 22, col, 700, 'left'); accBar(760, 124 + j * 260 + i * 52, 620, 34, r.acc[p], col, 1, 1, 26); }); });
+    text('찾은 낱말 9개 중: 영어만 ' + nfound(RES.eng) + '개 · 한국어 기본 ' + nfound(RES.kor) + '개 · 한국어 + 줄 단위 ' + nfound(RES.kor4) + '개', W / 2, 900, 30, GOLD, 800);
+    foot('2026-11-15 클라우드 시연 (OCRmyPDF 17.14.1 · Tesseract 5.3.4) · 직접 만든 가상 스캔 3쪽');
+  }
+  if (K === 'rotate') {
+    const h = 480, w = h / A4, X = i => 60 + i * (w + 50), L = [['up2', '거꾸로 넣은 쪽', RES.upside.acc['가정통신문'], RED], ['p2', '--rotate-pages', RES.rotate.acc['가정통신문'], GREEN],
+      ['skew', '4도 기울어짐', RES.skew.acc['관리비 고지서'], GOLD], ['deskew', '--deskew (3.4도 바로잡음)', RES.deskew.acc['관리비 고지서'], GREEN]];
+    L.forEach(([k, lab, v, col], i) => { page(k, X(i), 220, h); text(lab, X(i) + w / 2, 120, fit(lab, 30, w + 20), col, 900); text(f1(v) + '%', X(i) + w / 2, 170, 40, col, 900); });
+    text('6도 기울어진 쪽은 기울기를 0도로 판단해 그대로 (' + f1(RES.deskew6.acc['관리비 고지서']) + '%)', W / 2, 860, 30, RED, 800);
+    foot('정확도 = 띄어쓰기를 뺀 글자 비교 · 2026-11-15 클라우드 시연 · 직접 만든 가상 문서');
+  }
+  READY = true;
+});
+</script></body></html>

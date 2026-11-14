@@ -1,0 +1,217 @@
+{
+ "version": "17.14.1",
+ "tesseract": "tesseract 5.3.4",
+ "before_chars": 0,
+ "eng": {
+  "angle": null,
+  "cmd": "ocrmypdf  스캔본.pdf 영어만.pdf",
+  "code": 0,
+  "sec": 1.45,
+  "in_kb": 518,
+  "err": [],
+  "out_kb": 398,
+  "acc": {
+   "관리비 고지서": 14.1,
+   "가정통신문": 5.5,
+   "영수증": 33.7
+  },
+  "found": {
+   "관리비": false,
+   "168,440": true,
+   "납부기한": false,
+   "789012": true,
+   "방과후": false,
+   "12월 4일": false,
+   "신청서": false,
+   "치즈케이크": false,
+   "20,700": true
+  },
+  "sample": [
+   "202644 1021 FtelH| 212A] ",
+   "7}AO}DEE 1015-12038 A7Vd ",
+   "u ",
+   "H Hs: 202614 114 254 "
+  ]
+ },
+ "kor": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng 스캔본.pdf 한국어_기본.pdf",
+  "code": 0,
+  "sec": 1.96,
+  "in_kb": 518,
+  "err": [],
+  "out_kb": 407,
+  "acc": {
+   "관리비 고지서": 32.9,
+   "가정통신문": 32.6,
+   "영수증": 99.0
+  },
+  "found": {
+   "관리비": true,
+   "168,440": true,
+   "납부기한": false,
+   "789012": true,
+   "방과후": false,
+   "12월 4일": false,
+   "신청서": false,
+   "치즈케이크": true,
+   "20,700": true
+  }
+ },
+ "kor4": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 --sidecar /home/claude/daily-github-pick/2026-11-15-ocrmypdf/demo/out/한국어_줄단위.txt 스캔본.pdf 한국어_줄단위.pdf",
+  "code": 0,
+  "sec": 2.05,
+  "in_kb": 518,
+  "err": [],
+  "out_kb": 412,
+  "acc": {
+   "관리비 고지서": 79.4,
+   "가정통신문": 100.0,
+   "영수증": 99.0
+  },
+  "found": {
+   "관리비": true,
+   "168,440": true,
+   "납부기한": true,
+   "789012": true,
+   "방과후": true,
+   "12월 4일": true,
+   "신청서": true,
+   "치즈케이크": true,
+   "20,700": true
+  }
+ },
+ "lowres": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 저해상도.pdf 저해상도.pdf",
+  "code": 0,
+  "sec": 1.56,
+  "in_kb": 64,
+  "err": [],
+  "out_kb": 81,
+  "acc": {
+   "관리비 고지서": 90.0,
+   "가정통신문": 100.0,
+   "영수증": 96.0
+  },
+  "found": {
+   "관리비": true,
+   "168,440": true,
+   "납부기한": false,
+   "789012": true,
+   "방과후": true,
+   "12월 4일": true,
+   "신청서": true,
+   "치즈케이크": true,
+   "20,700": true
+  }
+ },
+ "skew": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 기울어짐.pdf 기울어짐_그대로.pdf",
+  "code": 0,
+  "sec": 1.67,
+  "in_kb": 185,
+  "err": [],
+  "out_kb": 156,
+  "acc": {
+   "관리비 고지서": 90.6
+  }
+ },
+ "deskew": {
+  "angle": "-3.358",
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 --deskew -v 1 기울어짐.pdf 기울어짐_바로잡기.pdf",
+  "code": 0,
+  "sec": 1.95,
+  "in_kb": 185,
+  "err": [],
+  "out_kb": 208,
+  "acc": {
+   "관리비 고지서": 96.5
+  }
+ },
+ "deskew6": {
+  "angle": "0.000",
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 --deskew -v 1 기울어짐6도.pdf 기울어짐6도_바로잡기.pdf",
+  "code": 0,
+  "sec": 1.75,
+  "in_kb": 187,
+  "err": [],
+  "out_kb": 178,
+  "acc": {
+   "관리비 고지서": 68.2
+  }
+ },
+ "upside": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 거꾸로.pdf 거꾸로_그대로.pdf",
+  "code": 0,
+  "sec": 2.01,
+  "in_kb": 518,
+  "err": [],
+  "out_kb": 408,
+  "acc": {
+   "관리비 고지서": 79.4,
+   "가정통신문": 0,
+   "영수증": 99.0
+  }
+ },
+ "rotate": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 --rotate-pages 거꾸로.pdf 거꾸로_돌리기.pdf",
+  "code": 0,
+  "sec": 2.93,
+  "in_kb": 518,
+  "err": [],
+  "out_kb": 412,
+  "acc": {
+   "관리비 고지서": 79.4,
+   "가정통신문": 100.0,
+   "영수증": 99.0
+  }
+ },
+ "p30": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 30쪽.pdf 30쪽.pdf",
+  "code": 0,
+  "sec": 9.09,
+  "in_kb": 5198,
+  "err": [],
+  "out_kb": 3933
+ },
+ "again": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 ../out/한국어_줄단위.pdf 다시넣기.pdf",
+  "code": 6,
+  "sec": 0.48,
+  "in_kb": 412,
+  "err": [
+   "PriorOcrFoundError: page 1 already has text! - aborting (use --force-ocr or --mode force to force OCR; see also help for --skip-text, --redo-ocr, and --mode)"
+  ]
+ },
+ "again_skip": {
+  "angle": null,
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 --skip-text ../out/한국어_줄단위.pdf 다시넣기_건너뛰기.pdf",
+  "code": 0,
+  "sec": 0.69,
+  "in_kb": 412,
+  "err": [],
+  "out_kb": 412
+ },
+ "bat_combo": {
+  "cmd": "ocrmypdf -l kor+eng --tesseract-pagesegmode 4 --rotate-pages --deskew --skip-text 거꾸로.pdf (검색PDF만들기.bat 와 같은 설정)",
+  "code": 0,
+  "sec": 3.76,
+  "found": "관리비·방과후·치즈케이크·신청서 4/4"
+ },
+ "install": {
+  "pip_sec": 7.0,
+  "venv_site_packages_mb": 138,
+  "base_mb": 13,
+  "ocrmypdf_mb": 1.8,
+  "note": "새 가상 환경에 pip install ocrmypdf, Tesseract 는 따로 설치(작업 공간에는 미리 있음, 5.3.4)",
+  "kor_traineddata": "tessdata_fast kor.traineddata 1.6MB (작업 공간 파일과 md5 같음)"
+ }
+}

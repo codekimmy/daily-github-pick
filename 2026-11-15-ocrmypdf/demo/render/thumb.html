@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// 썸네일: 실제 시연 결과(가상 스캔 1쪽 + OCRmyPDF가 붙인 글자 상자 + 찾은 자리) + 큰 글씨. ?kind=long → 1280×720, ?kind=shorts → 1080×1920 (글자는 위아래 250px 안쪽)
+const K = new URLSearchParams(location.search).get('kind') || 'long', V = K === 'shorts';
+const W = V ? 1080 : 1280, H = V ? 1920 : 720, cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+const IMG = {}; const load = k => new Promise(r => { const im = new Image(); im.onload = r; im.src = 'img/' + k + '.png'; IMG[k] = im; });
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), load('p1'), load('p2')]).then(() => {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  if (!V) {
+    const h = 640, w = h / A4; page('p1', 820, 40, h); film(0, 820, 40, h, 1); hits(0, 820, 40, h, 1);
+    text('스캔 PDF도', 60, 110, 76, INK, 900, 'left'); text('Ctrl+F 된다', 60, 210, 96, GOLD, 900, 'left');
+    findBar(60, 290, 700, '관리비', '1/3 · 찾음', true, 1, 30);
+    text('OCRmyPDF', 60, 450, 64, BLUE, 900, 'left'); text('3쪽 2.05초 · 낱말 9개 모두 찾음', 60, 530, 36, GREEN, 900, 'left');
+    text('2026-11-15 클라우드 시연 · 직접 만든 가상 문서', 60, 690, 20, '#6e7681', 600, 'left');
+  } else {
+    text('OCRmyPDF', W / 2, 330, 64, BLUE, 900); text('스캔 PDF도', W / 2, 450, 92, INK, 900); text('Ctrl+F 된다', W / 2, 570, 112, GOLD, 900);
+    const h = 900, w = h / A4; page('p1', W / 2 - w / 2, 660, h); film(0, W / 2 - w / 2, 660, h, 1); hits(0, W / 2 - w / 2, 660, h, 1);
+    findBar(W / 2 - 420, 1590, 840, '관리비', '1/3 · 찾음', true, 1, 32);
+    text('2026-11-15 클라우드 시연 · 직접 만든 가상 문서', W / 2, 1700, 28, SUB, 700);
+  }
+  READY = true;
+});
+</script></body></html>

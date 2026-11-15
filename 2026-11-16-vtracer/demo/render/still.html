@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// 블로그·README용 결과 그림 4장 (1600×1000). ?kind=logo | sign | dot | photo — 모두 시연 입력 그림과 VTracer가 만든 SVG를 그대로 그림
+const K = new URLSearchParams(location.search).get('kind') || 'logo';
+const W = 1600, H = 1000, cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+const IMG = {}; const load = k => new Promise(r => { const im = new Image(); im.onload = r; im.src = 'img/' + k; IMG[k.split('.')[0]] = im; });
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), ...IMGS.map(load)]).then(() => {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H); const foot = s => text(s, W / 2, 965, 22, '#8b949e', 600, 'center');
+  if (K === 'logo') {
+    text('작은 로고 JPG (240px) → VTracer SVG, 20배로 키워 비교', W / 2, 60, 40, INK, 900);
+    pic('logo', 60, 160, 300, 300); pill('로고_작은.jpg · ' + kb(RES.logo.in_kb), 210, 500, 24, SUB);
+    zoomPair('logo', 'logo_svg', { x: 420, y: 160, w: 1120, h: 560 }, .38, .74, 20, 300, 1, '일반 확대 (JPG)', 'VTracer SVG (색 6가지)');
+    text('VTracer 변환 ' + f2(RES.logo.max6_simplify.sec) + '초 · 조각 ' + RES.logo.max6_simplify.paths + '개 · ' + kb(RES.logo.max6_simplify.kb), 980, 790, 32, GREEN, 900);
+    text('색 수: 일반 확대 ' + RES.logo.bicubic_colors.toLocaleString('ko-KR') + '가지 → SVG 6가지 · 1200px 원본과 같은 색인 점 ' + f1(RES.logo.bicubic_same) + '% / ' + f1(RES.logo.max6_simplify.same) + '%', 980, 850, 26, SUB, 700);
+    foot('2026-11-16 클라우드 시연 결과 · 직접 그린 가상 로고 · VTracer 1.0.0-alpha.4');
+  }
+  if (K === 'sign') {
+    text('휴대폰으로 찍은 서명 → 흑백 SVG (VTracer)', W / 2, 60, 40, INK, 900);
+    const w = 720, h = 360; pic('sign', 60, 150, w, h); pill('입력: 그림자 진 서명 사진 (가상)', 60 + w / 2, 120, 24, SUB);
+    pic('sign_bw', 820, 150, w, h); box(820, 150, w, h, 0, null, RED, 1, 4); pill('--preset bw · 조각 ' + RES.sign.bw.paths + '개 · 정답 획과 겹침 ' + f1(RES.sign.bw.iou) + '%', 820 + w / 2, 120, 24, RED);
+    pic('sign_ad', 820, 580, w, h); box(820, 580, w, h, 0, null, GREEN, 1, 4); pill('--adaptive · 조각 ' + RES.sign.adaptive.paths + '개 · 정답 획과 겹침 ' + f1(RES.sign.adaptive.iou) + '%', 820 + w / 2, 550, 24, GREEN);
+    para('기본 흑백 설정은 오른쪽 그림자까지 검게 칠했고, 밝기 맞춤(--adaptive)은 그림자를 빼고 획만 남겼습니다. 결과 SVG는 배경이 투명합니다.', 80, 620, 660, 30, INK, 700);
+    text('변환 ' + f2(RES.sign.adaptive.sec) + '초 · ' + kb(RES.sign.adaptive.kb), 420, 860, 34, GREEN, 900);
+    foot('2026-11-16 클라우드 시연 결과 · 직접 그린 가상 서명 · VTracer 1.0.0-alpha.4');
+  }
+  if (K === 'dot') {
+    text('24×24 도트 그림 → SVG, 480px로 키워 비교', W / 2, 60, 40, INK, 900); const s = 460;
+    [['dot', '원본 PNG 일반 확대', SUB, true], ['dot_spline', '기본(곡선) 모드 · 조각 ' + RES.dot.spline.paths + '개', RED, true], ['dot_pixel', '-m pixel · 조각 ' + RES.dot.pixel.paths + '개 · ' + kb(RES.dot.pixel.kb), GREEN, true]].forEach(([k, lab, col, sm], i) => {
+      const x = 60 + i * 510; pic(k, x, 190, s, s, 1, sm); pill(lab, x + s / 2, 150, 24, col); });
+    text('곡선 모드는 칸을 녹여 둥글게 바꾸고 노란 칸 하나가 사라짐 · pixel 모드는 칸 모양 그대로', W / 2, 740, 30, INK, 800);
+    foot('2026-11-16 클라우드 시연 결과 · 직접 찍은 가상 도트 그림 · VTracer 1.0.0-alpha.4');
+  }
+  if (K === 'photo') {
+    text('고양이 사진(CC0, 451×300) → 설정별 SVG', W / 2, 60, 40, INK, 900); const w = 450, h = 300;
+    [['cat', '원본 JPG · ' + kb(RES.cat.in_kb), SUB], ['cat_poster', 'poster · ' + kb(RES.cat.poster.kb) + ' · 같은 색 ' + f1(RES.cat.poster.same) + '%', GREEN], ['cat_max8', 'max_colors=8 · ' + kb(RES.cat.max8.kb), GOLD],
+     ['cat_photo', 'photo · 조각 ' + RES.cat.photo.paths + '개 · ' + kb(RES.cat.photo.kb), BLUE], ['cat_ws', 'watershed · 조각 ' + RES.cat.watershed.paths + '개 · ' + kb(RES.cat.watershed.kb), PURPLE]].forEach(([k, lab, col], i) => {
+      const x = (i < 3 ? 70 + i * 500 : 320 + (i - 3) * 500), y = i < 3 ? 140 : 540; pic(k, x, y, w, h); pill(lab, x + w / 2, y + h + 30, 22, col); });
+    foot('2026-11-16 클라우드 시연 결과 · scikit-image chelsea 사진(CC0, Stefan van der Walt) · VTracer 1.0.0-alpha.4');
+  }
+  READY = true;
+});
+</script></body></html>

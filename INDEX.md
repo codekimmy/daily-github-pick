@@ -25,3 +25,4 @@
 | 18 | 2026-11-14 | [timsainb/noisereduce](https://github.com/timsainb/noisereduce) | 녹음 속 선풍기·에어컨 같은 바탕 잡음을 줄여 주는 무료 '소리 거름망' | 소리·녹음 | ★★★☆☆ | 1,885 | [바로가기](2026-11-14-noisereduce/) |
 | 19 | 2026-11-14 | [Lightricks/LTX-2](https://github.com/Lightricks/LTX-2) | 글·사진·소리로 소리 붙은 영상을 만드는 무료 공개 영상 AI LTX-2.5, 그래픽카드 메모리 24GB↑ 권장 | 영상·AI 생성 | 사양체크 | 약 9,800 | [바로가기](2026-11-14-spec-LTX-2/) |
 | 20 | 2026-11-15 | [ocrmypdf/OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) | 스캔한 PDF에 투명 글자를 덮어 Ctrl+F로 찾을 수 있게 해 주는 무료 '투명 글자 필름' | 문서·PDF | ★★★½☆ | 약 3.5만 | [바로가기](2026-11-15-ocrmypdf/) |
+| 21 | 2026-11-16 | [visioncortex/vtracer](https://github.com/visioncortex/vtracer) | 점 그림(JPG·PNG)을 확대해도 깨지지 않는 SVG로 받아 적어 주는 무료 '조립 설명서 받아쓰기' | 그림·디자인 | ★★★☆☆ | 약 7,500 | [바로가기](2026-11-16-vtracer/) |

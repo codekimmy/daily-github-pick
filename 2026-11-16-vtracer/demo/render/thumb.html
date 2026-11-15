@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// 썸네일: 실제 시연 결과(작은 로고 JPG 20배 확대 vs VTracer가 만든 SVG 20배 확대) + 큰 글씨. ?kind=long → 1280×720, ?kind=shorts → 1080×1920 (글자는 위아래 250px 안쪽)
+const K = new URLSearchParams(location.search).get('kind') || 'long', V = K === 'shorts';
+const W = V ? 1080 : 1280, H = V ? 1920 : 720, cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+const IMG = {}; const load = k => new Promise(r => { const im = new Image(); im.onload = r; im.src = 'img/' + k; IMG[k.split('.')[0]] = im; });
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), load('logo.jpg'), load('logo_svg.svg')]).then(() => {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  if (!V) {
+    zoomBox('logo', 660, 60, 290, 520, .37, .76, 7, 300); zoomBox('logo_svg', 970, 60, 290, 520, .37, .76, 7, 300);
+    pill('JPG 확대', 805, 620, 26, RED); pill('SVG 확대', 1115, 620, 26, GREEN); pill('×7', 960, 520, 30, GOLD);
+    text('작은 로고도', 50, 130, 76, INK, 900, 'left'); text('크게 키워도', 50, 240, 84, GOLD, 900, 'left'); text('또렷하게', 50, 345, 84, GOLD, 900, 'left');
+    text('VTracer', 50, 470, 72, BLUE, 900, 'left'); text('그림 → SVG · 로고 0.06초', 50, 550, 36, GREEN, 900, 'left');
+    text('2026-11-16 클라우드 시연 · 직접 그린 가상 로고', 50, 690, 20, '#6e7681', 600, 'left');
+  } else {
+    text('VTracer', W / 2, 320, 72, BLUE, 900); text('작은 로고도', W / 2, 440, 96, INK, 900); text('10배 넘게 키워도 또렷', W / 2, 560, 86, GOLD, 900);
+    zoomBox('logo', 90, 650, 900, 420, .4, .76, 11, 300); zoomBox('logo_svg', 90, 1130, 900, 420, .4, .76, 11, 300);
+    pill('JPG 11배 확대', W / 2, 690, 32, RED); pill('VTracer SVG 11배 확대', W / 2, 1170, 32, GREEN);
+    text('2026-11-16 클라우드 시연 · 직접 그린 가상 로고', W / 2, 1620, 28, SUB, 700);
+  }
+  READY = true;
+});
+</script></body></html>

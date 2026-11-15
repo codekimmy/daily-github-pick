@@ -12,6 +12,7 @@
 | `make_images.py` | `media/스펙트로그램비교.png`, `잡음크기비교.png`, `말소리크기.png`, `들어보기_*.mp3` |
 | `make_data.py` | 영상용 `render/data.js`(파형·측정값) + `render/img/*.png`(축 없는 스펙트로그램 띠) |
 | `script.py` · `build.py` | 롱폼·숏폼 대본(화면 자막 + 읽는 문장) → 말하는 시간(6.3글자/초, 최소 3초) + 쉼(1.1초 · 장 사이 1.4초)으로 시간 계산 → `render/timing.js`, `narration-*.txt` 4개 (2026-11-14-spec-LTX-2 도구를 고쳐 씀) |
+| `voice/` | 운영자 음성 입히기 (2026-11-15): `split.py 음성.mp3` → 문장 67개 실제 길이(`lengths-long.json`, `segments-long.json`) → `build.py voice` → `render/timing-voice.js`·`voice/cues-long.json`·`narration-long*.txt`(음성 시간) → `render/render.py long 출력.mp4 --voice` → `place.py 음성.mp3 영상.mp4 출력.mp4`(문장마다 제자리에) → `calm_bgm.py 330 bgm.wav` → `add_bgm.py`(목소리 나올 때 음악 자동으로 작아짐, 크기 0.063) |
 | `render/` | `engine.js`(그리기 도구 + 엔딩 유의사항) · `scenes.js`(장면) · `page.html`(크로스페이드·자막) · `render.py`(프레임 → ffmpeg, 24fps) · `thumb.html`·`thumb.py`(썸네일) |
 
 순서: `make_samples.py` → `test_all.py` → `make_images.py` → `make_data.py` → `build.py` → `render/render.py long ../media/noisereduce-long.mp4` · `render/render.py anim ../media/noisereduce-anim.mp4 1920 1080` · `… anim ../media/noisereduce-anim-vertical.mp4 1080 1920` → `render/thumb.py`

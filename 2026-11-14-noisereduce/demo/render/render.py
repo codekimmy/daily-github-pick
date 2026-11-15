@@ -1,7 +1,8 @@
 """page.html 을 프레임 단위로 찍어 바로 ffmpeg 로 넘긴다(프레임 파일을 디스크에 쌓지 않음).
 사용: python3 render.py long out.mp4                      롱폼 1920×1080 (무음 소리 트랙 포함)
       python3 render.py anim out.mp4 1920 1080            과정 애니메이션 가로 / 1080 1920 세로
-      python3 render.py long check_dir --only 10.5,60     지정한 초의 화면만 PNG 로 저장 (확인용)"""
+      python3 render.py long check_dir --only 10.5,60     지정한 초의 화면만 PNG 로 저장 (확인용)
+      … --voice                                         운영자 음성 시간(timing-voice.js)으로 렌더링 (2026-11-15)"""
 import os, subprocess, sys
 from playwright.sync_api import sync_playwright
 
@@ -14,7 +15,7 @@ here = os.path.dirname(os.path.abspath(__file__))
 with sync_playwright() as p:
     b = p.chromium.launch(); pg = b.new_page(viewport={"width": w, "height": h})
     pg.on("pageerror", lambda e: print("ERR", e))
-    pg.goto(f"file://{here}/page.html?mode={mode}&w={w}&h={h}&fps={FPS}")
+    pg.goto(f"file://{here}/page.html?mode={mode}&w={w}&h={h}&fps={FPS}" + ("&t=timing-voice" if "--voice" in sys.argv else ""))
     pg.wait_for_function("READY === true", timeout=60000)
     total = pg.evaluate("TOTAL"); print("frames", total, "=", total / FPS, "s", flush=True)
     if only:

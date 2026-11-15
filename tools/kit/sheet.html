@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="kit.css"><style>html,body{margin:0;background:#0b1020}canvas{display:block}</style>
+<script src="kit.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// ?kind=sheet → 캐릭터 소개 그림(1600×900) / ?kind=demo&t=초 → 연출 도구 시범 화면(1080×1920, 18초)
+const Q = new URLSearchParams(location.search), K = Q.get('kind') || 'sheet';
+const W = K === 'sheet' ? 1600 : 1080, H = K === 'sheet' ? 900 : 1920, cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
+const T = (s, x, y, size, color, w = 700, al = 'center') => { ctx.font = `${w} ${size}px ${w > 500 ? KIT.PIXEL_B : KIT.PIXEL}`; ctx.fillStyle = color; ctx.textAlign = al; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); };
+const ease = x => 1 - Math.pow(1 - Math.min(1, Math.max(0, x)), 3);
+function sheet() {
+  KIT.bg(ctx, W, H); T('채널 캐릭터 「오픈이」', W / 2, 80, 64, KIT.C.yellow); T('오픈소스를 하나씩 꺼내 보여 주는 종이 상자 · 직접 만든 18×16 픽셀 캐릭터', W / 2, 150, 28, KIT.C.sub, 400);
+  [['idle', '기본'], ['open', '짠! (상자 열기)'], ['wow', '와… (놀람)'], ['think', '음? (질문)'], ['point', '가리키기']].forEach(([p, lab], i) => {
+    const x = 170 + i * 305; KIT.char(ctx, p, x, 560, 14, 1.0); T(lab, x, 640, 30, KIT.C.ink); T(p, x, 685, 22, KIT.C.sub, 400); });
+  T('쓰는 곳: 롱폼·숏폼 첫 장면(open) · 놀라운 숫자(wow) · 아쉬운 점(think) · 설명(point) · 질문형 마무리(think + 말풍선)', W / 2, 790, 24, KIT.C.sub, 400);
+  T('tools/kit/kit.js · KIT.char(ctx, 자세, x, y, 픽셀크기, 초)', W / 2, 840, 22, '#6e7681', 400);
+}
+function demo(t) {
+  const scene = (a, b) => t >= a && t < b;
+  const A = () => { KIT.bg(ctx, W, H); KIT.head(ctx, W, '오늘의 오픈소스', 'OCRmyPDF', ease(t / .6), 330, 96);
+    KIT.char(ctx, t < 1.5 ? 'idle' : 'open', W / 2, 1150, 22, t); if (t > 1.6) KIT.bubble(ctx, '짠!', W / 2 + 230, 760, 44, ease((t - 1.6) * 3)); };
+  const B = (lt) => { KIT.chapterCard(ctx, W, H, 1, '얼마나 빠를까', 1); };
+  const C = (lt) => { KIT.bg(ctx, W, H); KIT.head(ctx, W, '얼마나 빠를까', '30쪽 9.09초', ease(lt / .6), 330, 96);
+    KIT.watchCounter(ctx, W / 2, 520, 840, '1초에 약 3.3쪽', 30 / 9.09, lt - .8, '쪽', ease((lt - .5) * 2), v => Math.floor(v));
+    KIT.char(ctx, lt > 3.5 ? 'wow' : 'point', W / 2 - 250, 1250, 16, lt); if (lt > 3.5) KIT.bubble(ctx, '와…', W / 2 - 90, 950, 40, ease((lt - 3.5) * 3));
+    KIT.stamp(ctx, '9개 모두 찾음', W / 2 + 200, 1050, (lt - 2.2) * 1.6, KIT.C.green, 54); };
+  const D = (lt) => { KIT.bg(ctx, W, H); KIT.askEnd(ctx, W, H, '스캔 서류, 어떻게 보관하십니까?', lt, 1);
+    T('정보 제공용 · 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 1640, 26, KIT.C.sub, 400); };
+  if (t < 4) A();
+  else if (t < 5.2) KIT.dissolve(ctx, W, H, ease((t - 4) / .6), () => A(), () => B(t - 4));
+  else if (t < 6.2) KIT.dissolve(ctx, W, H, ease((t - 5.2) / .6), () => B(), () => C(t - 5.2), 48, 11);
+  else if (t < 13) C(t - 5.2);
+  else KIT.dissolve(ctx, W, H, ease((t - 13) / .6), () => C(t - 5.2), () => D(t - 13), 48, 23);
+}
+let READY = false; Promise.all([document.fonts.load('700 40px "Galmuri11 Bold"'), document.fonts.load('400 40px "Galmuri11"')]).then(() => { if (K === 'sheet') sheet(); else demo(+(Q.get('t') || 0)); READY = true; });
+window.frame = t => demo(t);
+</script></body></html>

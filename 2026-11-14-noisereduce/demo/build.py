@@ -17,27 +17,30 @@ exec(open(os.path.join(HERE, 'script.py'), encoding='utf-8').read())  # LONG, SH
 VOICE = "voice" in sys.argv
 LEN = json.load(open(os.path.join(HERE, "voice", "lengths-long.json"))) if VOICE else None
 SENT = []  # 음성 모드: 문장마다 [영상 속 시작 초, 길이]
+# 숏폼 음성 (2026-11-15): 실제 말이 짧아 45초를 넘기도록 쉼을 2초 안에서 늘림 (문장 사이 1.7초, 장 사이 1.6+0.3초), 자막 길이 = 말 길이
+VOICE_S = "voice-shorts" in sys.argv
 
 
 def speak(s):
     return max(MIN_CUE, len(re.sub(r"[\s,!?]", "", s)) / CPS)
 
 
-def timing(chapters, end_min=7.0, voice=False):
+def timing(chapters, end_min=7.0, voice=False, lens=None, join=JOIN, gap=GAP, pad=0.8):
     out, acc, k = [], 0.0, 0
+    lens = lens if lens is not None else LEN
     for idx, (cid, tag, mind, cues) in enumerate(chapters):
         t, cs = 0.3, []
         if voice and cid != "end": mind = 0
         for i, (cap, nar) in enumerate(cues):
             if voice:
-                ls = LEN[k:k + nar.count("\n") + 1]; k += len(ls); tt = t
-                for x in ls: SENT.append([round(acc + tt, 3), x]); tt += x + JOIN
-                sp = sum(ls) + JOIN * (len(ls) - 1); d = max(sp, min(MIN_CUE, sp + 0.8))
+                ls = lens[k:k + nar.count("\n") + 1]; k += len(ls); tt = t
+                for x in ls: SENT.append([round(acc + tt, 3), x]); tt += x + join
+                sp = sum(ls) + join * (len(ls) - 1); d = max(sp, min(MIN_CUE, sp + pad))
             else:
                 d = sum(speak(x) for x in nar.split("\n")) + JOIN * (nar.count("\n"))
             cs.append([round(t, 2), round(t + d, 2), cap, nar])
-            t += d + JOIN
-        dur = max(mind, t - JOIN + GAP)
+            t += d + (join if voice else JOIN)
+        dur = max(mind, t - (join if voice else JOIN) + (gap if voice else GAP))
         if cid == "end": dur = max(dur, end_min)
         out.append({"id": cid, "tag": tag, "dur": round(dur, 2), "t0": round(acc, 2), "cues": cs})
         acc += dur
@@ -68,6 +71,18 @@ def narration(name, title, video, chs, total, note):
             f.write("\n".join(body) + "\n")
 
 
+if VOICE_S:
+    LS = json.load(open(os.path.join(HERE, "voice", "lengths-shorts.json")))
+    S, st = timing(SHORTS, voice=True, lens=LS, join=1.7, gap=1.6, pad=0.0)
+    assert len(SENT) == len(LS)
+    json.dump(SENT, open(os.path.join(HERE, "voice", "cues-shorts.json"), "w"))
+    for name in ("timing.js", "timing-voice.js"):
+        p = os.path.join(HERE, "render", name); old = open(p, encoding="utf-8").read().split("const SHORTS = ")[0]
+        if name == "timing-voice.js":
+            with open(p, "w", encoding="utf-8") as f: f.write(old + "const SHORTS = " + json.dumps(S, ensure_ascii=False) + ";\n")
+    narration("shorts", "숏폼(운영자 음성)", "media/noisereduce-shorts-voice.mp4", S, st, "- 구간 시간은 운영자 음성의 실제 문장 길이로 다시 맞춘 값입니다 (demo/voice/lengths-shorts.json), 끝에 엔딩 카드 6초")
+    gaps = [b[0] - a[0] - a[1] for a, b in zip(SENT, SENT[1:])]
+    print(f"shorts(voice) {fmt(st)} + 엔딩 6초 = {fmt(st + 6)}, 쉼 최대 {max(gaps):.2f}초"); sys.exit()
 L, lt = timing(LONG, voice=VOICE)
 if VOICE:
     assert len(SENT) == len(LEN), (len(SENT), len(LEN))

@@ -118,6 +118,7 @@ start 회의녹음_잡음제거.wav
 | `media/noisereduce-long.mp4` | 롱폼 5:49 (1920×1080, 자막, 음성 없음) |
 | `media/noisereduce-long-voice-bgm.mp4` · `media/noisereduce-long-voice.mp4` | 롱폼 운영자 음성 버전 5:22 (업로드용 배경음악 버전 · 음악 없는 버전, 2026-11-15) — 음성 길이에 맞춰 화면 시간을 다시 맞춤 (`demo/voice/`) |
 | `media/noisereduce-anim.mp4` · `media/noisereduce-anim-vertical.mp4` · `media/noisereduce-anim.gif` | 과정 애니메이션 50.2초 (가로·세로(숏폼용)·README용 GIF, 음성 없음) |
+| `media/noisereduce-shorts-voice-bgm.mp4` · `media/noisereduce-shorts-voice.mp4` | 숏폼 운영자 음성 버전 47.5초 (세로, 업로드용 배경음악 버전 · 음악 없는 버전, 2026-11-15) |
 | `media/terminal.gif` · `media/스펙트로그램비교.png` · `media/잡음크기비교.png` · `media/말소리크기.png` · `media/thumbnail.jpg` · `media/thumbnail-shorts.jpg` | 터미널 녹화 · 결과 그림 · 썸네일 |
 | `media/들어보기_*.mp3` | 처리 전·후 소리 (가상 녹음) |
 | `demo/` | 가상 녹음 만들기·측정 스크립트·예제 파일·영상 만드는 코드 (`demo/README.md`) |

@@ -1,9 +1,9 @@
 """운영자 음성의 문장들(segments-long.json)을 영상 속 문장 시각(cues-long.json, build.py voice 가 만듦)에 하나씩 놓아 입힌다.
-사용: python3 place.py <음성.mp3> <영상.mp4> <출력.mp4>"""
+사용: python3 place.py <음성.mp3> <영상.mp4> <출력.mp4> [long|shorts]"""
 import json, subprocess, sys
 from pathlib import Path
-mp3, video, out = sys.argv[1:4]; here = Path(__file__).parent
-seg = json.load(open(here / "segments-long.json", encoding="utf-8")); cue = json.load(open(here / "cues-long.json"))
+mp3, video, out = sys.argv[1:4]; here = Path(__file__).parent; K = sys.argv[4] if len(sys.argv) > 4 else "long"
+seg = json.load(open(here / f"segments-{K}.json", encoding="utf-8")); cue = json.load(open(here / f"cues-{K}.json"))
 assert len(seg) == len(cue)
 dur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", mp3]))
 vdur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", video]))

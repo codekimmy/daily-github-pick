@@ -1,4 +1,4 @@
-# 숏폼: 선풍기 소리 섞인 녹음, 0.32초 만에 (50.2초, 세로 9:16)
+# 숏폼: 선풍기 소리 섞인 녹음, 0.32초 만에 (음성 버전 47.5초, 세로 9:16)
 
 ## ✅ 업로드용 (이 부분만 복사해서 쓰면 됨)
 
@@ -27,7 +27,8 @@ python.org에서 파이썬을 설치한 뒤 명령 프롬프트에 pip install n
 
 **썸네일**: `media/thumbnail-shorts.jpg` (세로 1080×1920, 유튜브 앱에서 쇼츠 올릴 때 썸네일로 지정)
 
-**영상**: `media/noisereduce-anim-vertical.mp4` (50.2초, 자막 · 음성 없음 — 운영자 음성을 받으면 `narration-shorts.txt` 구간에 맞춰 입히고 배경음악 버전을 만듦)
+**영상**: `media/noisereduce-shorts-voice-bgm.mp4` (47.5초, 자막 + 운영자 음성 + 잔잔한 배경음악, 2026-11-15) · 음악 없는 음성 버전 `media/noisereduce-shorts-voice.mp4` · 음성 없는 원본 `media/noisereduce-anim-vertical.mp4`(50.2초)
+> 아래 표의 초는 음성 없는 원본 기준입니다. 음성 버전 구간 시간은 `narration-shorts.txt`에 있습니다 (문장 사이 쉼 최대 1.9초)
 
 ---
 아래는 참고용 원본 메모입니다.

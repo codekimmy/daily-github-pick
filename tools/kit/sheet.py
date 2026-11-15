@@ -1,11 +1,9 @@
-"""캐릭터 소개 그림(tools/kit/오픈이.png)과 연출 시범 영상(tools/kit/kit-demo.mp4·gif, 세로 18초)을 만든다. 사용: python3 tools/kit/sheet.py"""
+"""연출 아카이브 시범 영상(tools/kit/kit-demo.mp4·gif, 세로 18초)을 만든다. 사용: python3 tools/kit/sheet.py"""
 import os, subprocess
 from playwright.sync_api import sync_playwright
 here = os.path.dirname(os.path.abspath(__file__))
 with sync_playwright() as p:
     b = p.chromium.launch()
-    pg = b.new_page(viewport={"width": 1600, "height": 900}); pg.goto(f"file://{here}/sheet.html?kind=sheet"); pg.wait_for_function("READY === true")
-    pg.screenshot(path=os.path.join(here, "오픈이.png"))
     pg = b.new_page(viewport={"width": 1080, "height": 1920}); pg.goto(f"file://{here}/sheet.html?kind=demo"); pg.wait_for_function("READY === true")
     ff = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", "24", "-c:v", "mjpeg", "-i", "-", "-c:v", "libx264", "-crf", "20", "-pix_fmt", "yuv420p", os.path.join(here, "kit-demo.mp4")], stdin=subprocess.PIPE)
     for f in range(24 * 18):

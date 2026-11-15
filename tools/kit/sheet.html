@@ -2,7 +2,7 @@
 <html><head><meta charset="utf-8"><link rel="stylesheet" href="kit.css"><style>html,body{margin:0;background:#0b1020}canvas{display:block}</style>
 <script src="kit.js"></script></head><body><canvas id="c"></canvas>
 <script>
-// ?kind=sheet → 캐릭터 소개 그림(1600×900) / ?kind=demo&t=초 → 연출 도구 시범 화면(1080×1920, 18초)
+// ?kind=demo&t=초 → 연출 아카이브 시범 화면(1080×1920, 18초). ?kind=sheet → (보류) 캐릭터 소개 그림
 const Q = new URLSearchParams(location.search), K = Q.get('kind') || 'sheet';
 const W = K === 'sheet' ? 1600 : 1080, H = K === 'sheet' ? 900 : 1920, cv = document.getElementById('c'); cv.width = W; cv.height = H; const ctx = cv.getContext('2d');
 const T = (s, x, y, size, color, w = 700, al = 'center') => { ctx.font = `${w} ${size}px ${w > 500 ? KIT.PIXEL_B : KIT.PIXEL}`; ctx.fillStyle = color; ctx.textAlign = al; ctx.textBaseline = 'middle'; ctx.fillText(s, x, y); };
@@ -17,12 +17,11 @@ function sheet() {
 function demo(t) {
   const scene = (a, b) => t >= a && t < b;
   const A = () => { KIT.bg(ctx, W, H); KIT.head(ctx, W, '오늘의 오픈소스', 'OCRmyPDF', ease(t / .6), 330, 96);
-    KIT.char(ctx, t < 1.5 ? 'idle' : 'open', W / 2, 1150, 22, t); if (t > 1.6) KIT.bubble(ctx, '짠!', W / 2 + 230, 760, 44, ease((t - 1.6) * 3)); };
+    KIT.stamp(ctx, '스캔 PDF 글자 찾기', W / 2, 900, (t - 1) * 1.6, KIT.C.blue, 60, -5); };
   const B = (lt) => { KIT.chapterCard(ctx, W, H, 1, '얼마나 빠를까', 1); };
   const C = (lt) => { KIT.bg(ctx, W, H); KIT.head(ctx, W, '얼마나 빠를까', '30쪽 9.09초', ease(lt / .6), 330, 96);
     KIT.watchCounter(ctx, W / 2, 520, 840, '1초에 약 3.3쪽', 30 / 9.09, lt - .8, '쪽', ease((lt - .5) * 2), v => Math.floor(v));
-    KIT.char(ctx, lt > 3.5 ? 'wow' : 'point', W / 2 - 250, 1250, 16, lt); if (lt > 3.5) KIT.bubble(ctx, '와…', W / 2 - 90, 950, 40, ease((lt - 3.5) * 3));
-    KIT.stamp(ctx, '9개 모두 찾음', W / 2 + 200, 1050, (lt - 2.2) * 1.6, KIT.C.green, 54); };
+    KIT.stamp(ctx, '9개 모두 찾음', W / 2, 1000, (lt - 2.2) * 1.6, KIT.C.green, 64); };
   const D = (lt) => { KIT.bg(ctx, W, H); KIT.askEnd(ctx, W, H, '스캔 서류, 어떻게 보관하십니까?', lt, 1);
     T('정보 제공용 · 클라우드 시연 결과(운영자 직접 검증 아님)', W / 2, 1640, 26, KIT.C.sub, 400); };
   if (t < 4) A();

@@ -1,6 +1,6 @@
-// 채널 공용 연출 도구 (2026-11-15 운영자 요청 — 참고 예시 tips/참고예시/2026-11-15-픽셀아트-숏폼.md 에서 활용할 수 있는 것만)
-// 1) 채널 캐릭터 '오픈이' (직접 만든 고유 픽셀 캐릭터: 오픈소스를 하나씩 꺼내 보여 주는 종이 상자)
-// 2) 장 번호 카드 + 픽셀 조각 전환  3) 장면 틀(꼬리표 + 큰 제목)  4) 도장 배지  5) 체감 카운터  6) 질문형 마무리
+// 연출 아카이브 코드 (2026-11-15 운영자 요청): 오픈소스마다 어울리는 것만 골라 꺼내 쓰는 효과 모음. 목록·쓰임은 tools/kit/README.md
+// 장 번호 카드 · 픽셀 조각 전환 · 장면 틀(꼬리표 + 큰 제목) · 도장 배지 · 체감 카운터 · 질문형 마무리 · 바탕 격자
+// (캐릭터 '오픈이' char()는 보류 — 운영자: AI 사람 목소리와 안 어울리고 투박함. 코드만 남겨 둠, 쓰지 않음)
 // 사용: page.html 에서 <link rel="stylesheet" href="../../../tools/kit/kit.css"><script src="../../../tools/kit/kit.js"></script>
 //       모든 함수는 첫 인자로 캔버스 ctx 를 받음. 글꼴: PIXEL = 갈무리(Galmuri, SIL OFL 1.1, tools/kit/fonts)
 const KIT_Q_COLOR = '#f5c542';
@@ -123,11 +123,11 @@ const KIT = (() => {
     ctx.font = `700 64px ${PIXEL_B}`; ctx.fillStyle = C.ink; ctx.fillText('+' + fmt(perSec * Math.max(0, sec)) + unit, x, y + 145); ctx.restore();
   }
   // 질문형 마무리: 오픈이 + 말풍선 질문 + "댓글로 알려 주시기 바랍니다"
-  function askEnd(ctx, W, H, question, t, k = 1) {
-    if (k <= 0) return; ctx.save(); ctx.globalAlpha *= k; const v = H > W, s = v ? 16 : 12, cy = v ? H * .52 : H * .62;
-    char(ctx, 'think', W / 2, cy, s, t); bubble(ctx, question, W / 2, cy - 26 * s, v ? 40 : 36, Math.min(1, t * 2));
-    ctx.font = `700 ${v ? 40 : 36}px ${PIXEL_B}`; ctx.fillStyle = C.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText('댓글로 알려 주시기 바랍니다', W / 2, cy + (v ? 90 : 70)); ctx.restore();
+  function askEnd(ctx, W, H, question, t, k = 1) { // 질문 말풍선 + "댓글로 알려 주시기 바랍니다" (캐릭터 없이)
+    if (k <= 0) return; ctx.save(); ctx.globalAlpha *= k; const v = H > W, cy = v ? H * .45 : H * .5, fs = v ? 48 : 44;
+    bubble(ctx, question, W / 2, cy, fs, Math.min(1, t * 2));
+    ctx.font = `700 ${v ? 40 : 36}px ${PIXEL_B}`; ctx.fillStyle = C.yellow; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('댓글로 알려 주시기 바랍니다', W / 2, cy + (v ? 110 : 90)); ctx.restore();
   }
   return { PIXEL, PIXEL_B, C, P, POSE, char, bubble, bg, head, chapterCard, dissolve, stamp, watchCounter, askEnd };
 })();

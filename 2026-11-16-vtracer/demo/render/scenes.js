@@ -136,7 +136,7 @@ const DRAW_LONG = {
     const k3 = ap(lt, cs(c, 3)); text('1200px 원본과 같은 색인 점', 560, 730, 28, SUB, 700, 'center', k3);
     bar(200, 760, 560, 34, L.bicubic_same, 100, RED, ease(prog(lt, cs(c, 3), cs(c, 3) + 1.5)), '일반 ' + f1(L.bicubic_same) + '%', k3, 26);
     bar(200, 810, 560, 34, L.max6_simplify.same, 100, GREEN, ease(prog(lt, cs(c, 3) + .5, cs(c, 3) + 2)), 'SVG ' + f1(L.max6_simplify.same) + '%', k3, 26);
-    const k4 = ap(lt, cs(c, 4)); text('색 수', 1360, 730, 28, SUB, 700, 'center', k4);
+    const k4 = ap(lt, cs(c, 4)); text('서로 다른 색 값 (미세한 중간색 포함)', 1360, 730, 28, SUB, 700, 'center', k4);
     text(L.bicubic_colors.toLocaleString('ko-KR') + '가지 → 6가지', 1360, 800, 52, GOLD, 900, 'center', k4);
     const k5 = ap(lt, cs(c, 5)); pill('한계: 글자 테두리에 연한 띠가 남은 곳', 1360, 880, 26, RED, k5);
     stamp('20배에도 또렷', 1640, 210, ap(lt, tz + 3.6, .5), GREEN, 40);

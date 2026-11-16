@@ -14,7 +14,7 @@ Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px
     pic('logo', 60, 160, 300, 300); pill('로고_작은.jpg · ' + kb(RES.logo.in_kb), 210, 500, 24, SUB);
     zoomPair('logo', 'logo_svg', { x: 420, y: 160, w: 1120, h: 560 }, .38, .74, 20, 300, 1, '일반 확대 (JPG)', 'VTracer SVG (색 6가지)');
     text('VTracer 변환 ' + f2(RES.logo.max6_simplify.sec) + '초 · 조각 ' + RES.logo.max6_simplify.paths + '개 · ' + kb(RES.logo.max6_simplify.kb), 980, 790, 32, GREEN, 900);
-    text('색 수: 일반 확대 ' + RES.logo.bicubic_colors.toLocaleString('ko-KR') + '가지 → SVG 6가지 · 1200px 원본과 같은 색인 점 ' + f1(RES.logo.bicubic_same) + '% / ' + f1(RES.logo.max6_simplify.same) + '%', 980, 850, 26, SUB, 700);
+    text('서로 다른 색 값(미세한 중간색 포함): 일반 확대 ' + RES.logo.bicubic_colors.toLocaleString('ko-KR') + '가지 → SVG 6가지 · 1200px 원본과 같은 색인 점 ' + f1(RES.logo.bicubic_same) + '% / ' + f1(RES.logo.max6_simplify.same) + '%', 980, 850, 26, SUB, 700);
     foot('2026-11-16 클라우드 시연 결과 · 직접 그린 가상 로고 · VTracer 1.0.0-alpha.4');
   }
   if (K === 'sign') {

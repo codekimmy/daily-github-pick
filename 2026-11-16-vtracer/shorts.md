@@ -22,7 +22,7 @@
 
 **고정 댓글** (업로드 후 댓글로 달고 '고정')
 ```
-Windows는 파이썬을 설치한 뒤 pip install vtracer==1.0.0a4 로 설치합니다. 판 번호를 빼면 옛 판이 설치되니 꼭 붙이시기 바랍니다. 로고는 max_colors=6, 서명은 clustering='bw', adaptive=True, 도트 그림은 mode='pixel' 설정을 씁니다. 그림을 끌어다 놓기만 하면 되는 배치 파일(SVG만들기.bat)은 전체 영상 설명란 링크에 올려 두었습니다!
+Windows는 파이썬을 설치한 뒤 pip install vtracer==1.0.0a4 로 설치합니다. 버전 번호를 빼면 옛 버전이 설치되니 꼭 붙이시기 바랍니다. 로고는 max_colors=6, 서명은 clustering='bw', adaptive=True, 도트 그림은 mode='pixel' 설정을 씁니다. 그림을 끌어다 놓기만 하면 되는 배치 파일(SVG만들기.bat)은 전체 영상 설명란 링크에 올려 두었습니다!
 ```
 
 **썸네일**: `media/thumbnail-shorts.jpg` (세로 1080×1920, 유튜브 앱에서 쇼츠 올릴 때 썸네일로 지정)

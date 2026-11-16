@@ -103,13 +103,13 @@ const DRAW_LONG = {
     text('크기를 바꿔도 설명서대로 다시 그림 → 늘 선명', 1400, 690, 34, INK, 800, 'center', ap(lt, cs(c, 3)));
     const k4 = ap(lt, cs(c, 4)); box(260, 750, 1400, 90, 45, 'rgba(88,166,255,.12)', BLUE, k4, 3);
     text('VTracer: 모자이크를 보고 조립 설명서를 받아 적는 프로그램', 960, 795, 36, BLUE, 900, 'center', k4);
-    text('visioncortex(홍콩) · MIT 라이선스 · ⭐ 7,536 · 최신 1.0.0-alpha.4 (시험판)', 960, 890, 28, SUB, 700, 'center', ap(lt, cs(c, 5)));
+    text('visioncortex(홍콩) · MIT 라이선스 · ⭐ 7,536 · 최신 1.0.0-alpha.4 (시험 버전)', 960, 890, 28, SUB, 700, 'center', ap(lt, cs(c, 5)));
   },
   install(c, lt) {
     const k0 = ap(lt, 0); card(160, 130, 760, 230, '방법 ① 공식 화면 프로그램', 'Windows App', BLUE, k0, 64);
     text('README의 Windows App 설치 파일 · 이번 시연에서는 실행하지 않음', 540, 400, 24, SUB, 700, 'center', k0);
     const k1 = ap(lt, cs(c, 1)); code([':: 방법 ② 파이썬 설치 → VTracer 설치', 'winget install -e --id Python.Python.3.12', 'pip install vtracer==1.0.0a4'], 1000, 130, 760, k1, 28);
-    const k2 = ap(lt, cs(c, 2)); box(1000, 360, 760, 70, 14, 'rgba(255,123,114,.10)', RED, k2, 2); text('==1.0.0a4 를 빼면 옛 판 0.6.15 설치', 1380, 395, 30, RED, 900, 'center', k2);
+    const k2 = ap(lt, cs(c, 2)); box(1000, 360, 760, 70, 14, 'rgba(255,123,114,.10)', RED, k2, 2); text('==1.0.0a4 를 빼면 옛 버전 0.6.15 설치', 1380, 395, 30, RED, 900, 'center', k2);
     [['설치 시간 (리눅스)', f2(RES.install.pip_sec) + '초', GREEN], ['내려받는 파일', '1.2MB', GOLD], ['함께 설치되는 프로그램', '없음', BLUE]].forEach((r, i) => card(160 + i * 540, 500, 500, 170, r[0], r[1], r[2], ap(lt, cs(c, 3) + i * .9)));
     const k4 = ap(lt, cs(c, 4)); box(160, 730, 1600, 100, 18, 'rgba(242,193,78,.10)', GOLD, k4, 2);
     text('Windows 설치는 공식 안내 기준 · Windows 실행 확인 전 (시연은 리눅스)', 960, 780, 34, GOLD, 800, 'center', k4);
@@ -166,7 +166,7 @@ const DRAW_LONG = {
   },
   cons(c, lt) {
     const k0 = ap(lt, 0); text('아쉬운 점', 960, 150, 56, INK, 900, 'center', k0);
-    const items = [['시험판', '1.0.0-alpha.4 · ==1.0.0a4 를 붙여야 1.0 설치', RED], ['사진은 커짐', '고양이 37.8KB → SVG 697KB (poster)', GOLD],
+    const items = [['시험 버전', '1.0.0-alpha.4 · ==1.0.0a4 를 붙여야 1.0 설치', RED], ['사진은 커짐', '고양이 37.8KB → SVG 697KB (poster)', GOLD],
       ['큰 사진 + poster', '4000px 사진 109초', BLUE], ['시연 범위', '화면 프로그램·Windows 실행은 시연하지 않음', SUB]];
     items.forEach((it, i) => { const k = ap(lt, cs(c, i + 1)), y = 240 + i * 160; box(200, y, 1520, 130, 20, CARD, it[2], k, 3);
       text((i + 1) + '. ' + it[0], 250, y + 65, 42, it[2], 900, 'left', k); text(it[1], 700, y + 65, fit(it[1], 34, 980), INK, 700, 'left', k); });

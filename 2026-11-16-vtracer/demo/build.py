@@ -39,7 +39,7 @@ def narration(name, title, video, chs, total, note):
     lines = [f"VTracer {title} 내레이션 대본", f"영상 파일: {video} (길이 {fmt(total)})", "",
              "■ 읽는 법",
              "- 대괄호 안 시간이 영상에서 그 문장이 나와야 하는 구간입니다",
-             "- 영어·숫자는 모두 읽는 소리대로 한글로 바꿨습니다 (예: VTracer → 브이트레이서, SVG → 에스브이지, JPG → 제이피지, 0.05초 → 영 쩜 영오 초)",
+             "- 영어·숫자는 모두 읽는 소리대로 한글로 바꿨습니다 (예: VTracer → 브이티레이서, SVG → 에스브이지, JPG → 제이피지, 0.05초 → 영 쩜 영오 초)",
              "- 한 줄에 한 문장, 마침표 없이 정리했습니다", note, "", "■ 구간별 대본", ""]
     text = []
     for c in chs:

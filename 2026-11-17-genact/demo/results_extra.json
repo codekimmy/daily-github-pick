@@ -1,0 +1,24 @@
+{
+ "mixed_30s": {
+  "cpu_sec_at_28s": 0.01,
+  "cpu_percent": 0.04,
+  "rss_mb_max": 6.3
+ },
+ "speed_10s_lines": {
+  "1": 27,
+  "5": 112,
+  "20": 399
+ },
+ "download_10s": {
+  "files_before": 0,
+  "files_after": 0,
+  "shown_max_MiB": 212.99,
+  "fake_names": [],
+  "ends_with": "7.25MiB/s   eta 0sSaving work to disk..."
+ },
+ "no_network_bytes_5s": 67598,
+ "pipe": {
+  "stdout_lines": 3,
+  "error": []
+ }
+}

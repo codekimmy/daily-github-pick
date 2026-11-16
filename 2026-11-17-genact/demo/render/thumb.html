@@ -1,0 +1,31 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<link rel="stylesheet" href="../../../tools/kit/kit.css"><script src="../../../tools/kit/kit.js"></script>
+<script src="timing.js"></script><script src="clips.js"></script><script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 썸네일: ?v=0 롱폼 1280×720 / ?v=1 숏폼 1080×1920 — 화면 속 터미널은 genact가 실제로 출력한 글자(clips.js)
+const V = new URLSearchParams(location.search).get('v') === '1', W = V ? 1080 : 1280, H = V ? 1920 : 720;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), document.fonts.load(`700 40px ${KIT.PIXEL_B}`)]).then(() => { draw(); READY = true; });
+function big(s, x, y, size, col) { ctx.save(); ctx.font = `700 ${size}px ${KIT.PIXEL_B}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = size * .16; ctx.strokeStyle = '#05070c'; ctx.strokeText(s, x, y); ctx.fillStyle = col; ctx.fillText(s, x, y); ctx.restore(); }
+function draw() {
+  KIT.bg(ctx, W, H);
+  if (!V) {
+    term('cc', 30, 40, 600, 420, 9, .75); term('download', 650, 40, 600, 420, 8, .75);
+    ctx.fillStyle = 'rgba(5,7,12,.55)'; ctx.fillRect(0, 0, W, H);
+    big('바쁜 척 화면', 640, 420, 120, '#f5c542');
+    big('213MB 받는 척 → 파일 0개', 640, 560, 66, '#ffffff');
+    big('genact', 640, 660, 52, '#7ee787');
+  } else {
+    term('cc', 40, 300, 1000, 640, 9, .8); term('cryptomining', 40, 960, 1000, 640, 8, .8);
+    ctx.fillStyle = 'rgba(5,7,12,.72)'; ctx.fillRect(0, 0, W, H);
+    big('이 화면, 사실', 540, 700, 120, '#ffffff');
+    big('아무 일도 안 함', 540, 860, 120, '#f5c542');
+    KIT.stamp(ctx, '파일 0개 · CPU 0.04%', 540, 1100, 1, '#ff7b72', 64);
+    big('genact', 540, 1400, 110, '#7ee787');
+  }
+}
+</script></body></html>

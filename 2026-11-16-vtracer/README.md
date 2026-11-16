@@ -121,7 +121,7 @@ start msedge 로고.svg
 |---|---|
 | `blog.md` · `youtube-long.md` · `shorts.md` | 티스토리 글 · 롱폼 대본 · 숏폼 대본 |
 | `narration-long.txt` · `narration-shorts.txt` (+ `-text.txt`) | 음성용 대본 (구간 시간 + 한글 읽기 / 문장만) |
-| `media/vtracer-long.mp4` | 롱폼 5:14 (1920×1080, 자막, 음성 없음 — 운영자 음성을 받으면 음성·배경음악 버전을 만듦) |
-| `media/vtracer-anim.mp4` · `media/vtracer-anim-vertical.mp4` · `media/vtracer-anim.gif` | 과정 애니메이션 49.8초 (가로·세로(숏폼용)·README용 GIF, 음성 없음) |
+| `media/vtracer-long.mp4` | 롱폼 5:15 (1920×1080, 자막, 음성 없음 — 운영자 음성을 받으면 음성·배경음악 버전을 만듦) |
+| `media/vtracer-anim.mp4` · `media/vtracer-anim-vertical.mp4` · `media/vtracer-anim.gif` | 과정 애니메이션 50.9초 (가로·세로(숏폼용)·README용 GIF, 음성 없음) |
 | `media/terminal.gif` · `media/로고확대비교.png` · `media/서명비교.png` · `media/도트비교.png` · `media/사진비교.png` · `media/thumbnail.jpg` · `media/thumbnail-shorts.jpg` | 터미널 녹화 · 결과 그림 · 썸네일 |
 | `demo/` | 시연 그림 만들기·측정 스크립트·Windows 배치 파일·영상 만드는 코드 (`demo/README.md`) |

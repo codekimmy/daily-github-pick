@@ -1,7 +1,7 @@
 """VTracer 시연 측정 → results.json, out/*.svg, out/*.png (다시 그린 그림, 저장소에는 빼 둠)
 - 시간: 같은 변환을 3번 해서 가운데 값
 - 같은 색 비율: SVG를 원래 크기로 다시 그린 뒤, 정답 그림과 색 차이(RGB 거리)가 40 이하인 점의 비율
-- 획 일치(IoU): 서명에서 검게 그린 자리와 정답 획 자리가 겹치는 정도 (100%면 똑같음)
+- 원래 획과 겹친 정도(IoU): 서명에서 검게 그린 자리와 원래 획(서명_정답.png, 그림자를 넣기 전 획) 자리가 겹치는 정도 (100%면 똑같음)
 사용: python3 demo/test_all.py"""
 import json, os, re, statistics, time
 import numpy as np, resvg_py, vtracer

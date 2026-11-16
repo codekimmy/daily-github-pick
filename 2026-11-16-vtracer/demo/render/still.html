@@ -20,10 +20,10 @@ Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px
   if (K === 'sign') {
     text('휴대폰으로 찍은 서명 → 흑백 SVG (VTracer)', W / 2, 60, 40, INK, 900);
     const w = 720, h = 360; pic('sign', 60, 150, w, h); pill('입력: 그림자 진 서명 사진 (가상)', 60 + w / 2, 120, 24, SUB);
-    pic('sign_bw', 820, 150, w, h); box(820, 150, w, h, 0, null, RED, 1, 4); pill('--preset bw · 조각 ' + RES.sign.bw.paths + '개 · 정답 획과 겹침 ' + f1(RES.sign.bw.iou) + '%', 820 + w / 2, 120, 24, RED);
-    pic('sign_ad', 820, 580, w, h); box(820, 580, w, h, 0, null, GREEN, 1, 4); pill('--adaptive · 조각 ' + RES.sign.adaptive.paths + '개 · 정답 획과 겹침 ' + f1(RES.sign.adaptive.iou) + '%', 820 + w / 2, 550, 24, GREEN);
+    pic('sign_bw', 820, 150, w, h); box(820, 150, w, h, 0, null, RED, 1, 4); pill('--preset bw · 조각 ' + RES.sign.bw.paths + '개 · 원래 획과 겹침 ' + f1(RES.sign.bw.iou) + '%', 820 + w / 2, 120, 24, RED);
+    pic('sign_ad', 820, 580, w, h); box(820, 580, w, h, 0, null, GREEN, 1, 4); pill('--adaptive · 조각 ' + RES.sign.adaptive.paths + '개 · 원래 획과 겹침 ' + f1(RES.sign.adaptive.iou) + '%', 820 + w / 2, 550, 24, GREEN);
     para('기본 흑백 설정은 오른쪽 그림자까지 검게 칠했고, 밝기 맞춤(--adaptive)은 그림자를 빼고 획만 남겼습니다. 결과 SVG는 배경이 투명합니다.', 80, 620, 660, 30, INK, 700);
-    text('변환 ' + f2(RES.sign.adaptive.sec) + '초 · ' + kb(RES.sign.adaptive.kb), 420, 860, 34, GREEN, 900);
+    text('원래 획 = 그림자·잡티를 넣기 전, 시연용으로 직접 그린 서명 획 그림', 420, 920, 22, SUB, 600, 'center'); text('변환 ' + f2(RES.sign.adaptive.sec) + '초 · ' + kb(RES.sign.adaptive.kb), 420, 860, 34, GREEN, 900);
     foot('2026-11-16 클라우드 시연 결과 · 직접 그린 가상 서명 · VTracer 1.0.0-alpha.4');
   }
   if (K === 'dot') {

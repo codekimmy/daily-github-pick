@@ -142,7 +142,7 @@ const DRAW_LONG = {
     stamp('20배에도 또렷', 1640, 210, ap(lt, tz + 3.6, .5), GREEN, 40);
   },
   demo2(c, lt) { sceneSign(c, lt, { x: 260, y: 160, w: 1600, h: 700 }, cs(c, 1), cs(c, 2));
-    const k3 = ap(lt, cs(c, 3)), y = 600; text('정답 획과 겹친 정도', 580, y, 30, SUB, 800, 'center', k3);
+    const k3 = ap(lt, cs(c, 3)), y = 600; text('원래 획과 겹친 정도', 580, y, 30, SUB, 800, 'center', k3); text('원래 획 = 그림자를 넣기 전 직접 그린 서명', 580, y + 165, 22, SUB, 600, 'center', k3);
     bar(280, y + 40, 520, 40, SG.bw.iou, 100, RED, ease(prog(lt, cs(c, 3), cs(c, 3) + 1.5)), f1(SG.bw.iou) + '%', k3);
     bar(280, y + 100, 520, 40, SG.adaptive.iou, 100, GREEN, ease(prog(lt, cs(c, 3) + .6, cs(c, 3) + 2.1)), f1(SG.adaptive.iou) + '%', k3);
     const k4 = ap(lt, cs(c, 4)); stamp('배경 투명 · 조각 3개', 580, 830, k4, GREEN, 38); },
@@ -197,7 +197,7 @@ function DRAW_ANIM(c, lt, W, H) {
     pill('×' + z.toFixed(1), cx, y + s - 50, v ? 40 : 32, GOLD, ap(lt, 1)); stamp('흐릿', cx + s / 2 - 80, y + 90, ap(lt, 4.6, .5), RED, v ? 60 : 50); }
   if (c.id === 's_logo') sceneLogo(c, lt, R, .8, cs(c, 1), { dy: v ? 120 : 40 });
   if (c.id === 's_sign') { sceneSign(c, lt, { x: R.x, y: R.y + (v ? 60 : 40), w: R.w, h: R.h }, .8, 2.4);
-    const k = ap(lt, cs(c, 1)), y = v ? R.y + 1250 : R.y + 640; stamp('겹친 정도 ' + f1(SG.bw.iou) + '% → ' + f1(SG.adaptive.iou) + '%', v ? cx : R.x + 380, y, k, GREEN, v ? 46 : 38); }
+    const k = ap(lt, cs(c, 1)), y = v ? R.y + 1250 : R.y + 640; stamp('원래 획과 겹침 ' + f1(SG.bw.iou) + '% → ' + f1(SG.adaptive.iou) + '%', v ? cx : R.x + 380, y, k, GREEN, v ? 46 : 38); }
   if (c.id === 's_dot') { const s = v ? 860 : 620; sceneDot(c, lt, { x: R.x, y: R.y + (v ? 100 : 30), w: R.w, h: R.h }, 1.2, 3.2, s);
     if (!v) { card(R.x + 800, R.y + 120, 620, 190, '기본(곡선) 모드', '칸이 녹음', RED, ap(lt, 1.2), 52); card(R.x + 800, R.y + 360, 620, 190, '-m pixel', '칸 모양 그대로', GREEN, ap(lt, 3.2), 52); } }
   if (c.id === 's_end') { const a = ap(lt, 0); text('SVG 파일 크기 (원본 사진 ' + kb(CT.in_kb) + ')', cx, R.y + 30, v ? 42 : 36, SUB, 800, 'center', a);

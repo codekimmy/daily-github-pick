@@ -4,7 +4,7 @@
 thumbnail.jpg → 가상 카페 로고 JPG와 VTracer SVG를 7배로 키워 나란히 놓고 '작은 로고도 크게 키워도 또렷하게 · 로고 0.06초' 문구를 넣은 썸네일
 vtracer-anim.gif → VTracer 과정 애니메이션: 240px 로고 확대 시 흐릿 → SVG 변환 0.06초 후 20배에도 또렷 → 서명 사진에서 획만 남김(60.5%→82.6%) → 도트 그림 칸 모양 유지 순 화면
 로고확대비교.png → 가상 카페 로고 240px JPG와 VTracer SVG를 20배로 키워 나란히 비교한 결과 그림, 일반 확대는 흐릿하고 SVG는 테두리가 또렷하며 변환 0.06초·색 6가지 표시
-서명비교.png → 그림자 진 가상 서명 사진을 VTracer로 바꾼 결과 그림, 흑백 기본 설정은 그림자까지 검게(겹친 정도 60.5%), 밝기 맞춤 설정은 획만 남김(82.6%, 조각 3개)
+서명비교.png → 그림자 진 가상 서명 사진을 VTracer로 바꾼 결과 그림, 흑백 기본 설정은 그림자까지 검게(원래 획과 겹침 60.5%), 밝기 맞춤 설정은 획만 남김(82.6%, 조각 3개)
 도트비교.png → 24×24 가상 도트 화분을 480px로 키워 비교한 결과 그림, 원본 일반 확대는 흐릿, VTracer 곡선 모드는 칸이 녹고, pixel 모드는 칸 모양 그대로(2.5KB)
 사진비교.png → CC0 고양이 사진을 VTracer 설정 4가지로 바꾼 결과 그림, poster 697KB·같은 색 98.3%, max_colors=8 543.7KB, photo 조각 106개, watershed 조각 23개 비교
 terminal.gif → 명령 창에서 VTracer 1.0.0-alpha.4 확인 → 로고 JPG 8.3KB를 SVG 46.3KB로 → 서명 흑백 기본 조각 39개, 밝기 맞춤 3개 → 도트 pixel 모드 순 터미널 화면
@@ -70,13 +70,13 @@ VTracer는 **모자이크 그림을 보고 '조립 설명서'를 받아 적는 �
 
 **② 휴대폰으로 찍은 서명.** 종이에 쓴 가상 서명을 휴대폰으로 찍은 것처럼 오른쪽이 그림자로 어두운 사진입니다. 흑백 기본 설정은 **그림자까지 검게** 칠했고, 밝기 맞춤(`--adaptive`)을 더하자 **획만 남았습니다**. 결과 SVG는 배경이 투명해 문서 위에 바로 올릴 수 있습니다.
 
-[이미지: 서명비교.png | 대체 텍스트: 그림자 진 가상 서명 사진을 VTracer로 바꾼 결과 그림, 흑백 기본 설정은 그림자까지 검게(겹친 정도 60.5%), 밝기 맞춤 설정은 획만 남김(82.6%, 조각 3개)]
+[이미지: 서명비교.png | 대체 텍스트: 그림자 진 가상 서명 사진을 VTracer로 바꾼 결과 그림, 흑백 기본 설정은 그림자까지 검게(원래 획과 겹침 60.5%), 밝기 맞춤 설정은 획만 남김(82.6%, 조각 3개)]
 
-> **표 읽는 법** — '겹친 정도'는 검게 그린 자리와 정답 획 자리가 겹치는 비율입니다. 100%면 정답과 똑같고, 그림자를 검게 칠하면 정답에 없는 자리가 늘어 값이 내려갑니다.
+> **표 읽는 법** — 시연용 서명 사진은 먼저 깨끗한 서명 획 그림(**원래 획**)을 직접 그린 뒤, 그 위에 종이 색·그림자·잡티를 입혀 만들었습니다. '원래 획과 겹친 정도'는 VTracer가 검게 칠한 자리가 이 원래 획 자리와 얼마나 일치하는지를 나타냅니다. 100%면 원래 획과 똑같고, 그림자까지 검게 칠하면 원래 획에 없는 자리가 늘어 값이 내려갑니다.
 
 <table style="border-collapse: collapse; width: 100%; border: 1px solid #bbbbbb;" border="1" data-ke-align="alignLeft">
 <thead>
-<tr><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">설정</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">걸린 시간</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">조각(도형) 수</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">파일</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">정답 획과 겹친 정도</th></tr>
+<tr><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">설정</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">걸린 시간</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">조각(도형) 수</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">파일</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">원래 획과 겹친 정도</th></tr>
 </thead>
 <tbody>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">색 그림 기본 설정</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">4.06초</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">1,829개</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">1,000KB</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">59.9%</td></tr>

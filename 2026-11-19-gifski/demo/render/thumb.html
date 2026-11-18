@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<link rel="stylesheet" href="../../../tools/kit/kit.css"><script src="../../../tools/kit/kit.js"></script>
+<script src="timing.js"></script><script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 썸네일: ?v=0 롱폼 1280×720 / ?v=1 숏폼 1080×1920 — 그림은 실제 변환 결과 GIF의 50번째 장면(img/)
+const V = new URLSearchParams(location.search).get('v') === '1', W = V ? 1080 : 1280, H = V ? 1920 : 720;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), IMG_READY]).then(() => { draw(); READY = true; });
+function big(s, x, y, size, col) { ctx.save(); ctx.font = `900 ${size}px ${F}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = size * .16; ctx.strokeStyle = '#05070c'; ctx.strokeText(s, x, y); ctx.fillStyle = col; ctx.fillText(s, x, y); ctx.restore(); }
+function draw() {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  if (!V) {
+    zoomBox('sunset_ffmpeg_basic', 30, 30, 600, 400, .5, .28, 3.5); zoomBox('sunset_gifski_q90', 650, 30, 600, 400, .5, .28, 3.5);
+    pill('흔한 변환 ' + MB(S.ffmpeg_basic.kb), 330, 70, 30, RED); pill('gifski ' + MB(S.gifski_q90.kb), 950, 70, 30, GREEN);
+    big('움짤 용량 1/4', 640, 520, 110, '#f5c542');
+    big('점무늬 없는 GIF', 640, 640, 64, '#ffffff');
+    big('gifski', 1150, 670, 44, '#7ee787');
+  } else {
+    zoomBox('sunset_ffmpeg_basic', 90, 300, 900, 600, .5, .28, 3); zoomBox('sunset_gifski_q90', 90, 960, 900, 600, .5, .28, 3);
+    pill('흔한 변환 ' + MB(S.ffmpeg_basic.kb), 540, 350, 40, RED); pill('gifski ' + MB(S.gifski_q90.kb), 540, 1010, 40, GREEN);
+    big('같은 영상', 540, 820, 110, '#ffffff'); big('용량 1/4', 540, 1450, 140, '#f5c542');
+    big('gifski', 540, 1620, 90, '#7ee787');
+  }
+}
+</script></body></html>

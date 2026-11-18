@@ -27,3 +27,4 @@
 | 20 | 2026-11-15 | [ocrmypdf/OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) | 스캔한 PDF에 투명 글자를 덮어 Ctrl+F로 찾을 수 있게 해 주는 무료 '투명 글자 필름' | 문서·PDF | ★★★½☆ | 약 3.5만 | [바로가기](2026-11-15-ocrmypdf/) |
 | 21 | 2026-11-16 | [visioncortex/vtracer](https://github.com/visioncortex/vtracer) | 점 그림(JPG·PNG)을 확대해도 깨지지 않는 SVG로 받아 적어 주는 무료 '조립 설명서 받아쓰기' | 그림·디자인 | ★★★☆☆ | 약 7,500 | [바로가기](2026-11-16-vtracer/) |
 | 22 | 2026-11-17 | [svenstaro/genact](https://github.com/svenstaro/genact) | 명령 창에 빌드·내려받기·해킹하는 척 글자만 흘려보내는 무료 '명령 창 영화 세트' (실제 작업 없음) | 호기심·재미 | ★★½☆☆ | 약 1.2만 | [바로가기](2026-11-17-genact/) |
+| 23 | 2026-11-19 | [ImageOptim/gifski](https://github.com/ImageOptim/gifski) | 장면마다 색을 새로 골라 영상을 작고 선명한 GIF 움짤로 바꿔 주는 무료 '크레파스 고르기 화가' | 영상·이미지 | ★★★½☆ | 약 5,700 | [바로가기](2026-11-19-gifski/) |

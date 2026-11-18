@@ -25,7 +25,7 @@
 |  | Schroedinger-Hat/ImageGoNord | 사진 색감을 테마 팔레트로 | 이탈리아 | 936 | pip `image-go-nord` | 0.9초 | 바탕화면 색 통일 | ★3 |
 |  | li-plus/seam-carving | 사물은 그대로 두고 사진 비율만 줄이기 | 중국 | 119 | pip `seam-carving` | 800→500px 23초 | 사진 가운데만 쏙 | ★3 |
 |  | lovell/sharp (sharp-cli) | 사진 용량 줄이기·WebP 변환 | 영국 | 3.3만 | npm `sharp-cli` | 0.29초, 21.7KB→1.9KB | 용량 10분의 1 | ★3 |
-|  | ImageOptim/gifski | 영상·사진을 고화질 GIF로 | 영국 | 5.7천 | crates `gifski` | 빌드 100초, 변환 0.4~0.8초 | GIF가 이렇게 선명? | ★4 |
+| ✅ Day 23 | ImageOptim/gifski | 영상·사진을 고화질 GIF로 | 영국 | 5.7천 | crates `gifski` | 빌드 100초, 변환 0.4~0.8초 (11/19 재확인: 1.34.0, 빌드 39초, cargo 기본 설치는 mp4 직접 못 읽음 → `ffmpeg -f yuv4mpegpipe - \| gifski -o x.gif -`, 노을 5초 영상 ffmpeg 기본 5.2MB·팔레트 3.1MB·gifski 1.4MB(SSIM 0.954 최고), 커피잔 사진 영상 팔레트 9.9MB→gifski 5.6MB(SSIM은 0.947>0.894), 화면 녹화는 팔레트 58KB<gifski 98KB, -W 320 -r 10 -Q 70 → 0.95MB, Windows는 winget ImageOptim.gifski 화면 프로그램 1.14.4) | GIF가 이렇게 선명? | ★4 |
 |  | cedricbonhomme/Stegano | 사진 속에 비밀 글 숨기기 | 룩셈부르크 | 594 | pip `stegano` | 0.4초. 한글은 `-e UTF-32LE` 필요 | 이 사진엔 편지가 숨어 있다 | ★3 |
 |  | sepandhaghighi/samila | 수학 공식으로 추상화 그리기 | 이란 | 1.2천 | pip `samila` | 6~12초 | 시드 하나가 세상에 하나뿐인 그림 | ★3 |
 |  | oxipng/oxipng · sharkdp/pastel | PNG 무손실 압축 · 색 섞기 계산기 | 커뮤니티·독일 | 4.3천·6.5천 | crates | 성공 | 단독으로는 약함 | ★2 |

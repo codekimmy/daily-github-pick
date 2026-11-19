@@ -1,0 +1,32 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<link rel="stylesheet" href="../../../tools/kit/kit.css"><script src="../../../tools/kit/kit.js"></script>
+<script src="timing.js"></script><script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 썸네일: ?v=0 롱폼 1280×720 / ?v=1 숏폼 1080×1920 — 글은 시연용 가상 비밀 일기를 rage로 잠근 화면(lockDoc 연출), 숫자는 시연 측정값
+const V = new URLSearchParams(location.search).get('v') === '1', W = V ? 1080 : 1280, H = V ? 1920 : 720;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), IMG_READY]).then(() => { draw(); READY = true; });
+function big(s, x, y, size, col) { ctx.save(); ctx.font = `900 ${size}px ${F}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = size * .16; ctx.strokeStyle = '#05070c'; ctx.strokeText(s, x, y); ctx.fillStyle = col; ctx.fillText(s, x, y); ctx.restore(); }
+function draw() {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  if (!V) {
+    doc(40, 40, 560, 330, 'diary.txt', R0.diary_lines.map(l => l.slice(0, 22)), 0, 1, BLUE, 24);
+    doc(680, 40, 560, 330, 'diary.txt.age', R0.diary_lines.map(l => l.slice(0, 22)), 1, 1, GOLD, 24);
+    padlock(1130, 250, 130, 1, GOLD, 1); big('→', 640, 205, 60, '#ffffff');
+    big('파일에 자물쇠', 640, 470, 104, '#f5c542');
+    big("'비밀번호' 3줄 → 0줄", 640, 590, 60, '#ffffff');
+    big('rage', 1150, 670, 50, '#7ee787');
+  } else {
+    doc(90, 300, 900, 420, 'diary.txt', R0.diary_lines.map(l => l.slice(0, 24)), 0, 1, BLUE, 34);
+    doc(90, 860, 900, 420, 'diary.txt.age', R0.diary_lines.map(l => l.slice(0, 24)), 1, 1, GOLD, 34);
+    padlock(820, 1120, 200, 1, GOLD, 1);
+    big('파일에 자물쇠', 540, 790, 120, '#f5c542');
+    big("'비밀번호' 0줄", 540, 1430, 110, '#ffffff');
+    big('rage', 540, 1600, 100, '#7ee787');
+  }
+}
+</script></body></html>

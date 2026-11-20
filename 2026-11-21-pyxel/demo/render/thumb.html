@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<link rel="stylesheet" href="../../../tools/kit/kit.css"><script src="../../../tools/kit/kit.js"></script>
+<script src="timing.js"></script><script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// 썸네일: ?v=0 롱폼 1280×720 / ?v=1 숏폼 1080×1920 — 시연용 '별 줍기' 게임 실제 실행 화면(handheld 연출) + 시연 측정값
+const V = new URLSearchParams(location.search).get('v') === '1', W = V ? 1080 : 1280, H = V ? 1920 : 720;
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`), document.fonts.load(`700 40px ${KIT.PIXEL_B}`), IMG_READY]).then(() => { draw(); READY = true; });
+function big(s, x, y, size, col, font = F, w = 900) { ctx.save(); ctx.font = `${w} ${size}px ${font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = size * .16; ctx.strokeStyle = '#05070c'; ctx.strokeText(s, x, y); ctx.fillStyle = col; ctx.fillText(s, x, y); ctx.restore(); }
+function draw() {
+  KIT.bg(ctx, W, H);
+  if (!V) {
+    handheld(40, 40, 520, 8.3);
+    big('파이썬 40줄로', 910, 170, 84, '#ffffff');
+    big('게임 완성', 910, 290, 110, '#f5c542');
+    pal16(690, 375, 40, 1, 1, false); big('자동 작곡', 1010, 410, 56, '#7ee787'); big('0.02초', 1010, 490, 56, '#7ee787');
+    big('Pyxel', 910, 650, 80, '#f5c542', KIT.PIXEL_B, 700);
+  } else {
+    handheld(90, 330, 900, 8.3);
+    big('파이썬 40줄로', 540, 1300, 110, '#ffffff');
+    big('게임 완성', 540, 1450, 140, '#f5c542');
+    big('Pyxel', 540, 1610, 110, '#7ee787', KIT.PIXEL_B, 700);
+  }
+}
+</script></body></html>

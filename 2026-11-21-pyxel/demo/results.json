@@ -1,0 +1,136 @@
+{
+ "date": "2026-11-21",
+ "env": "클라우드 리눅스 · CPU 2개 · 그래픽카드 없음 · 가상 화면(Xvfb)",
+ "install_sec": 1.1,
+ "install_ok": true,
+ "version": "3.0.3",
+ "installed_mb": 27.2,
+ "deps": [],
+ "python_req": ">=3.11 (PyPI)",
+ "license": "MIT",
+ "wheel_mb_win64": 9.2,
+ "star": {
+  "frames": 360,
+  "sec": 12.0,
+  "fps": 30.0,
+  "cpu_sec": 4.85,
+  "max_rss_mb": 457.6,
+  "state": {
+   "x": 54,
+   "score": 11,
+   "miss": 5
+  },
+  "gif_kb": 347
+ },
+ "star_nofont": {
+  "frames": 360,
+  "sec": 12.001,
+  "fps": 30.0,
+  "cpu_sec": 3.54,
+  "max_rss_mb": 140.5,
+  "state": {
+   "x": 54,
+   "score": 11,
+   "miss": 5
+  },
+  "gif_kb": 348
+ },
+ "star_lines_total": 49,
+ "star_lines_code": 40,
+ "korean": {
+  "builtin": "한글이 빈칸으로 나옴(영어만 보임)",
+  "ttf": "Font(글꼴 파일, 12) 지정 시 한글 보임"
+ },
+ "bgm": [
+  {
+   "preset": 0,
+   "name": "타이틀",
+   "channels": 4,
+   "gen_sec": 0.0003,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 767
+  },
+  {
+   "preset": 1,
+   "name": "출발",
+   "channels": 4,
+   "gen_sec": 0.0008,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 750
+  },
+  {
+   "preset": 2,
+   "name": "마을",
+   "channels": 4,
+   "gen_sec": 0.0062,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 555
+  },
+  {
+   "preset": 3,
+   "name": "평화",
+   "channels": 4,
+   "gen_sec": 0.0157,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 631
+  },
+  {
+   "preset": 4,
+   "name": "들판",
+   "channels": 4,
+   "gen_sec": 0.0003,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 546
+  },
+  {
+   "preset": 5,
+   "name": "모험",
+   "channels": 4,
+   "gen_sec": 0.0011,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 759
+  },
+  {
+   "preset": 6,
+   "name": "전투",
+   "channels": 4,
+   "gen_sec": 0.0003,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 1018
+  },
+  {
+   "preset": 7,
+   "name": "위기",
+   "channels": 4,
+   "gen_sec": 0.0003,
+   "save_sec": 0.01,
+   "wav_sec": 20.0,
+   "mml_chars": 1196
+  }
+ ],
+ "package": {
+  "pyxapp_kb": 1.5,
+  "sec": 0.08,
+  "html_kb": 2.2,
+  "html_sec": 0.08,
+  "html_needs": "kitao.dev 의 pyxel.js(인터넷 연결 필요)"
+ },
+ "examples_py": 20,
+ "examples_cube": 6,
+ "examples_apps": [
+  "30sec_of_daylight.pyxapp",
+  "cursed_caverns.pyxapp",
+  "laser-jetman.pyxapp",
+  "mega_wing.pyxapp",
+  "megaball.pyxapp",
+  "space_rescue.pyxapp",
+  "vortexion.pyxapp"
+ ]
+}

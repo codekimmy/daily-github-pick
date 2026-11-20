@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0d1117}canvas{display:block}</style>
+<script src="engine.js"></script></head><body><canvas id="c"></canvas>
+<script>
+// 썸네일 (직접 만든 사양 카드, 숫자는 공식 README·Mac 문서). ?kind=long → 1280×720, ?kind=shorts → 1080×1920 (글자는 위아래 250px 안쪽)
+const K = new URLSearchParams(location.search).get('kind') || 'long', V = K === 'shorts';
+const W = V ? 1080 : 1280, H = V ? 1920 : 720, cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+document.fonts.load(`900 40px ${F}`).then(() => {
+  ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+  const R = [['GPU 메모리', '3.65GiB~', GREEN, '최소 모드 측정'], ['RAM', '14GiB', GOLD, '같은 측정'], ['모델 파일', '약 25GB', BLUE, 'Mac 문서']];
+  if (!V) {
+    pill('사양 체크', 150, 70, 30, GOLD); text('MOSS-Image', 70, 185, 110, INK, 900, 'left');
+    text('내 PC로 돌아갈까?', 70, 320, 84, GOLD, 900, 'left');
+    gpu(930, 120, 280, 140, '', 1);
+    R.forEach((r, i) => { const x = 70 + i * 390; box(x, 430, 360, 210, 20, CARD, r[2], 1, 4); text(r[0], x + 180, 480, 32, SUB, 800); text(r[1], x + 180, 555, fit(r[1], 62, 330, 900), r[2], 900); text(r[3], x + 180, 610, 22, '#6e7681', 600); });
+    text('공식 자료 기준 · 직접 실행하지 않음', 1210, 690, 22, '#6e7681', 600, 'right');
+  } else {
+    pill('사양 체크', W / 2, 330, 40, GOLD); text('MOSS-Image', W / 2, 490, 130, INK, 900);
+    text('그림 AI, 내 PC로', W / 2, 680, 92, INK, 900); text('돌아갈까?', W / 2, 800, 110, GOLD, 900);
+    R.forEach((r, i) => { const y = 950 + i * 200; box(90, y, W - 180, 170, 24, CARD, r[2], 1, 4); text(r[0], 140, y + 60, 40, SUB, 800, 'left'); text(r[3], 140, y + 120, 28, '#6e7681', 600, 'left'); text(r[1], W - 140, y + 85, 70, r[2], 900, 'right'); });
+    text('공식 자료 기준 · 직접 실행하지 않음', W / 2, 1620, 34, SUB, 700);
+  }
+  READY = true;
+});
+</script></body></html>

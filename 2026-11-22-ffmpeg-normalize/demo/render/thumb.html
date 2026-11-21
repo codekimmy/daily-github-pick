@@ -1,0 +1,42 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<link rel="stylesheet" href="../../../tools/kit/kit.css"><script src="../../../tools/kit/kit.js"></script>
+<script src="timing.js"></script><script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// ?s=thumb (1280×720) | thumbv (1080×1920) | ba (전·후 막대 1600×900) | pk (귀 기준 vs 최고점 파형 1600×900) — 모두 시연 측정값(data.js)
+const S = new URLSearchParams(location.search).get('s') || 'thumb';
+const SZ = { thumb: [1280, 720], thumbv: [1080, 1920], ba: [1600, 900], pk: [1600, 900] }[S], W = SZ[0], H = SZ[1];
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`)]).then(() => { draw(); READY = true; });
+function big(s, x, y, size, col, font = F, w = 900) { ctx.save(); ctx.font = `${w} ${size}px ${font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = size * .16; ctx.strokeStyle = '#05070c'; ctx.strokeText(s, x, y); ctx.fillStyle = col; ctx.fillText(s, x, y); ctx.restore(); }
+function draw() {
+  KIT.bg(ctx, W, H);
+  if (S === 'thumb') {
+    meters(80, 120, 260, 420, BEF, 1, { names: false, scale: false, gap: 14, fs: 22 }); big('→', 400, 330, 70, INK);
+    meters(470, 120, 260, 420, AFT, 1, { names: false, scale: false, gap: 14, fs: 22, target: -23, tpos: 'none' });
+    big('볼륨 제각각', 1010, 170, 86, '#ffffff'); big('→ 2초 만에', 1010, 290, 86, GOLD); big('같은 크기로', 1010, 410, 86, GOLD);
+    big('차이 32.0 → 0.4', 1010, 530, 52, GREEN); big('ffmpeg-normalize', 640, 650, 64, GOLD, MONO, 700);
+  } else if (S === 'thumbv') {
+    big('볼륨 제각각', 540, 330, 110, '#ffffff'); big('→ 2초 만에 통일', 540, 470, 100, GOLD);
+    meters(130, 640, 380, 620, BEF, 1, { names: false, scale: false, gap: 18, fs: 30 }); big('→', 540, 950, 70, INK);
+    meters(570, 640, 380, 620, AFT, 1, { names: false, scale: false, gap: 18, fs: 30, target: -23, tpos: 'none' });
+    big('차이 32.0 → 0.4', 540, 1420, 70, GREEN); big('ffmpeg-normalize', 540, 1560, 76, GOLD, MONO, 700);
+  } else if (S === 'ba') {
+    text('ffmpeg-normalize 시연: 가상 녹음 4개의 소리 크기 (LUFS, 0에 가까울수록 큼)', 800, 50, 34, INK, 900);
+    text('맞추기 전', 420, 120, 40, RED, 900); text('맞춘 뒤 (기본 목표 -23 LUFS, 2.35초)', 1180, 120, 40, GREEN, 900);
+    meters(140, 200, 600, 560, BEF, 1, { fs: 30, gap: 30 }); meters(900, 200, 600, 560, AFT, 1, { fs: 30, gap: 30, target: -23, tpos: 'none' });
+    text('가장 큰 − 가장 작은 = 32.0', 420, 860, 30, RED, 800); text('가장 큰 − 가장 작은 = 0.4', 1180, 860, 30, GREEN, 800);
+    text('2026-11-22 클라우드 시연 결과', 1580, 20, 18, SUB, 500, 'right');
+  } else {
+    text('같은 4개를 두 방식으로 맞춘 파형 (막대 높이 = 순간 크기)', 800, 50, 34, INK, 900);
+    text('귀 기준 (기본값 -nt ebu)', 420, 120, 36, GREEN, 900); text('최고점 기준 (-nt peak -t 0)', 1200, 120, 36, GOLD, 900);
+    R0.wave_after.forEach((w, i) => { wv(w, 170, 170 + i * 165, 500, 120, 1, FCOL[i], ''); text(FNAME[i], 160, 230 + i * 165 - 70, 24, FCOL[i], 800, 'left'); text(f1(AFT[i]) + ' LUFS', 690, 230 + i * 165, 28, INK, 900, 'left'); });
+    R0.wave_peak.forEach((w, i) => { wv(w, 900, 170 + i * 165, 480, 120, 1, FCOL[i], ''); text(f1(PK[i]) + ' LUFS', 1400, 230 + i * 165, 28, PK[i] > -12 ? RED : INK, 900, 'left'); });
+    text('귀 기준 크기 차이 0.4', 420, 850, 32, GREEN, 900); text('귀 기준 크기 차이 9.3', 1200, 850, 32, RED, 900);
+    text('2026-11-22 클라우드 시연 결과', 1580, 885, 18, SUB, 500, 'right');
+  }
+}
+</script></body></html>

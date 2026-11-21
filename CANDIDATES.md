@@ -40,7 +40,7 @@
 |  | lagmoellertim/unsilence | 무음 구간 자르기·빨리 감기 | 독일 | 600 | pip `unsilence` (+`setuptools<80`) | 15.0→10.7초 | 강의 몰아보기 | ★4 |
 |  | spotify/pedalboard | 소리에 리버브·피치·코러스 | 스웨덴 Spotify | 6.4천 | pip `pedalboard` | 0.55초 | Spotify 이펙터 공짜로 | ★3 |
 |  | sergree/matchering | 좋아하는 곡 기준으로 자동 마스터링 | 개인 | 2.7천 | pip `matchering` | -32.4→-21.1 LUFS | 내 곡을 프로 곡처럼 | ★3 |
-|  | slhck/ffmpeg-normalize | 여러 파일 소리 크기 맞추기 | 독일 | 1.5천 | pip `ffmpeg-normalize` | -21.8→-23.0 LUFS | 볼륨 들쭉날쭉 해결 | ★3 |
+| ✅ Day 27 | slhck/ffmpeg-normalize | 여러 파일 소리 크기 맞추기 | 독일 | 1.5천 | pip `ffmpeg-normalize` | -21.8→-23.0 LUFS (11/22 재확인: 1.45.2, 설치 2.5초·함께 설치되는 프로그램 8개, 가상 녹음 4개 -42.1~-10.1 → -22.7~-23.1 LUFS 2.35초, 기본 결과 .mkv(mp3는 -c:a·-ext), -t -14는 말소리 최고점 제한으로 -15.4~-15.9, 영상 그림 그대로·소리 96kHz로 바뀜(-ar 48000), 최고점 맞추기는 9.3 차이, 60분 111.4초, 같은 이름 결과 건너뜀·소리 없는 영상 오류) | 볼륨 들쭉날쭉 해결 | ★3 |
 |  | adefossez/seewav | 음악을 춤추는 파형 영상으로 | 프랑스 | 300 | pip `seewav` | 15초 mp4, 7초 | 노래 하나로 비주얼라이저 | ★3 |
 |  | espeak-ng/espeak-ng | 인터넷·모델 없이 한국어 읽어 주기 | 국제 커뮤니티 | 7천 | npm `espeak-ng` | 4.66초 WAV (발음 품질 귀로 확인 필요) | 오프라인 한국어 TTS | ★3 |
 |  | s-macke/SAM | 1982년 로봇 목소리 합성기 | 미국(원작) | 1.5천 | npm `sam-js` | 0.2초 (귀로 확인 필요) | 40년 전 컴퓨터 목소리 | ★3 |

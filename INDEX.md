@@ -31,3 +31,4 @@
 | 24 | 2026-11-20 | [str4d/rage](https://github.com/str4d/rage) | 자물쇠는 나눠 주고 열쇠는 내가 갖는 방식으로 파일을 잠그는 무료 '자물쇠 상자' (age 형식 암호화) | 보안·개인정보 | ★★★☆☆ | 약 3,700 (10/30 조사) | [바로가기](2026-11-20-rage/) |
 | 25 | 2026-11-21 | [kitao/pyxel](https://github.com/kitao/pyxel) | 16색·소리 4줄로 줄인 옛날 게임기를 파이썬 코드로 조립하는 무료 '8비트 게임기 조립 상자' (자동 작곡 포함) | 호기심·게임 | ★★★☆☆ | 약 1.78만 | [바로가기](2026-11-21-pyxel/) |
 | 26 | 2026-11-21 | [OpenMOSS/MOSS-Image](https://github.com/OpenMOSS/MOSS-Image) | 그림 속 글자까지 그리는 무료 공개 그림 AI, 공식 최소 모드 측정 GPU 메모리 3.65GiB(RAM 14GiB·모델 약 25GB 별도) | 이미지·AI 생성 | 사양체크 | 확인 못 함 | [바로가기](2026-11-21-spec-MOSS-Image/) |
+| 27 | 2026-11-22 | [slhck/ffmpeg-normalize](https://github.com/slhck/ffmpeg-normalize) | 녹음·영상 여러 개를 끝까지 듣고 귀 기준(LUFS)으로 같은 소리 크기로 맞춰 주는 무료 '소리 크기 지휘자' | 소리·영상 | ★★★☆☆ | 약 1,540 | [바로가기](2026-11-22-ffmpeg-normalize/) |

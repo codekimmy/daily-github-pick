@@ -1,0 +1,308 @@
+{
+ "date": "2026-11-22",
+ "env": "클라우드 리눅스 · CPU 2개 · 그래픽카드 없음",
+ "install": {
+  "sec": 2.5,
+  "version": "v1.45.2",
+  "deps": [
+   "ffmpeg-progress-yield",
+   "markdown-it-py",
+   "mdurl",
+   "mutagen",
+   "Pygments",
+   "rich",
+   "rich-argparse",
+   "tqdm"
+  ],
+  "venv_mb": 19.7
+ },
+ "before": [
+  {
+   "name": "회의 녹음",
+   "file": "1_회의녹음.wav",
+   "lufs": -42.1,
+   "peak": -24.0,
+   "streams": [
+    [
+     "audio",
+     "pcm_s16le",
+     "44100"
+    ]
+   ],
+   "sec": 13.21,
+   "kb": 1165.0
+  },
+  {
+   "name": "강의 녹음",
+   "file": "2_강의녹음.wav",
+   "lufs": -20.1,
+   "peak": -1.0,
+   "streams": [
+    [
+     "audio",
+     "pcm_s16le",
+     "44100"
+    ]
+   ],
+   "sec": 13.88,
+   "kb": 1224.1
+  },
+  {
+   "name": "인터뷰",
+   "file": "3_인터뷰.mp3",
+   "lufs": -28.6,
+   "peak": -10.4,
+   "streams": [
+    [
+     "audio",
+     "mp3",
+     "44100"
+    ]
+   ],
+   "sec": 12.25,
+   "kb": 196.5
+  },
+  {
+   "name": "배경음악",
+   "file": "4_배경음악.wav",
+   "lufs": -10.1,
+   "peak": -0.3,
+   "streams": [
+    [
+     "audio",
+     "pcm_s16le",
+     "44100"
+    ]
+   ],
+   "sec": 12.0,
+   "kb": 1058.4
+  }
+ ],
+ "basic": {
+  "sec": 2.35,
+  "files": [
+   {
+    "name": "회의 녹음",
+    "out": "1_회의녹음.mkv",
+    "lufs": -23.1,
+    "peak": -5.0,
+    "streams": [
+     [
+      "audio",
+      "pcm_s16le",
+      "44100"
+     ]
+    ],
+    "sec": 13.21,
+    "kb": 1167.6,
+    "type1": "dynamic",
+    "type2": "linear"
+   },
+   {
+    "name": "강의 녹음",
+    "out": "2_강의녹음.mkv",
+    "lufs": -22.8,
+    "peak": -3.7,
+    "streams": [
+     [
+      "audio",
+      "pcm_s16le",
+      "44100"
+     ]
+    ],
+    "sec": 13.88,
+    "kb": 1226.7,
+    "type1": "dynamic",
+    "type2": "linear"
+   },
+   {
+    "name": "인터뷰",
+    "out": "3_인터뷰.mkv",
+    "lufs": -22.7,
+    "peak": -4.6,
+    "streams": [
+     [
+      "audio",
+      "pcm_s16le",
+      "44100"
+     ]
+    ],
+    "sec": 12.2,
+    "kb": 1080.0,
+    "type1": "dynamic",
+    "type2": "linear"
+   },
+   {
+    "name": "배경음악",
+    "out": "4_배경음악.mkv",
+    "lufs": -23.0,
+    "peak": -13.1,
+    "streams": [
+     [
+      "audio",
+      "pcm_s16le",
+      "44100"
+     ]
+    ],
+    "sec": 12.0,
+    "kb": 1060.8,
+    "type1": "dynamic",
+    "type2": "linear"
+   }
+  ]
+ },
+ "yt14": {
+  "sec": 3.63,
+  "files": [
+   {
+    "name": "회의 녹음",
+    "out": "1_회의녹음.mp3",
+    "lufs": -15.4,
+    "peak": -2.0,
+    "streams": [
+     [
+      "audio",
+      "mp3",
+      "48000"
+     ]
+    ],
+    "sec": 13.25,
+    "kb": 318.6,
+    "type2": "dynamic"
+   },
+   {
+    "name": "강의 녹음",
+    "out": "2_강의녹음.mp3",
+    "lufs": -15.7,
+    "peak": -2.2,
+    "streams": [
+     [
+      "audio",
+      "mp3",
+      "48000"
+     ]
+    ],
+    "sec": 13.92,
+    "kb": 334.7,
+    "type2": "dynamic"
+   },
+   {
+    "name": "인터뷰",
+    "out": "3_인터뷰.mp3",
+    "lufs": -15.9,
+    "peak": -2.2,
+    "streams": [
+     [
+      "audio",
+      "mp3",
+      "48000"
+     ]
+    ],
+    "sec": 12.24,
+    "kb": 294.4,
+    "type2": "dynamic"
+   },
+   {
+    "name": "배경음악",
+    "out": "4_배경음악.mp3",
+    "lufs": -14.2,
+    "peak": -4.4,
+    "streams": [
+     [
+      "audio",
+      "mp3",
+      "44100"
+     ]
+    ],
+    "sec": 12.04,
+    "kb": 289.7,
+    "type2": "linear"
+   }
+  ]
+ },
+ "video": {
+  "sec": 1.24,
+  "before": {
+   "lufs": -40.9,
+   "peak": -20.0,
+   "streams": [
+    [
+     "video",
+     "h264",
+     null
+    ],
+    [
+     "audio",
+     "aac",
+     "44100"
+    ]
+   ],
+   "sec": 11.39,
+   "kb": 151.4
+  },
+  "after": {
+   "lufs": -23.1,
+   "peak": -2.5,
+   "streams": [
+    [
+     "video",
+     "h264",
+     null
+    ],
+    [
+     "audio",
+     "aac",
+     "96000"
+    ]
+   ],
+   "sec": 11.5,
+   "kb": 157.0
+  },
+  "video_same": true
+ },
+ "peak": {
+  "sec": 1.44,
+  "files": [
+   {
+    "name": "회의 녹음",
+    "lufs": -18.1,
+    "peak": 0.0
+   },
+   {
+    "name": "강의 녹음",
+    "lufs": -19.1,
+    "peak": 0.0
+   },
+   {
+    "name": "인터뷰",
+    "lufs": -18.2,
+    "peak": 0.0
+   },
+   {
+    "name": "배경음악",
+    "lufs": -9.8,
+    "peak": -0.0
+   }
+  ]
+ },
+ "again": {
+  "code": 0,
+  "msg": "WARNING: Output file 'normalized/1_회의녹음.mkv' already exists, skipping. Use -f to force overwriting."
+ },
+ "noaudio": {
+  "code": 1,
+  "msg": "ERROR: Validation failed for 1 file(s). Please fix the issues above and try again.",
+  "made": false
+ },
+ "long60": {
+  "sec": 111.4,
+  "code": 0,
+  "after": {
+   "lufs": -23.4,
+   "peak": -5.3
+  },
+  "in_mb": 317.5,
+  "out_mb": 57.6
+ },
+ "video_ar48": 48000
+}

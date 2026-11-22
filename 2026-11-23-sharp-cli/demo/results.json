@@ -1,0 +1,230 @@
+{
+ "install": {
+  "sec": 2.79,
+  "pkgs": 32,
+  "mb": 37.7,
+  "version": "6.1.0",
+  "sharp": "0.35.4"
+ },
+ "photos": [
+  {
+   "name": "1_바다노을",
+   "mb": 2.56,
+   "w": 4032,
+   "h": 3024
+  },
+  {
+   "name": "2_산풍경",
+   "mb": 2.577,
+   "w": 4032,
+   "h": 3024
+  },
+  {
+   "name": "3_숲길",
+   "mb": 2.613,
+   "w": 4032,
+   "h": 3024
+  },
+  {
+   "name": "4_꽃밭",
+   "mb": 2.831,
+   "w": 4032,
+   "h": 3024
+  },
+  {
+   "name": "5_도시야경",
+   "mb": 3.345,
+   "w": 4032,
+   "h": 3024
+  },
+  {
+   "name": "6_구름하늘",
+   "mb": 2.575,
+   "w": 4032,
+   "h": 3024
+  }
+ ],
+ "resize": {
+  "sec": 0.49,
+  "before": 16.5,
+  "after": 1.64,
+  "each": [
+   0.23,
+   0.236,
+   0.247,
+   0.283,
+   0.412,
+   0.236
+  ],
+  "size": [
+   1600,
+   1200
+  ]
+ },
+ "formats": {
+  "jpeg": {
+   "q": 80,
+   "sec": 0.45,
+   "total": 1.64,
+   "each": [
+    0.23,
+    0.236,
+    0.247,
+    0.283,
+    0.412,
+    0.236
+   ],
+   "ssim": 0.9612
+  },
+  "webp": {
+   "q": 80,
+   "sec": 0.93,
+   "total": 1.01,
+   "each": [
+    0.128,
+    0.139,
+    0.143,
+    0.182,
+    0.278,
+    0.142
+   ],
+   "ssim": 0.9341
+  },
+  "avif": {
+   "q": 50,
+   "sec": 11.91,
+   "total": 0.52,
+   "each": [
+    0.062,
+    0.068,
+    0.071,
+    0.119,
+    0.133,
+    0.063
+   ],
+   "ssim": 0.9181
+  },
+  "png": {
+   "q": null,
+   "sec": 0.73,
+   "total": 23.3,
+   "each": [
+    3.584,
+    3.834,
+    4.007,
+    4.02,
+    3.576,
+    4.275
+   ],
+   "ssim": 1.0
+  }
+ },
+ "quality": {
+  "photo": "2_산풍경",
+  "rows": {
+   "95": {
+    "kb": 479.5,
+    "ssim": 0.9856,
+    "sec": 0.43
+   },
+   "90": {
+    "kb": 265.6,
+    "ssim": 0.9694,
+    "sec": 0.45
+   },
+   "80": {
+    "kb": 135.8,
+    "ssim": 0.9307,
+    "sec": 0.35
+   },
+   "60": {
+    "kb": 73.7,
+    "ssim": 0.8796,
+    "sec": 0.32
+   },
+   "40": {
+    "kb": 49.3,
+    "ssim": 0.8386,
+    "sec": 0.33
+   },
+   "20": {
+    "kb": 28.3,
+    "ssim": 0.7883,
+    "sec": 0.32
+   }
+  }
+ },
+ "meta": {
+  "orig_gps": true,
+  "default_gps": false,
+  "keep_gps": true,
+  "default_kb": 224.3
+ },
+ "many": {
+  "n": 60,
+  "sec": 7.53,
+  "before": 165.0,
+  "after": 10.1,
+  "err": ""
+ },
+ "square": {
+  "centre": {
+   "sec": 0.22,
+   "size": [
+    1080,
+    1080
+   ]
+  },
+  "attention": {
+   "sec": 0.23,
+   "size": [
+    1080,
+    1080
+   ]
+  }
+ },
+ "heic": {
+  "code": 1,
+  "err": "FAILED: source: bad seek to 3696263\nsource: bad seek to 3696234\nsource: bad seek to 3696232\nheif: Error while loading plugin: Support for this compression format has not been built in (11.6003)\n\nSpecify --help for available options",
+  "out": []
+ },
+ "same": {
+  "code": 0,
+  "err": "/home/claude/daily-github-pick/2026-11-23-sharp-cli/demo/work/same/1_바다노을.jpg",
+  "before": 2.56,
+  "after": 0.23
+ },
+ "enlarge": {
+  "default": [
+   1600,
+   1200
+  ],
+  "without": [
+   800,
+   600
+  ]
+ },
+ "orient": {
+  "default": [
+   1600,
+   1200
+  ],
+  "auto": [
+   1600,
+   2133
+  ],
+  "bat": [
+   1200,
+   1600
+  ]
+ },
+ "names": {
+  "bracket": "No input files",
+  "nodir_isfile": true,
+  "template": [
+   "여행 사진 (2).webp",
+   "여행 사진 [1].webp"
+  ],
+  "q150": "FAILED: Expected integer between 1 and 100 for quality but received 150 of type number"
+ }
+}

@@ -22,7 +22,7 @@
 
 **고정 댓글** (업로드 후 댓글로 달고 '고정')
 ```
-Windows는 파이썬 3.10 이상과 ffmpeg를 설치한 뒤 명령 프롬프트에 pip install ffmpeg-normalize 를 붙여넣어 설치합니다. 그다음 ffmpeg-normalize 파일1.wav 파일2.mp3 처럼 파일 이름을 나열하면 normalized 폴더에 결과가 생깁니다. mp3로 받는 옵션은 롱폼 설명란에 있습니다!
+Windows는 파이썬 3.10 이상과 ffmpeg를 설치한 뒤 명령 프롬프트에 pip install ffmpeg-normalize 를 붙여넣어 설치합니다. 그다음 ffmpeg-normalize 파일1.wav 파일2.mp3 처럼 파일 이름을 나열하면 normalized 폴더에 결과가 생깁니다. 명령어 없이 파일을 끌어다 놓아 쓰는 실행 파일(.bat)과 오류 해결법은 롱폼 설명란의 저장소 링크에 있습니다!
 ```
 
 **썸네일**: `media/thumbnail-shorts.jpg` (세로 1080×1920, 유튜브 앱에서 쇼츠 올릴 때 썸네일로 지정)

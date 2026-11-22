@@ -37,6 +37,8 @@
    ffmpeg-normalize 파일.wav -c:a libmp3lame -b:a 192k -ext mp3        (mp3로 받기)
    ffmpeg-normalize 영상.mp4 -c:a aac -b:a 128k -ar 48000 -ext mp4        (영상 소리만)
    ffmpeg-normalize 파일.wav -t -14        (목표 -14 LUFS)
+▶ 명령어 없이 쓰기: 저장소 폴더의 demo/tools_win/소리크기맞추기.bat 위에 파일을 끌어다 놓으면 원본 옆 '소리맞춤' 폴더에 결과가 생깁니다 (설치 1~3단계 먼저)
+▶ Windows 설치·실행·오류 해결 전체 순서는 위 저장소 링크의 README 'Windows에서 쓰는 법'에 있습니다
 ※ 읽는 법: LUFS(러프스)는 사람 귀가 느끼는 소리 크기 단위입니다. 0에 가까울수록 큰 소리이고 마이너스는 값에 붙는 부호입니다. 바뀐 크기 = 두 값의 차이입니다(-42.1 → -23.1 LUFS = 약 19 만큼 커짐).
 ※ 영상 속 소리 파일은 시연용으로 직접 합성한 가상 녹음이며, 숫자는 시연 측정값입니다.
 

@@ -4,6 +4,7 @@
 |---|---|
 | `make_samples.py` · `tts/` | 시연용 가상 녹음 만들기: espeak-ng(npm `espeak-ng`, 인터넷·모델 없이 합성)로 읽은 한국어 문장 + 직접 계산한 화음 → 일부러 소리 크기를 제각각으로 (`samples/` 1_회의녹음.wav · 2_강의녹음.wav · 3_인터뷰.mp3 · 4_배경음악.wav · 5_발표영상.mp4) |
 | `bench.py` | 새 가상 환경 설치 시간·함께 설치되는 프로그램 → ① 4개 기본값 ② mp3·-14 LUFS ③ 영상(그림 값 비교) ④ 최고점 맞추기 ⑤ 같은 이름 다시 실행 ⑥ 소리 없는 영상 ⑦ 60분 녹음 → `results.json` (소리 크기는 ffmpeg `ebur128`로 따로 잼, 작업 파일은 `work/`, 커밋하지 않음) |
+| `tools_win/소리크기맞추기.bat` | Windows용: 파일을 끌어다 놓으면 `python -m ffmpeg_normalize`로 소리 → mp3·영상 → mp4(-ar 48000, -f)로 원본 옆 `소리맞춤` 폴더에 저장. 안 명령은 리눅스에서 같은 옵션으로 확인, .bat 자체는 Windows 실행 확인 전 |
 | `loud.py` | 녹화용 보조 도구: 파일마다 통합 음량(LUFS)을 막대로 출력 |
 | `demo.sh` | 터미널 녹화용 (`tools/record_terminal.sh demo/demo.sh media/terminal.gif`, 날짜 폴더에서) |
 | `mkdata.py` | results.json + 전·후·최고점 맞춤 파형(막대 96개) → `render/data.js`, 전·후 이어 듣기 mp3 → `media/` |

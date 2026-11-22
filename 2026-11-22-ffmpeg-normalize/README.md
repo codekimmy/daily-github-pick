@@ -49,44 +49,103 @@ ffmpeg-normalize(에프에프엠펙 노멀라이즈)는 **소리 크기 지휘�
 
 - 들어 보기: `media/before-4files.mp3`(맞추기 전 4개 이어 붙임) · `media/after-4files.mp3`(맞춘 뒤 4개 이어 붙임)
 
-## Windows에서 따라하기 (cmd)
-> 아래 Windows 방법은 PyPI 안내와 `ffmpeg-normalize -h` 도움말을 바탕으로 정리한 것이며, 이번 시연에서 Windows로 실행해 보지 않았습니다(리눅스 시연). ffmpeg 설치 명령(winget)도 시연하지 않았습니다.
+## Windows에서 쓰는 법 (처음부터 끝까지)
+> 시연은 클라우드(리눅스)에서 했고, 아래 Windows 방법은 PyPI 안내·`ffmpeg-normalize -h` 도움말·winget 목록(Gyan.FFmpeg)을 바탕으로 정리한 것입니다. **Windows에서 직접 실행해 확인한 것은 아닙니다.** 각 단계의 '성공 화면'과 다르게 나오면 맨 아래 '자주 나는 오류'를 보시기 바랍니다.
+
+### 0. 준비물
+| 항목 | 내용 |
+|---|---|
+| 운영체제 | Windows 10·11 (2단계 winget이 없으면 Microsoft Store에서 '앱 설치 관리자'를 업데이트하거나 gyan.dev에서 ffmpeg를 받음) |
+| 파이썬 | 3.10 이상 (python.org에서 무료) |
+| ffmpeg | 따로 설치 필요 (아래 2단계, ffmpeg-normalize가 소리 처리를 ffmpeg에 맡김) |
+| ffmpeg-normalize | `pip install` 한 줄 (함께 설치되는 프로그램 8개, 시연 기준 약 20MB) |
+| 화면 | 없음 — 명령 프롬프트(cmd)에 글자로 명령을 입력, 또는 아래 5단계 `.bat` 파일에 끌어다 놓기 |
+
+### 1. 파이썬 설치
+1. https://www.python.org/downloads/ 에서 **Download Python** 단추를 눌러 설치 파일을 받아 실행합니다
+2. 설치 첫 화면 아래쪽 **"Add python.exe to PATH"에 체크**한 뒤 **Install Now**를 누릅니다 (체크를 빼먹으면 명령 프롬프트가 python을 찾지 못합니다)
+3. 키보드 `윈도우 키` → `cmd` 입력 → **명령 프롬프트**를 열고 확인합니다
 
 ```cmd
-:: 0. 파이썬 3.10 이상 설치 (python.org, 설치 화면에서 "Add python.exe to PATH" 체크)
+:: 파이썬 버전 확인 → "Python 3.12.7"처럼 3.10 이상 숫자가 나오면 성공
 python --version
-
-:: 1. ffmpeg 설치 (예: winget 사용 — ffmpeg.org 안내의 Windows용 빌드) 후 명령 창을 새로 열어 확인
-winget install Gyan.FFmpeg
-ffmpeg -version
-
-:: 2. ffmpeg-normalize 설치
-pip install ffmpeg-normalize
-
-:: 3. 녹음 파일이 있는 폴더로 이동 (예: 문서\녹음)
-cd %USERPROFILE%\Documents\녹음
-
-:: 4. 파일 여러 개를 한꺼번에 맞추기 → normalized 폴더에 .mkv로 저장 (기본 목표 -23 LUFS)
-ffmpeg-normalize 회의1.wav 회의2.wav 강의.mp3
-
-:: 5. mp3로 받기 (소리 형식·음질·확장자 지정)
-ffmpeg-normalize 회의1.wav 강의.mp3 -c:a libmp3lame -b:a 192k -ext mp3
-
-:: 6. 폴더의 wav 파일을 모두 하나씩 맞추기 (cmd용 반복문, .bat 파일 안에서는 %f 대신 %%f)
-for %f in (*.wav) do ffmpeg-normalize "%f" -c:a libmp3lame -b:a 192k -ext mp3
-
-:: 7. 영상: 그림은 그대로 두고 소리만 맞추기 (소리 형식 aac, 표본 수 48000Hz, 결과 폴더 이름 video)
-ffmpeg-normalize 발표.mp4 -c:a aac -b:a 128k -ar 48000 -ext mp4 -of video
-
-:: 8. 유튜브 업로드용으로 더 크게 (-14 LUFS, 말소리는 최고점 제한 때문에 조금 낮게 나올 수 있음)
-ffmpeg-normalize 발표.mp4 -t -14 -c:a aac -b:a 192k -ar 48000 -ext mp4 -of yt
-
-:: 9. 결과 파일이 이미 있으면 건너뛰므로 다시 만들 때는 -f(덮어쓰기)
-ffmpeg-normalize 회의1.wav -f
 ```
 
-- **자주 쓰는 옵션**: `-t`(목표 크기, 기본 -23) · `-tp`(최고점 제한, 기본 -2) · `-c:a`(소리 형식) · `-b:a`(음질) · `-ext`(확장자) · `-ar`(표본 수) · `-of`(결과 폴더 이름, 기본 normalized) · `-f`(덮어쓰기) · `-n`(미리 보기, 실제로 바꾸지 않음) · `-nt`(방식: ebu 귀 기준·peak 최고점·rms 평균) · `--print-stats`(측정값 출력)
-- cmd는 `*.wav` 같은 별표를 파일 목록으로 펼쳐 주지 않으므로, 여러 파일은 이름을 나열하거나 6번 반복문을 쓰시기 바랍니다
+### 2. ffmpeg 설치
+```cmd
+:: winget(Windows 기본 설치 도구)으로 ffmpeg 설치 → 설치 동의를 물으면 Y
+winget install Gyan.FFmpeg
+```
+- 설치가 끝나면 **명령 프롬프트 창을 모두 닫고 새로 엽니다** (새 창이어야 ffmpeg를 찾습니다)
+
+```cmd
+:: 첫 줄이 "ffmpeg version …"으로 시작하면 성공
+ffmpeg -version
+```
+
+### 3. ffmpeg-normalize 설치
+```cmd
+:: 설치 → 마지막 줄에 "Successfully installed ffmpeg-normalize-…"가 나오면 성공
+pip install ffmpeg-normalize
+:: 확인 → "ffmpeg-normalize v1.45.2"처럼 버전이 나오면 성공
+ffmpeg-normalize --version
+```
+
+### 4. 내 파일로 해 보기 (명령 프롬프트)
+1. 파일 탐색기에서 녹음 파일이 있는 폴더를 엽니다
+2. 탐색기 위쪽 **주소창을 누르고 `cmd`를 입력한 뒤 Enter** → 그 폴더 위치에서 명령 프롬프트가 열립니다
+3. 아래 명령 중 필요한 것을 입력합니다 (파일 이름에 띄어쓰기가 있으면 `"회의 1.wav"`처럼 큰따옴표로 감쌉니다)
+
+```cmd
+:: ① 여러 파일을 한꺼번에 맞추기 → 같은 폴더 안 "normalized" 폴더에 .mkv 파일로 저장 (기본 목표 -23 LUFS)
+ffmpeg-normalize 회의1.wav 회의2.wav 강의.mp3
+
+:: ② mp3로 받기 (휴대폰·차에서 바로 재생 가능한 형식)
+ffmpeg-normalize 회의1.wav 강의.mp3 -c:a libmp3lame -b:a 192k -ar 48000 -ext mp3
+
+:: ③ 영상: 그림은 그대로 두고 소리만 맞추기 → "video" 폴더에 mp4로 저장
+ffmpeg-normalize 발표.mp4 -c:a aac -b:a 192k -ar 48000 -ext mp4 -of video
+
+:: ④ 유튜브 업로드용으로 더 크게 (-14 LUFS, 말소리는 최고점 제한 때문에 조금 낮게 나올 수 있음)
+ffmpeg-normalize 발표.mp4 -t -14 -c:a aac -b:a 192k -ar 48000 -ext mp4 -of yt
+
+:: ⑤ 폴더 안 wav 파일을 모두 mp3로 (cmd는 *.wav를 파일 목록으로 펼쳐 주지 않으므로 반복문 사용)
+for %f in (*.wav) do ffmpeg-normalize "%f" -c:a libmp3lame -b:a 192k -ar 48000 -ext mp3
+
+:: ⑥ 결과 폴더 열기
+explorer normalized
+```
+- 명령이 끝나면 `normalized`(또는 `-of`로 정한) 폴더에 같은 이름의 새 파일이 생깁니다. **원본 파일은 바뀌지 않습니다**
+- 같은 명령을 다시 실행하면 결과 파일이 이미 있어 **건너뜁니다.** 다시 만들려면 명령 끝에 `-f`(덮어쓰기)를 붙입니다
+
+### 5. 명령어 없이 쓰기 — 끌어다 놓는 실행 파일
+저장소의 [`demo/tools_win/소리크기맞추기.bat`](demo/tools_win/소리크기맞추기.bat)을 내려받아 바탕화면 등에 두고, **소리·영상 파일을 이 파일 위에 마우스로 끌어다 놓으면** 원본 옆 `소리맞춤` 폴더에 결과가 생깁니다.
+- 소리 파일(wav·mp3·m4a·flac 등) → mp3, 영상 파일(mp4·mov·mkv) → mp4(그림은 그대로)
+- 여러 파일을 한꺼번에 끌어다 놓아도 됩니다. 목표 크기는 메모장으로 `.bat`을 열어 `set TARGET=-23` 숫자를 고칩니다(유튜브용 -14)
+- 1~3단계 설치가 먼저 끝나 있어야 합니다. ffmpeg나 ffmpeg-normalize가 없으면 화면에 무엇을 설치해야 하는지 안내합니다
+- `.bat` 안 명령(`python -m ffmpeg_normalize … -of 폴더 -f`)은 리눅스에서 같은 옵션으로 동작을 확인했고, `.bat` 파일 자체는 Windows에서 실행해 보지 않았습니다
+
+### 6. 자주 나는 오류와 해결
+| 화면에 나온 말 | 원인 | 해결 |
+|---|---|---|
+| `'python'은(는) 내부 또는 외부 명령 … 아닙니다` | 1단계에서 PATH 체크를 빼먹음 | 파이썬을 다시 설치하면서 "Add python.exe to PATH" 체크, 또는 `py --version`으로 확인 후 명령의 `python` 대신 `py` 사용 |
+| `'pip'은(는) … 아닙니다` | pip 경로를 못 찾음 | `py -m pip install ffmpeg-normalize` |
+| `'ffmpeg-normalize'은(는) … 아닙니다` | 설치된 실행 파일 폴더가 PATH에 없음 | 명령 앞부분을 `py -m ffmpeg_normalize`로 바꿔 실행 (예: `py -m ffmpeg_normalize 회의1.wav`) |
+| `ERROR: Could not find ffmpeg in your $PATH …` (시연에서 ffmpeg를 숨겨 확인한 문구) | ffmpeg 미설치 또는 창을 새로 열지 않음 | 2단계 후 **명령 프롬프트를 닫고 새로 열기**, `ffmpeg -version` 확인 |
+| `already exists, skipping` | 결과 파일이 이미 있음 | 명령 끝에 `-f` |
+| `File does not contain any audio streams` | 소리 없는 영상 | 소리가 있는 파일인지 확인 |
+| `exceeds the target true peak` 경고 | 목표를 크게 잡아 최고점 제한에 걸림 | 그대로 써도 되며(목표보다 조금 작게 나옴), 꼭 맞추려면 `-t`를 낮추거나 `-tp -1`처럼 제한을 올림 |
+
+### 7. 지우는 법
+```cmd
+:: ffmpeg-normalize 지우기
+pip uninstall ffmpeg-normalize
+:: ffmpeg 지우기
+winget uninstall Gyan.FFmpeg
+```
+
+### 자주 쓰는 옵션
+`-t`(목표 크기, 기본 -23) · `-tp`(최고점 제한, 기본 -2) · `-c:a`(소리 형식) · `-b:a`(음질) · `-ext`(확장자) · `-ar`(표본 수) · `-of`(결과 폴더 이름, 기본 normalized) · `-f`(덮어쓰기) · `-n`(미리 보기, 실제로 바꾸지 않음) · `-nt`(방식: ebu 귀 기준·peak 최고점·rms 평균) · `--print-stats`(측정값 출력)
 
 ## 이런 사람에게 쓸모 있다
 - **회의·강의 녹음을 모아 듣는 사람** → 파일마다 볼륨을 다시 만지지 않아도 됩니다
@@ -125,4 +184,5 @@ ffmpeg-normalize 회의1.wav -f
 | `media/before-after.png` · `media/peak-vs-lufs.png` | 전·후 소리 크기 비교 · 귀 기준과 최고점 맞추기 비교 |
 | `media/before-4files.mp3` · `media/after-4files.mp3` | 가상 녹음 4개 맞추기 전·후 이어 듣기 |
 | `media/terminal.gif` · `media/thumbnail.jpg` · `media/thumbnail-shorts.jpg` | 터미널 녹화 · 썸네일 |
+| `demo/tools_win/소리크기맞추기.bat` | Windows용 끌어다 놓기 실행 파일 (소리 → mp3, 영상 → mp4, 원본 옆 `소리맞춤` 폴더) |
 | `demo/` | 가상 녹음·측정·영상 만드는 코드 (`demo/README.md`) |

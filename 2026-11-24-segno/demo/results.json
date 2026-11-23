@@ -1,0 +1,237 @@
+{
+ "install": {
+  "sec": 0.609,
+  "rc": 0,
+  "pkgs": [
+   "segno"
+  ],
+  "bytes": 297644
+ },
+ "version": "Segno 1.6.6",
+ "wifi": {
+  "sec": 0.057,
+  "px": 370,
+  "bytes": 490,
+  "decoded": [
+   "WIFI:T:WPA;S:우리집_5G;P:kimchi2026!;;"
+  ],
+  "version": 3,
+  "error": "M",
+  "modules": 29,
+  "helper_decoded": [
+   "WIFI:T:WPA;S:우리집_5G;P:kimchi2026!;;"
+  ]
+ },
+ "card": {
+  "sec": 0.058,
+  "px": 410,
+  "bytes": 591,
+  "decoded": [
+   "MECARD:N:김하늘;TEL:01012345678;EMAIL:sky@example.com;;"
+  ],
+  "version": 4,
+  "vcard_version": 6,
+  "vcard_decoded": [
+   "BEGIN:VCARD\r\nVERSION:3.0\r\nN:김;하늘\r\nFN:김하늘\r\nORG:가상상회\r\nEMAIL:sky@example.com\r\nTEL:010-1234-5678\r\nEND:VCARD\r\n"
+  ]
+ },
+ "length": [
+  {
+   "name": "짧은 주소",
+   "chars": 19,
+   "version": 2,
+   "modules": 25,
+   "error": "Q"
+  },
+  {
+   "name": "한글 인사 10자",
+   "chars": 10,
+   "version": 2,
+   "modules": 25,
+   "error": "L"
+  },
+  {
+   "name": "한글 100자",
+   "chars": 100,
+   "version": 11,
+   "modules": 61,
+   "error": "L"
+  },
+  {
+   "name": "한글 500자",
+   "chars": 500,
+   "version": 28,
+   "modules": 129,
+   "error": "L"
+  },
+  {
+   "name": "영문 1000자",
+   "chars": 1000,
+   "version": 22,
+   "modules": 105,
+   "error": "L"
+  }
+ ],
+ "toolong": {
+  "chars": 1000,
+  "rc": 1,
+  "msg": "Data too large. No QR Code can handle the provided data"
+ },
+ "max_korean": 984,
+ "errorlevel": [
+  {
+   "level": "L",
+   "version": 2,
+   "px": 330,
+   "cover": {
+    "5": false,
+    "10": false,
+    "15": false,
+    "20": false,
+    "25": false
+   }
+  },
+  {
+   "level": "M",
+   "version": 3,
+   "px": 370,
+   "cover": {
+    "5": false,
+    "10": false,
+    "15": false,
+    "20": false,
+    "25": false
+   }
+  },
+  {
+   "level": "Q",
+   "version": 3,
+   "px": 370,
+   "cover": {
+    "5": true,
+    "10": false,
+    "15": false,
+    "20": false,
+    "25": false
+   }
+  },
+  {
+   "level": "H",
+   "version": 4,
+   "px": 410,
+   "cover": {
+    "5": true,
+    "10": true,
+    "15": false,
+    "20": false,
+    "25": false
+   }
+  }
+ ],
+ "colors": [
+  {
+   "name": "남색/흰색",
+   "dark": "#1a2a6c",
+   "light": "white",
+   "file": "color_0.png",
+   "decoded_ok": true
+  },
+  {
+   "name": "빨강/연노랑",
+   "dark": "#c0392b",
+   "light": "#fff7d6",
+   "file": "color_1.png",
+   "decoded_ok": true
+  },
+  {
+   "name": "연회색/흰색",
+   "dark": "#d0d0d0",
+   "light": "white",
+   "file": "color_2.png",
+   "decoded_ok": true
+  },
+  {
+   "name": "흰색/검정(반전)",
+   "dark": "white",
+   "light": "black",
+   "file": "color_3.png",
+   "decoded_ok": true
+  },
+  {
+   "name": "투명 바탕",
+   "dark": "#1a2a6c",
+   "light": "transparent",
+   "file": "color_4.png",
+   "decoded_ok": true
+  }
+ ],
+ "border": {
+  "0": {
+   "alone": true,
+   "on_dark": false
+  },
+  "4": {
+   "alone": true,
+   "on_dark": true
+  }
+ },
+ "scale": [
+  {
+   "scale": 1,
+   "px": 33,
+   "bytes": 204,
+   "ok": true
+  },
+  {
+   "scale": 3,
+   "px": 99,
+   "bytes": 284,
+   "ok": true
+  },
+  {
+   "scale": 10,
+   "px": 330,
+   "bytes": 395,
+   "ok": true
+  }
+ ],
+ "svg_bytes": 1234,
+ "dpi": [
+  299.9994,
+  299.9994
+ ],
+ "camera": [
+  {
+   "name": "15도 기울임",
+   "ok": true
+  },
+  {
+   "name": "흐리게(반지름 3)",
+   "ok": true
+  },
+  {
+   "name": "흐리게(반지름 8)",
+   "ok": false
+  },
+  {
+   "name": "가로 80px로 작게",
+   "ok": true
+  },
+  {
+   "name": "가로 40px로 작게",
+   "ok": false
+  }
+ ],
+ "micro": {
+  "version": "M3-M",
+  "modules": 15,
+  "decoded": [
+   "01012345678"
+  ],
+  "normal_modules": 21
+ },
+ "cli_once": 0.052,
+ "many1000": 2.1,
+ "many_check": 5,
+ "terminal_lines": 17
+}

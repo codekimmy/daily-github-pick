@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>html,body{margin:0;background:#0d1117;overflow:hidden}canvas{display:block}</style>
+<link rel="stylesheet" href="../../../tools/kit/kit.css"><script src="../../../tools/kit/kit.js"></script>
+<script src="timing.js"></script><script src="data.js"></script><script src="engine.js"></script><script src="scenes.js"></script>
+</head><body><canvas id="c"></canvas>
+<script>
+// ?s=thumb (1280×720) | thumbv (1080×1920) | wifi | len | cover | color (블로그 그림 1600×900) — 모두 시연 측정값(data.js)·segno로 만든 실제 QR 칸 배열(MAT)
+const S = new URLSearchParams(location.search).get('s') || 'thumb';
+const SZ = { thumb: [1280, 720], thumbv: [1080, 1920] }[S] || [1600, 900], W = SZ[0], H = SZ[1];
+const cv = document.getElementById('c'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+let READY = false;
+Promise.all([document.fonts.load(`900 40px ${F}`), document.fonts.load(`600 20px ${MONO}`)]).then(() => { draw(); READY = true; });
+function big(s, x, y, size, col, font = F, w = 900) { ctx.save(); ctx.font = `${w} ${size}px ${font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = size * .16; ctx.strokeStyle = '#05070c'; ctx.strokeText(s, x, y); ctx.fillStyle = col; ctx.fillText(s, x, y); ctx.restore(); }
+const foot = () => text('2026-11-24 클라우드 시연 결과 · 와이파이·연락처는 시연용 가상 자료 · 읽기 확인은 zxing-cpp 기준', W - 20, H - 20, 18, SUB, 500, 'right');
+function draw() {
+  KIT.bg(ctx, W, H);
+  if (S === 'thumb') {
+    qrDraw(MAT.wifi, 60, 90, 520, 1); stamp('0.06초', 520, 130, 1, GOLD, 50);
+    big('와이파이 비밀번호', 930, 200, 64, '#ffffff'); big('QR 한 장으로', 930, 310, 76, GOLD); big('명령 한 줄 0.06초', 930, 420, 56, GREEN);
+    big('segno', 930, 580, 96, GOLD, MONO, 700);
+  } else if (S === 'thumbv') {
+    big('와이파이 비밀번호', 540, 330, 92, '#ffffff'); big('QR 한 장으로', 540, 470, 100, GOLD);
+    qrDraw(MAT.wifi, 140, 600, 800, 1);
+    big('명령 한 줄 0.06초', 540, 1500, 72, GREEN); big('segno', 540, 1640, 100, GOLD, MONO, 700);
+  } else if (S === 'wifi') {
+    text('segno 시연: 가상 와이파이(우리집_5G)로 만든 QR과 다른 프로그램(zxing-cpp)으로 읽은 결과', 800, 50, 30, INK, 900);
+    qrDraw(MAT.wifi, 80, 110, 640, 1);
+    [['명령', 'segno "WIFI:T:WPA;S:우리집_5G;P:kimchi2026!;;" -o wifi.png --scale 10'], ['걸린 시간', RES.wifi.sec.toFixed(2) + '초'], ['결과', '29 × 29칸 · 370 × 370 픽셀 · 490바이트 PNG'], ['읽은 내용', 'WIFI:T:WPA;S:우리집_5G;P:kimchi2026!;;'], ['휴대폰 접속', '시연에서 확인하지 않음']].forEach(([k, v], i) => {
+      text(k, 780, 170 + i * 120, 30, SUB, 800, 'left'); if (i === 0) { text('segno "WIFI:T:WPA;S:우리집_5G;P:kimchi2026!;;"', 780, 210, 24, INK, 600, 'left', 1, MONO); text('      -o wifi.png --scale 10', 780, 245, 24, INK, 600, 'left', 1, MONO); return; } text(v, 780, 215 + i * 120, fit(v, 30, 790, 700), i === 3 ? GREEN : i === 4 ? RED : INK, 700, 'left', 1, i === 0 || i === 3 ? MONO : F); });
+    foot();
+  } else if (S === 'len') {
+    text('글 길이에 따른 QR 크기 (segno 자동 선택)', 800, 50, 34, INK, 900);
+    [[MAT.short, '짧은 주소 19자', '25 × 25칸'], [MAT.k100, '한글 100자', '61 × 61칸'], [MAT.k500, '한글 500자', '129 × 129칸']].forEach((it, i) => { const x = 60 + i * 510; qrDraw(it[0], x, 110, 460, 1); text(it[1], x + 230, 620, 36, INK, 900); text(it[2], x + 230, 675, 34, [GREEN, GOLD, RED][i], 900, 'center', 1, MONO); });
+    text(`한글은 ${RES.max_korean}자까지 · 1,000자는 "${RES.toolong.msg}" 오류`, 800, 770, 32, RED, 800); foot();
+  } else if (S === 'cover') {
+    text('같은 주소를 여분 칸 단계(L·M·Q·H)별로 만들고 가운데를 10% 가렸을 때 읽힘 여부', 800, 50, 30, INK, 900);
+    ['L', 'M', 'Q', 'H'].forEach((l, i) => { const x = 50 + i * 390, s = 360; qrDraw(MAT['url' + l], x, 110, s, 1); coverBox(x, 110, s, 10);
+      text(l + ' 단계 · ' + (EL[l].version * 4 + 17) + '칸', x + s / 2, 520, 36, GOLD, 900);
+      text('5% 가림', x + 110, 590, 30, INK, 800); mark(EL[l].cover[5], x + 250, 590, 46, 1); text('10% 가림', x + 110, 660, 30, INK, 800); mark(EL[l].cover[10], x + 250, 660, 46, 1); });
+    text('15% 이상 가리면 네 단계 모두 실패 (그림 넓이 기준 · 주황 상자)', 800, 760, 32, SUB, 800); foot();
+  } else {
+    text('색 바꾸기와 흰 여백 — zxing-cpp로 읽은 결과', 800, 50, 34, INK, 900);
+    const opt = [{ dark: '#1a2a6c', light: '#ffffff' }, { dark: '#c0392b', light: '#fff7d6' }, { dark: '#d0d0d0', light: '#ffffff' }, { dark: '#ffffff', light: '#000000' }, { dark: '#1a2a6c', light: 'transparent' }];
+    RES.colors.forEach((cc, i) => { const x = 60 + i * 305; if (i === 4) box(x, 110, 260, 260, 4, '#2b3440', null, 1); qrDraw(MAT.urlL, x, 110, 260, 1, 1, opt[i]); text(cc.name, x + 130, 400, 28, INK, 800); mark(cc.decoded_ok, x + 130, 450, 44, 1); });
+    box(60, 510, 760, 320, 16, '#2b2b2b', null, 1); qrDraw(MAT.urlL, 120, 540, 200, 1, 1, { border: 0 }); text('흰 여백 0칸 (-b 0)', 220, 780, 28, INK, 800); mark(RES.border['0'].on_dark, 340, 560, 44, 1);
+    qrDraw(MAT.urlL, 480, 530, 240, 1); text('기본 여백 4칸', 600, 800, 28, INK, 800); mark(RES.border['4'].on_dark, 700, 550, 44, 1);
+    para('연회색처럼 흐린 색도 zxing-cpp는 읽었지만 휴대폰 카메라 앱은 다를 수 있습니다. 어두운 바탕 위에 붙일 때는 흰 여백을 지우지 않습니다.', 880, 600, 660, 30, INK, 700, 'left'); foot();
+  }
+}
+</script></body></html>

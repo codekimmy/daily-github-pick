@@ -66,7 +66,7 @@
 |  | thampiman/reverse-geocoder | 사진 GPS → 동네 이름 (오프라인) | 개인 | 1.9천 | pip `reverse_geocoder` | 가짜 남산 좌표 → Seoul, 0.6초  (11/11 재확인: 1.5.1, 한국 지명 153곳뿐 · Enjitsu·Neietsu 같은 옛 일본식 표기 섞임, 해운대 → Kijang) | 사진 한 장으로 사는 동네가 드러난다 | ★4 |
 |  | RapidAI/RapidOCR | CPU에서 도는 OCR | 중국 | 8.4천 | pip `rapidocr_onnxruntime` | 영문·숫자 영수증 정확, **한글 못 읽음** | 영수증 → 가계부 | ★3 |
 | ✅ Day 24 | str4d/rage (원본 age) | 파일을 열쇠로 잠그는 암호화 | 뉴질랜드 | 3.7천 | crates `rage` (빌드 4.5분) | 한글 일기 암호화·복원 (11/20 재확인: 0.12.1, 설치 약 89초, 852바이트 일기 잠그기 0.003초 +350바이트·'비밀번호' 3줄→0줄, 다른 열쇠·1바이트 바꿈·끝 자름 모두 열기 거부, 암호 문장 -p 열기 약 1.6초(scrypt 2^19)·빈칸이면 낱말 10개 자동, 받는 사람 2명 OK, 폴더는 tar로 묶어야 함, 1GB 잠그기 1.59초·열기 2.15초, -o 기존 파일 묻지 않고 덮어씀, pinentry 있으면 암호 입력 창이 뜸, GitHub 페이지 접속 막혀 별 수 다시 확인 못 함, Windows winget str4d.rage는 목록 사이트 기준) | 비밀 일기 잠그기 | ★3 |
-|  | heuer/segno · redacted/XKCD-password-generator | 와이파이 QR · 외우기 쉬운 비밀번호 | 독일·개인 | 800·1.4천 | pip `segno`·`xkcdpass` | 성공 | zxcvbn 편과 묶기 | ★3 |
+| ✅ Day 29 (segno) | heuer/segno · redacted/XKCD-password-generator | 와이파이 QR · 외우기 쉬운 비밀번호 | 독일·개인 | 800·1.4천 | pip `segno`·`xkcdpass` | 성공 (11/24 재확인: segno 1.6.6, 설치 0.61초·함께 설치되는 프로그램 0개, 와이파이 QR 0.06초 29칸·zxing-cpp 읽기 OK(한글 이름), MECARD 33칸·vCard 41칸, 한글 984자까지, 가운데 10% 가림은 H만 성공·15%는 모두 실패, 색 5가지 OK, 여백 0칸은 어두운 바탕에서 실패, 1,000장 2.1초, `python -m segno` 안 됨 → `-m segno.cli`, 휴대폰 카메라 확인 못 함, 별 822) | zxcvbn 편과 묶기 | ★3 |
 |  | sml2h3/ddddocr | 보안문자(캡차) 읽는 AI | 중국 | 1.5만 | pip `ddddocr` | 5자 중 4자 | 캡차는 사람만 읽을까? | ★3 |
 |  | ShieldMnt/invisible-watermark | AI 그림에 숨은 표식 | 미국 | 2천 | pip `invisible-watermark` | 파이썬 + dwtDctSvd 방식만 안정 | AI 그림의 숨은 도장 | ★3 |
 |  | kerrickstaley/genanki · miurahr/pykakasi | Anki 카드 파일 만들기 · 일본어 한자 읽기 | 미국·일본 | 2.8천·500 | pip | 성공 | 여행 회화 카드 1초 | ★3 |

@@ -281,8 +281,32 @@ const M = (() => {
     Promise.all([document.fonts.load(`900 40px ${FONT}`), document.fonts.load(`700 40px ${FONT}`), document.fonts.load('400 20px "DejaVu Sans Mono"')]).then(() => { window.READY = true; });
   }
 
+
+  // ---------- 날짜 도장 카드 (2026-11-25 jrnl) — 왼쪽 동그란 빨간 날짜 도장 + 제목 + 본문(@·# 꼬리표 주황) ----------
+  // render(t, t0, dx, dim): t0에 왼쪽에서 톡 + 0.35초 뒤 날짜 도장 '쾅', dim(0~1)이면 회색으로 흐려짐
+  function dateCard(x, y, w, date, title, body, o = {}) {
+    const h = o.h || 150, fs = o.fs || 36, hl = s => esc(s).replace(/([@#][^\s.,]+)/g, `<span style="color:${C.orange};font-weight:900">$1</span>`);
+    const b = box(x, y, w, h, 'card', { display: 'flex', alignItems: 'center', gap: '26px', padding: '0 30px' }, o.par);
+    const d = el('div', null, { minWidth: '150px', height: '104px', border: `5px solid ${C.red}`, borderRadius: '18px', color: C.red, fontWeight: '900', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', lineHeight: '1.1' }, b);
+    const [dd, tt] = String(date).split(' '); el('div', null, { fontSize: '27px' }, d, esc(dd.slice(5).replace('-', '.'))); el('div', null, { fontSize: '23px' }, d, esc(tt || ''));
+    const tx = el('div', null, { overflow: 'hidden' }, b);
+    el('div', null, { fontSize: fs + 'px', fontWeight: '900', whiteSpace: 'nowrap' }, tx, hl(title));
+    if (body) el('div', null, { fontSize: (fs - 8) + 'px', fontWeight: '700', color: '#555', whiteSpace: 'nowrap' }, tx, hl(body));
+    return { el: b, render(t, t0, dx = 0, dim = 0) { const a = popIn(t, t0, .5); tf(b, dx + (1 - a) * -260, 0, 1, 0, (a > 0 ? Math.min(1, a * 2) : 0) * (1 - dim * .6));
+      const s = P(t, t0 + .35, t0 + .7); d.style.transform = `rotate(-6deg) scale(${lerp(2.2, 1, eOut(s))})`; d.style.opacity = s; b.style.filter = dim ? `grayscale(${dim})` : 'none'; } };
+  }
+  // ---------- 날짜 칸 그림 (2026-11-25 jrnl) — rows줄 × cols칸(예: 10년 × 365일)이 차오르고, 고른 칸만 색이 바뀜 ----------
+  // draw(t, { fill:[시작,끝], marks:[{ on:i=>bool, col, at, d }] }) — 칸은 왼쪽 위부터 줄마다 채워짐. 고른 칸 목록(on)은 시연 결과로 정함
+  function dayGrid(x, y, w, h, rows = 10, cols = 365, par) {
+    const cv = el('canvas', null, { position: 'absolute', left: px(x), top: px(y) }, par); cv.width = w; cv.height = h; const g = cv.getContext('2d');
+    const cw = w / cols, rh = h / rows, N = rows * cols;
+    return { el: cv, draw(t, o = {}) { const [f0, f1] = o.fill || [-9, -8], fill = P(t, f0, f1); g.clearRect(0, 0, w, h);
+      for (let i = 0; i < N; i++) { if (i / N > fill) break; let col = '#cfc7b4', tall = 0;
+        for (const m of o.marks || []) if (m.on(i) && i / N < P(t, m.at, m.at + (m.d ?? 1))) { col = m.col; tall = m.tall ? 1 : 0; }
+        g.fillStyle = col; g.fillRect((i % cols) * cw, Math.floor(i / cols) * rh + (tall ? 2 : 6), Math.max(1.2, cw * .82), rh - (tall ? 4 : 12)); } } };
+  }
   return { C, cfg, clamp, P, eOut, eIO, eBack, lerp, popIn, out, shake, el, box, tf, esc, textW, wrap, fitSize, caption, stamp, hand, pen, ellipsePath, arrowPath, circleAround,
-    count, term, qr, scanAt, pillRender, stars, icon, iconTile, fallback, ending, run,
+    count, term, qr, scanAt, pillRender, stars, icon, iconTile, fallback, ending, run, dateCard, dayGrid,
     pill: (html, ok, x, y, w, h = 52) => { const e = box(x, y, w, h, 'pill ' + (ok ? 'ok' : 'ng')); e.innerHTML = html; return e; },
     get parent() { return parent; } };
 })();

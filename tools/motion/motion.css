@@ -1,0 +1,27 @@
+/* 모션 스타일 공용 CSS (2026-11-24) — 스티커 카드 · 키네틱 제목 · 빨간 펜. 색은 motion.js 의 M.C 와 같게 */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow:hidden;font-family:"Noto Sans CJK KR",sans-serif;color:#141414;background:#F4EFE6}
+#stage{position:absolute;left:0;top:0;overflow:hidden}
+.layer{position:absolute;inset:0;overflow:hidden}
+.dots{position:absolute;inset:0;background-image:radial-gradient(rgba(20,20,20,.13) 2px,transparent 2.4px);background-size:32px 32px}
+.card{position:absolute;background:#fff;border:4px solid #141414;border-radius:22px;box-shadow:9px 9px 0 #141414}
+.dark{background:#17181C;color:#EDEDED}
+.mono{font-family:"DejaVu Sans Mono","Noto Sans CJK KR",monospace}
+.cap{position:absolute;font-weight:900;line-height:1.18;letter-spacing:-2px;z-index:5}
+.cap .ln{white-space:nowrap}
+.cap .tk{display:inline-block;position:relative;margin-right:.28em}
+.cap .acc{color:#FF5A1F}
+.cap .ul{position:absolute;left:-4px;right:-4px;bottom:.1em;height:.23em;background:#FFD84D;z-index:-1;transform-origin:left center;border-radius:4px}
+.chip{position:absolute;border:3px solid #141414;border-radius:999px;background:#fff;font-weight:800;padding:8px 22px;font-size:28px;white-space:nowrap;box-shadow:5px 5px 0 #141414}
+.stamp{position:absolute;border:6px solid #E5482D;color:#E5482D;font-weight:900;border-radius:14px;padding:4px 22px;background:rgba(255,255,255,.92);white-space:nowrap;z-index:8}
+.hand{position:absolute;color:#E5482D;font-weight:900;font-style:italic;white-space:nowrap;z-index:8}
+.pill{position:absolute;border-radius:14px;border:3px solid #141414;font-weight:900;font-size:26px;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.ok{background:#D6F5E2;color:#0E7A3E}.ng{background:#FFE0DE;color:#C62D25}
+.tag{position:absolute;font-size:26px;font-weight:800;display:flex;gap:14px;align-items:center;z-index:6}
+.tag .no{background:#141414;color:#fff;border-radius:10px;padding:6px 16px}
+#sub{position:absolute;background:rgba(20,20,20,.94);color:#fff;font-weight:700;border-radius:16px;text-align:center;z-index:20;display:flex;align-items:center;justify-content:center}
+#sub span{position:absolute;left:0;right:0;padding:0 20px;white-space:nowrap}
+#prog{position:absolute;left:0;right:0;bottom:0;height:10px;background:rgba(20,20,20,.1);z-index:20}
+#progf{position:absolute;left:0;top:0;bottom:0;background:#FF5A1F}
+#brand{position:absolute;font-size:24px;font-weight:800;padding:6px 16px;border:3px solid #141414;border-radius:10px;background:#fff;z-index:20}
+svg.pen{position:absolute;left:0;top:0;overflow:visible;pointer-events:none;z-index:7}

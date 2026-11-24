@@ -22,6 +22,7 @@
 | `motion.css` | 카드·제목·자막·펜 모양 |
 | `buddy.js` | 보조 캐릭터 **냥봇** (`M.buddy`) — 9장 |
 | `page-template.html` | 날짜 폴더 `demo/render/page.html`로 복사해서 쓰는 틀 |
+| `thumb-template.html` · `render_thumbs.py` | 썸네일·블로그 그림 틀과 찍는 도구 (10장, 2026-11-25) |
 | `render_motion.py` | 프레임 렌더러. 여러 프로세스로 나눠 찍고(`--jobs`) 이어 붙임, 30fps 기본, `--only`로 확인용 정지 화면 |
 | `examples/2026-11-24-segno/` | 견본 장면(`scenes.js`), `timing.js`·`data.js`는 그날 파일 그대로 |
 
@@ -29,7 +30,7 @@
 1. 지금처럼 `bench.py` → `results.json`, `mkdata.py` → `data.js`(RES, 필요하면 MAT), 대본 → `voice/retime.py` → `timing.js`(LONG, SHORTS)까지 만든다 (**바뀌지 않음**)
 2. `tools/motion/page-template.html`을 `demo/render/page.html`로 복사하고 `endScene.name`(이름 · 한 줄 비유)을 고친다
 3. `demo/render/scenes.js`를 만든다: 맨 위에 `const DISCLAIMER = [...]`(엔딩 유의사항 2줄), `const SCENES = {}`. 장 id마다 `SCENES.장id = S => { …만들기… return t => { …그리기… } }`
-   - **안 만든 장은 기본 장면(fallback)으로 자동으로 그려진다** (장 제목 = 큰 제목, 자막 문장마다 카드 1장). 시간이 모자라면 미리보기·타이틀·핵심 시연 2~3장만 직접 만들고 나머지는 기본 장면으로 둬도 영상은 완성된다
+   - **모든 장을 직접 만든다 (2026-11-25 운영자 요청 — 기본 장면 금지).** 안 만든 장은 기본 장면(fallback: 장 제목 + 자막 카드)으로 그려지는데, 이것은 오류가 나도 영상이 끊기지 않게 하는 안전장치일 뿐이다. 기본 장면이 쓰이면 렌더 출력에 `콘솔 오류: 기본 장면(fallback) 사용 — 직접 만들어야 함: 장id`가 찍히므로 그 장을 만든다
    - 숏폼(SHORTS)의 장 id(`s_hook` 등)도 같은 방식. 세로·가로 둘 다 `S.V`(세로면 true)로 배치만 바꾼다
 4. 확인 화면을 찍어 본다 (장마다 '다 나타난 순간' 1장 이상, 전환 순간 1장, 마지막 프레임)
    `python3 ../../../tools/motion/render_motion.py long chk --only 3,10,25,…,last`
@@ -132,6 +133,22 @@ return t => { …; nb.render(t, NB); };
 **규칙**
 - 배치 자리를 먼저 비운다: 롱폼·가로는 **오른쪽 280px**(카드가 x 1620을 넘지 않게), 세로는 **오른쪽 위 300×300**(큰 제목 두 줄, 한 줄 9자 안팎)
 - 반응은 **장면마다 2~4번**, 자막·화면 사건과 같은 순간에만. 계속 움직이면 화면 내용보다 눈에 띈다
-- 나오는 장: 롱폼은 미리보기·타이틀·시연 장들·정리(설치·옵션처럼 글이 많은 장은 빼도 됨), 숏폼은 모든 장면. 엔딩 카드에는 넣지 않는다
+- 나오는 장: **엔딩을 뺀 롱폼 모든 장과 숏폼 모든 장면** (2026-11-25 운영자 요청). 엔딩 카드에는 넣지 않는다
 - 말풍선 글자를 넣지 않는다 (✓ ! ? 표시만). 대사처럼 보이면 AI 목소리와 부딪힘
 - `flip` 옵션은 쓰지 않는다 (도장 글자가 뒤집힘)
+
+## 10. 썸네일·블로그 그림 (2026-11-25 운영자 요청 — 영상과 같은 포맷)
+| 파일 | 크기 | 담을 것 |
+|---|---|---|
+| `media/thumbnail.jpg` | 1280×720 | 실제 결과 카드(왼쪽, 살짝 기울임) + 핵심 숫자 도장 1개 + 큰 제목 2줄(핵심 낱말 주황) + 알약 1개 + 영문 이름 + 냥봇 |
+| `media/thumbnail-shorts.jpg` | 1080×1920 | 큰 제목 2줄(위 250px 아래) + 결과 카드 + 도장 + 냥봇 + 영문 이름 (모든 글자 위아래 250px 안쪽) |
+| 블로그 그림 `media/*.png` | 1600×900 | 위 큰 제목 한 줄(요점) + 시연 결과 카드·✓/✗ 알약 + 아래 오른쪽 작은 글씨(날짜·시연 결과·가상 자료) · 냥봇은 자리가 있을 때만 |
+
+순서 (날짜 폴더 `demo/render` 안에서):
+1. `cp ../../../tools/motion/thumb-template.html thumb.html`
+2. `thumbs.js`에 `const THUMBS = { id: { w, h, file, bg, scene: S => { …만들기… return t => { …그리기… } } } }` — 영상 장면과 같은 함수(`M.caption`·`M.qr`·`M.stamp`·`M.pill`·`M.buddy` …)를 쓰되, **모든 움직임이 3초 안에 끝나게** 하거나 처음부터 다 나타난 모습으로 그린다 (`render_thumbs.py`가 3초짜리 장면의 마지막 프레임을 찍음). `pillRender(e, 9, 0, ok)`처럼 큰 시간을 넣으면 다 나타난 모습
+3. `python3 ../../../tools/motion/render_thumbs.py` (또는 그림 id 몇 개만) → `../../media/`에 저장 → 직접 열어 겹침·잘림 확인
+4. 블로그·README의 대체 텍스트(GUIDE 5-2)가 새 그림 내용과 맞는지 확인
+- 견본: `2026-11-24-segno/demo/render/thumbs.js` (썸네일 2장 + 블로그 그림 4장)
+- 냥봇 자세: `nb.render(t, [{ at: 2.4, a: 'point', dir: 'left' }])`처럼 동작 시작을 2.4초 근처에 두면 3초 프레임에서 동작하는 모습이 찍힘
+

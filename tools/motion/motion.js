@@ -259,6 +259,7 @@ const M = (() => {
       if (c.tag) { const tg = el('div', 'tag', { left: px(cfg.V ? 70 : 110), top: px(cfg.V ? 120 : 42) }); const m = c.tag.match(/^(\d+)\s+(.*)$/); tg.innerHTML = m ? `<span class="no">${m[1]}</span><span>${esc(m[2])}</span>` : `<span>${esc(c.tag)}</span>`; }
       const S = { c, layer, dur: c.dur, V: cfg.V, W: cfg.W, H: cfg.H, cue: k => c.cues[Math.min(k, c.cues.length - 1)][0], cueEnd: k => c.cues[Math.min(k, c.cues.length - 1)][1], text: k => c.cues[Math.min(k, c.cues.length - 1)][2] };
       const make = c.id === '__end' ? (S2 => ending(S2, endScene || {})) : (scenes[c.id] || fallback);
+      if (c.id !== '__end' && !scenes[c.id] && !cfg.mode.startsWith('thumb')) console.error('기본 장면(fallback) 사용 — 직접 만들어야 함: ' + c.id);   // 2026-11-25 운영자 요청: 모든 장 직접
       let render; try { render = make(S); } catch (e) { console.error('장면 오류', c.id, e); layer.innerHTML = ''; el('div', 'dots'); render = fallback(S); }
       layer.style.display = 'none';
       return { c, layer, render, trans: o.trans || 'fade' };

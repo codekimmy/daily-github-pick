@@ -178,7 +178,7 @@ py -m pip uninstall segno
 |---|---|
 | `blog.md` · `youtube-long.md` · `shorts.md` | 티스토리 글 · 롱폼 대본 · 숏폼 대본 |
 | `narration-long.txt` · `narration-shorts.txt` (+ `-text.txt`) | 음성용 대본 (구간 시간 + 한글 읽기 / 문장만) |
-| `media/segno-long.mp4` | 롱폼 5:41 (1920×1080, 30fps, 모션 스타일 + 냥봇(GUIDE 5-4), 자막, 음성 없음 — 운영자 음성을 받으면 음성·배경음악 버전을 만듦) |
+| `media/segno-long.mp4` | 롱폼 5:47 (1920×1080, 30fps, 모션 스타일 + 냥봇(GUIDE 5-4), 자막, 음성 없음 — 운영자 음성을 받으면 음성·배경음악 버전을 만듦) |
 | `media/segno-anim.mp4` · `media/segno-anim-vertical.mp4` · `media/segno-anim.gif` | 과정 애니메이션 46.4초 (모션 스타일 + 냥봇, 가로·세로(숏폼용)·README용 GIF, 음성 없음) |
 | `media/wifi-qr.png` · `media/length.png` · `media/cover-test.png` · `media/color-border.png` | 와이파이 QR · 글 길이 비교 · 가림 시험 · 색과 여백 |
 | `media/terminal.gif` · `media/thumbnail.jpg` · `media/thumbnail-shorts.jpg` | 터미널 녹화 · 썸네일 |

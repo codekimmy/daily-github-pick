@@ -461,7 +461,7 @@ SCENES.opts = S => {
 // ---- 10 쓸 곳: 아이콘 카드 3장(0.8초 이상 간격) + 카드 안 QR 찍힘 ----
 SCENES.uses = S => {
   const c = [0, 1, 2].map(S.cue);
-  const caps = capsOf(S, [[['①', '손님용'], ['*와이파이 QR*']], [['②', '명함·안내문에'], ['*연락처 QR*']], [['③', '번호별', 'QR을'], ['*한꺼번에*']]]);
+  const caps = capsOf(S, [[['①', '손님용'], ['*와이파이 QR*', '붙이기']], [['②', '명함·안내문에'], ['*연락처 QR*']], [['③', '번호별', 'QR을'], ['*한꺼번에*']]]);
   const U = [['wifi', '손님용 와이파이', '인쇄해 붙여 두기', MAT.wifi], ['person', '명함 · 안내문', '연락처·신청 주소', MAT.card], ['file', '번호별 QR', '테이블·물품 번호', MAT.short]];
   const cards = U.map((u, i) => { const b = box(110 + i * 500, 340, 460, 560, 'card', { padding: '30px' });
     el('div', null, { marginBottom: '18px' }, b, M.iconTile(u[0], 96)); el('div', null, { fontSize: '44px', fontWeight: '900' }, b, u[1]); el('div', null, { fontSize: '28px', fontWeight: '700', color: '#666', marginBottom: '16px' }, b, u[2]);

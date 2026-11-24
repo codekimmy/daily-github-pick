@@ -16,3 +16,6 @@
 순서: `python3 bench.py` → `python3 mkdata.py` → `python3 build.py` → (demo/render 폴더에서) `python3 ../../../tools/motion/render_motion.py long ../../media/segno-long.mp4` · `… anim ../../media/segno-anim-vertical.mp4 1080 1920` · `… anim ../../media/segno-anim.mp4 1920 1080` → 썸네일·블로그 그림은 `python3 ../../../tools/motion/render_thumbs.py`
 GIF: `ffmpeg -i media/segno-anim.mp4 -vf "fps=8,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=none" media/segno-anim.gif`
 환경: 리눅스, 파이썬 3, segno 1.6.6, zxing-cpp 3.1.1, Pillow, ffmpeg, 한글 글꼴 Noto Sans CJK
+
+## 운영자 음성 입히기 (롱폼, 2026-11-25)
+`voice/split.py ../work/voice-long.mp3 long`(문장 70개로 나눠 실제 길이 → `voice/lengths-long.json`) → `python3 build.py voice`(→ `render/timing-voice.js`, `voice/cues-long.json`, 쉼 최대 1.90초) → `render/`에서 `python3 ../../../tools/motion/render_motion.py long ../work/long-voice-video.mp4 --page page-voice.html` → `python3 voice/place.py 음성.mp3 ../work/long-voice-video.mp4 ../media/segno-long-voice.mp4 long` → `python3 voice/calm_bgm.py 312 ../work/bgm.wav` → `python3 voice/add_bgm.py ../media/segno-long-voice.mp4 ../work/bgm.wav ../media/segno-long-voice-bgm.mp4` (도구는 2026-11-14-noisereduce/demo/voice 를 복사)

@@ -39,15 +39,15 @@ SCENES.preview = S => {
     caps.forEach(c => c.render(t));
     const ti = popIn(t, c0 - .15, .55), tx = out(t, c2 - .3, .45); tf(tm.el, -tx * 1000, (1 - ti) * 400, 1, 0, 1 - tx);
     tm.render(t, [{ at: c0 + .6, text: WIFI_CMD, dur: 2.8 }, { at: c0 + 3.95, kind: 'out', text: '✓ wifi.png 저장 · 29 × 29칸 · 490바이트' }]);
-    const qi = popIn(t, c1 - .8, .5), qo = out(t, e2 + .6, .5);
+    const qi = popIn(t, c1 - .8, .5), qo = 0;   // 음성 길이에 맞춰 장이 짧아져도 결과 화면을 끝까지 유지 (2026-11-25)
     tf(qc, qo * -200, (1 - qi) * -500, 1 - qo * .35, (1 - qi) * 12 + Math.sin(t * 1.3) * .6, qi > 0 ? 1 - qo : 0);
     code.draw(t, { stamp: c1 + .06, dur: 1.9, scan: scanAt(t, c2 + .04) });
     st.render(t, c1 + 2.3, e2 + .6); const cp = popIn(t, c1 + 2.9); tf(chip, qo * -200, (1 - cp) * 30, cp, 0, cp * (1 - qo));
     const kb = popIn(t, c2 + 1.85, .45); tf(okb, qo * -200, 0, kb, 0, kb > 0 ? 1 - qo : 0);
-    const ri = eOut(P(t, c2 + .2, c2 + .7)), ro = out(t, e2 + .55, .45); tf(res, (1 - ri) * -1000 - ro * 1000, 0, 1, 0, ri > 0 ? 1 : 0);
+    const ri = eOut(P(t, c2 + .2, c2 + .7)), ro = 0; tf(res, (1 - ri) * -1000 - ro * 1000, 0, 1, 0, ri > 0 ? 1 : 0);
     rows.forEach((r, i) => { const a = popIn(t, c2 + .7 + i * .8, .4); r.d.style.opacity = Math.min(1, a * 2); r.d.style.transform = `translateX(${(1 - a) * -60}px)`; r.ck.style.transform = `scale(${popIn(t, c2 + 1.0 + i * .8, .4)})`; });
     circ.set(eOut(P(t, c2 + 2.5, c2 + 3.1)), -ro * 1000); hd.render(t, c2 + 2.9, .6, 1e9, -ro * 1000);
-    recap.forEach((r, i) => { const a = popIn(t, e2 + 1.2 + i * .8); tf(r, 0, (1 - a) * 60, a, (1 - a) * -8, Math.min(1, a * 2)); });
+    recap.forEach(r => tf(r, 0, 0, 1, 0, 0));   // 요약 알약은 쓰지 않음 (장 끝이 짧아 끝까지 나타나지 못함)
     nb.render(t, [{ at: c0 + .6, a: 'enter' }, { at: c0 + 1.2, a: 'point', dir: 'left' }, { at: c1 + 2.3 - .35, a: 'stamp' }, { at: c2 + 2.0, a: 'nod' }]);
   };
 };

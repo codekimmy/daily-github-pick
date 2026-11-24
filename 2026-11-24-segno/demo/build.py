@@ -1,8 +1,9 @@
 """segno 대본 → 시간 계산 → render/timing.js + 음성용 대본 4개 (2026-11-23-sharp-cli/demo/build.py를 고쳐 씀).
 대본(화면 자막, 읽는 문장)만 고치고 이 파일을 다시 돌리면 영상 시간과 대본 시간이 같이 바뀐다.
 시간: 문장마다 말하는 시간(공백 뺀 글자 수 ÷ 6.3초, 최소 3초) + 쉼(같은 장 안 1.1초, 장이 바뀔 때 1.4초) — GUIDE 5-1장
-사용: python3 demo/build.py"""
-import json, os, re
+사용: python3 demo/build.py
+      python3 demo/build.py voice   (운영자 음성 voice/lengths-long.json 의 실제 문장 길이로 롱폼만 다시 계산 → render/timing-voice.js, voice/cues-long.json, 2026-11-14 noisereduce 방식)"""
+import json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -16,12 +17,23 @@ def speak(s):
     return max(MIN_CUE, len(re.sub(r"[\s,!?]", "", s)) / CPS)
 
 
-def timing(chapters, end_min=7.0):
-    out, acc = [], 0.0
+VOICE = "voice" in sys.argv
+LEN = json.load(open(os.path.join(HERE, "voice", "lengths-long.json"))) if VOICE else None
+SENT = []  # 음성 모드: 문장마다 [영상 속 시작 초, 길이]
+
+
+def timing(chapters, end_min=7.0, voice=False):
+    out, acc, k = [], 0.0, 0
     for idx, (cid, tag, mind, cues) in enumerate(chapters):
         t, cs = 0.3, []
+        if voice and cid != "end": mind = 0
         for i, (cap, nar) in enumerate(cues):
-            d = sum(speak(x) for x in nar.split("\n")) + JOIN * (nar.count("\n"))
+            if voice:   # 실제 문장 길이 + 문장 사이 쉼 1.1초 (GUIDE 5-1), 자막은 최소 3초
+                ls = LEN[k:k + nar.count("\n") + 1]; k += len(ls); tt = t
+                for x in ls: SENT.append([round(acc + tt, 3), x]); tt += x + JOIN
+                sp = sum(ls) + JOIN * (len(ls) - 1); d = max(sp, min(MIN_CUE, sp + .8))
+            else:
+                d = sum(speak(x) for x in nar.split("\n")) + JOIN * (nar.count("\n"))
             cs.append([round(t, 2), round(t + d, 2), cap, nar])
             t += d + JOIN
         dur = max(mind, t - JOIN + GAP)
@@ -55,6 +67,18 @@ def narration(name, title, video, chs, total, note):
             f.write("\n".join(body) + "\n")
 
 
+if VOICE:
+    L, lt = timing(LONG, voice=True)
+    assert len(SENT) == len(LEN), (len(SENT), len(LEN))
+    json.dump(SENT, open(os.path.join(HERE, "voice", "cues-long.json"), "w"))
+    old = open(os.path.join(HERE, "render", "timing.js"), encoding="utf-8").read().split("const SHORTS = ")[1]
+    with open(os.path.join(HERE, "render", "timing-voice.js"), "w", encoding="utf-8") as f:
+        f.write("const LONG = " + json.dumps(L, ensure_ascii=False) + ";\nconst SHORTS = " + old)
+    narration("long", "롱폼(운영자 음성)", "media/segno-long-voice.mp4", L, lt, "- 구간 시간은 운영자 음성의 실제 문장 길이로 다시 맞춘 값입니다 (demo/voice/lengths-long.json)")
+    gaps = [b[0] - a[0] - a[1] for a, b in zip(SENT, SENT[1:])]
+    print(f"long(voice) {fmt(lt)} 쉼 최대 {max(gaps):.2f}초, 2초 넘는 곳 {sum(g > 2 for g in gaps)}개")
+    for c in L: print(f"  {c['id']:8s} {c['t0']:6.1f} +{c['dur']:5.1f}")
+    sys.exit()
 L, lt = timing(LONG)
 S, st = timing(SHORTS)
 with open(os.path.join(HERE, "render", "timing.js"), "w", encoding="utf-8") as f:

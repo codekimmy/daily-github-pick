@@ -28,7 +28,7 @@ SCENES.preview = S => {
   });
   const circ = pen(circleAround(rows[0].v, 28, 18), 6);
   const vr = rows[0].v.getBoundingClientRect();
-  const hd = hand('← 한글도 그대로 읽힘', vr.right + 46, vr.top + 4, 34);
+  const hd = hand('← 한글 그대로', vr.right + 46, vr.top + 4, 34);
   const qc = box(1150, 150, 640, 640); const code = qr(MAT.wifi, 572, { left: '30px', top: '30px' }, qc);
   const st = stamp('0.06초', 1560, 120, 58);
   const chip = el('div', 'chip', { left: '1340px', top: '830px' }, null, '29 × 29칸');

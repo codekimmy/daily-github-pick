@@ -43,7 +43,7 @@ segno(세그노)는 **QR 스티커 인쇄소**입니다.
 | 그 밖 | `--scale 1` 33픽셀·204바이트(읽힘) · SVG 1,234바이트 · `--dpi 300` 저장 확인 · `-o` 없이 실행하면 명령 창에 QR을 글자로 그림(`--compact` 17줄) · 마이크로 QR(`--micro`) 전화번호 11자리 15 × 15칸(일반 QR 21칸, zxing-cpp는 읽음, 휴대폰 카메라 앱 지원은 확인 못 함) |
 | 막힌 점 | ① 한글 1,000자 → `Data too large` 오류 ② 흰 여백을 없애고 어두운 바탕에 두면 읽기 실패 ③ 와이파이 형식을 명령어로 쓸 때 비밀번호 속 `; , : \ "`는 앞에 `\`를 붙여야 함(형식 규칙, 파이썬 도우미·`.bat`는 자동 처리) ④ `python3 -m segno`는 `No module named segno.__main__` → `-m segno.cli`로 실행 ⑤ 휴대폰 카메라·Windows 실행은 시연하지 않음 |
 
-![segno 과정 애니메이션: 가상 와이파이 QR 칸이 대각선으로 찍혀 나옴 → 0.06초 도장 → 초록 띠로 읽어 이름·비밀번호 확인 → 가운데 10% 가림 시험 L 실패·H 성공 → 설치 명령 순 화면](media/segno-anim.gif)
+![segno 과정 애니메이션: 가상 와이파이 비밀번호에 취소선 → 명령 타이핑과 QR 칸 찍힘·0.06초 도장 → 읽기 띠로 이름·비밀번호 확인 → 가운데 10% 가림 시험 H만 성공 → 설치 명령 순 화면](media/segno-anim.gif)
 
 ![명령 창에서 segno 1.6.6 확인 → 글자로 그린 QR → 가상 와이파이 QR을 0.048초에 wifi.png로 저장 → zxing-cpp로 읽어 우리집_5G 이름과 비밀번호가 그대로 나온 터미널 화면](media/terminal.gif)
 
@@ -178,8 +178,8 @@ py -m pip uninstall segno
 |---|---|
 | `blog.md` · `youtube-long.md` · `shorts.md` | 티스토리 글 · 롱폼 대본 · 숏폼 대본 |
 | `narration-long.txt` · `narration-shorts.txt` (+ `-text.txt`) | 음성용 대본 (구간 시간 + 한글 읽기 / 문장만) |
-| `media/segno-long.mp4` | 롱폼 5:15 (1920×1080, 자막, 음성 없음 — 운영자 음성을 받으면 음성·배경음악 버전을 만듦) |
-| `media/segno-anim.mp4` · `media/segno-anim-vertical.mp4` · `media/segno-anim.gif` | 과정 애니메이션 46.4초 (가로·세로(숏폼용)·README용 GIF, 음성 없음) |
+| `media/segno-long.mp4` | 롱폼 5:15 (1920×1080, 30fps, 모션 스타일 + 냥봇(GUIDE 5-4), 자막, 음성 없음 — 운영자 음성을 받으면 음성·배경음악 버전을 만듦) |
+| `media/segno-anim.mp4` · `media/segno-anim-vertical.mp4` · `media/segno-anim.gif` | 과정 애니메이션 46.4초 (모션 스타일 + 냥봇, 가로·세로(숏폼용)·README용 GIF, 음성 없음) |
 | `media/wifi-qr.png` · `media/length.png` · `media/cover-test.png` · `media/color-border.png` | 와이파이 QR · 글 길이 비교 · 가림 시험 · 색과 여백 |
 | `media/terminal.gif` · `media/thumbnail.jpg` · `media/thumbnail-shorts.jpg` | 터미널 녹화 · 썸네일 |
 | `demo/tools_win/와이파이QR.bat` | Windows용 두 번 눌러 쓰는 실행 파일 (이름·비밀번호를 묻고 `와이파이QR.png` 300dpi 저장) |

@@ -9,8 +9,9 @@
 | `tools_win/와이파이QR.bat` | Windows용: 두 번 누르면 와이파이 이름·비밀번호를 묻고 `segno.helpers.make_wifi`로 `와이파이QR.png`(scale 20, 300dpi) 저장. 안 파이썬 명령은 리눅스에서 같은 방식(환경 변수로 전달, 특수 기호 비밀번호)으로 확인, .bat 자체는 Windows 실행 확인 전 |
 | `mkdata.py` | results.json + segno로 만든 실제 QR 칸 배열 → `render/data.js` (영상·그림은 QR을 칸 배열로 직접 그림) |
 | `script.py` · `build.py` | 롱폼·숏폼 대본(화면 자막 + 읽는 문장) → 말하는 시간(6.3글자/초, 최소 3초) + 쉼(1.1초 · 장 사이 1.4초) → `render/timing.js`, `narration-*.txt` 4개 (2026-11-23-sharp-cli 도구를 고쳐 씀) |
-| `render/` | `engine.js`(그리기 도구 + 엔딩 유의사항) · `scenes.js`(장면, 연출: 도장 배지·가림 시험 ✓/✗ 비교 + 새 연출 'QR 스티커 찍기' `qrDraw`·`scan`) · `page.html` · `render.py` · `thumb.html`·`thumb.py`(썸네일 2장 + 블로그 그림 4장) |
+| `render/` | **2026-11-24 다시 만듦 — 모션 스타일 키트(`tools/motion`, GUIDE 5-4)**: `page.html`(tools/motion/page-template.html 복사) · `scenes.js`(롱폼 14개 장 + 숏폼 5장면 모두 직접 만든 장면, 엔딩 뺀 모든 장에 냥봇) · `timing.js`·`data.js`(그대로) · `render.py`(옛 렌더러, 쓰지 않음) |
+| `render-old/` | 처음 만든 남색 캔버스 버전(`engine.js`·`scenes.js`·`page.html`) 보관 + 썸네일·블로그 그림을 만드는 `thumb.html`·`thumb.py`(이 버전 그리기 도구를 씀) |
 
-순서: `python3 bench.py` → `python3 mkdata.py` → `python3 build.py` → `python3 render/render.py long ../media/segno-long.mp4` · `render/render.py anim ../media/segno-anim.mp4 1920 1080` · `… anim ../media/segno-anim-vertical.mp4 1080 1920` (demo 폴더에서) → `render/thumb.py`
+순서: `python3 bench.py` → `python3 mkdata.py` → `python3 build.py` → (demo/render 폴더에서) `python3 ../../../tools/motion/render_motion.py long ../../media/segno-long.mp4` · `… anim ../../media/segno-anim-vertical.mp4 1080 1920` · `… anim ../../media/segno-anim.mp4 1920 1080` → 썸네일은 `render-old/thumb.py`
 GIF: `ffmpeg -i media/segno-anim.mp4 -vf "fps=8,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=none" media/segno-anim.gif`
 환경: 리눅스, 파이썬 3, segno 1.6.6, zxing-cpp 3.1.1, Pillow, ffmpeg, 한글 글꼴 Noto Sans CJK

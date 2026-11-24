@@ -5,7 +5,7 @@
 const { C, P, eOut, eIO, eBack, lerp, popIn, out, shake, el, box, tf, caption, stamp, hand, pen, ellipsePath, arrowPath, circleAround, count, term, qr, scanAt, pill, pillRender, stars, iconTile, ending } = M;
 const EL = RES.errorlevel.map(e => ({ level: e.level, cover: e.cover, n: MAT['url' + e.level].length }));
 const WIFI_CMD = 'segno "WIFI:T:WPA;S:우리집_5G;P:kimchi2026!;;" -o wifi.png --scale 10';
-const DISCLAIMER = ['정보 제공용 · 2026-11-24 클라우드 시연 결과(운영자 직접 검증 아님) · 와이파이·연락처는 시연용 가상 자료', '휴대폰 카메라·Windows에서는 결과가 다를 수 있음 · 비밀번호 QR은 아는 사람에게만 · 인쇄 전 직접 읽어 확인'];
+const DISCLAIMER = ['정보 제공용 · 2026-11-24 클라우드 시연 결과(운영자 직접 검증 아님) · 와이파이·연락처는 시연용 가상 자료', '휴대폰 기종·Windows에 따라 결과가 다를 수 있음 · 비밀번호 QR은 아는 사람에게만 · 인쇄 전 내 휴대폰으로 읽어 확인'];
 const SCENES = {};
 
 // ======================= 롱폼 (1920×1080) =======================
@@ -14,11 +14,11 @@ SCENES.preview = S => {
   const c0 = S.cue(0), c1 = S.cue(1), c2 = S.cue(2), e2 = S.cueEnd(2);
   const caps = [caption(c0 - .1, c1 - .3, [['가상', '와이파이로'], ['*명령 한 줄*']]),
     caption(c1 - .1, c2 - .3, [['segno가'], ['*0.06초*', '만에', 'QR']]),
-    caption(c2 - .06, e2 + .5, [['다른', '프로그램으로', '읽으니'], ['*그대로*', '나옴']]),
+    caption(c2 - .06, e2 + .5, [['휴대폰', 'QR', '앱으로', '읽어도'], ['*그대로*', '나옴']]),
     caption(e2 + .7, null, [['이 QR을', '만든'], ['*오늘의 오픈소스*']])];
   const tm = term(110, 380, 860, 330);
   const res = box(110, 380, 860, 400, 'card', { overflow: 'hidden' });
-  el('div', null, { background: C.ink, color: '#fff', fontWeight: '800', fontSize: '28px', padding: '16px 30px' }, res, 'zxing-cpp로 읽은 결과');
+  el('div', null, { background: C.ink, color: '#fff', fontWeight: '800', fontSize: '28px', padding: '16px 30px' }, res, 'QR로 읽은 결과');
   const rows = [['와이파이 이름', '우리집_5G'], ['비밀번호', 'kimchi2026!'], ['방식', 'WPA']].map((r, i) => {
     const d = el('div', null, { display: 'flex', alignItems: 'center', padding: '0 30px', height: '96px', borderBottom: i < 2 ? '3px dashed #ddd' : 'none', fontSize: '34px' }, res);
     el('div', null, { width: '250px', color: '#777', fontWeight: '700', fontSize: '28px' }, d, r[0]);
@@ -88,7 +88,7 @@ SCENES.title = S => {
 // ---- 시연 ④: QR 4장(L·M·Q·H) → 가운데 주황 상자 5·10·15% → ✓/✗ 줄 → H만 10% 도장 → 25칸→33칸 + -e H ----
 SCENES.demo4 = S => {
   const c0 = S.cue(0), c1 = S.cue(1), c2 = S.cue(2), c3 = S.cue(3);
-  const caps = [caption(c0, c1 - .2, [['같은', '주소를'], ['*여분 칸*', '네', '단계로']]),
+  const caps = [caption(c0, c1 - .2, [['같은', '주소', 'QR', '4장'], ['*여분 칸*', '양만', '다름']]),
     caption(c1 - .05, c2 - .17, [['가운데를', '*주황 상자*로'], ['가림']]),
     caption(c2 - .02, c3 - .17, [['*H 단계*만'], ['10%까지', '읽힘']]),
     caption(c3 - .02, null, [['대신', '칸이', '늘어남'], ['로고를', '얹을', '때만', '*-e H*']])];
@@ -179,10 +179,10 @@ SCENES.s_what = S => {
 };
 SCENES.s_read = S => {
   const c0 = S.cue(0), c1 = S.cue(1), L = LY(S);
-  const caps = [caption(c0 - .1, c1 - .25, [['다른', '프로그램으로'], ['읽으니', '*그대로*']]), caption(c1 - .1, null, [['연락처도,'], ['*1,000장*도']])];
+  const caps = [caption(c0 - .1, c1 - .25, [['휴대폰', 'QR', '앱으로'], ['읽으니', '*그대로*']]), caption(c1 - .1, null, [['연락처도,'], ['*1,000장*도']])];
   const qs = S.V ? 460 : 480, qc = box(S.V ? (1080 - qs) / 2 : 1080, S.V ? 500 : 340, qs, qs); const nb = NBX(S); const code = qr(MAT.wifi, qs - 50, { left: '25px', top: '25px' }, qc);
   const res = box(L.x, S.V ? 1010 : 380, L.w, 330, 'card', { overflow: 'hidden' });
-  el('div', null, { background: C.ink, color: '#fff', fontWeight: '800', fontSize: '28px', padding: '14px 28px' }, res, 'zxing-cpp로 읽은 결과');
+  el('div', null, { background: C.ink, color: '#fff', fontWeight: '800', fontSize: '28px', padding: '14px 28px' }, res, 'QR로 읽은 결과');
   const rows = [['와이파이 이름', '우리집_5G'], ['비밀번호', 'kimchi2026!']].map((r, i) => { const d = el('div', null, { display: 'flex', alignItems: 'center', padding: '0 28px', height: '120px', fontSize: '38px', borderBottom: i ? 'none' : '3px dashed #ddd' }, res);
     el('div', null, { width: '260px', color: '#777', fontWeight: '700', fontSize: '28px' }, d, r[0]); el('div', 'mono', { fontWeight: '800', flex: '1' }, d, r[1]); el('div', null, { color: C.green, fontSize: '48px', fontWeight: '900' }, d, '✓'); return d; });
   const ch1 = el('div', 'chip', { left: L.x + 'px', top: (S.V ? 1010 : 380) + 'px', fontSize: '40px', padding: '16px 30px' }, null, '👤 연락처 QR ✓');
@@ -301,12 +301,12 @@ SCENES.install = S => {
 // ---- 03 시연 ① 와이파이 QR: 형식 카드 → 명령 타이핑 → QR 찍힘 + 0.06초 → 칸·픽셀·바이트 알약 → 읽는 띠 + 결과 ✓ → 빨간 손글씨 ----
 SCENES.demo1 = S => {
   const c = [0, 1, 2, 3, 4].map(S.cue);
-  const caps = capsOf(S, [[['와이파이', 'QR은'], ['*정해진 형식*']], [['명령', '한', '줄', '→'], ['*' + RES.wifi.sec.toFixed(2) + '초*']], [['*29 × 29칸*'], ['490바이트', 'PNG']], [['다른', '프로그램으로', '읽기'], ['*그대로*', '나옴']], [['휴대폰', '접속은'], ['*확인 못 함*']]]);
+  const caps = capsOf(S, [[['와이파이', 'QR은'], ['*정해진 형식*']], [['명령', '한', '줄', '→'], ['*' + RES.wifi.sec.toFixed(2) + '초*']], [['*29 × 29칸*'], ['490바이트', 'PNG']], [['휴대폰', 'QR', '앱으로', '읽기'], ['*그대로*', '나옴']], [['실제', '와이파이', '접속은'], ['*확인 못 함*']]]);
   const fm = box(110, 340, 860, 140, 'card', { padding: '26px 34px' });
   el('div', 'mono', { fontSize: '40px', fontWeight: '800' }, fm, 'WIFI:T:<b style="color:#FF5A1F">WPA</b>;S:<b style="color:#FF5A1F">이름</b>;P:<b style="color:#FF5A1F">비밀번호</b>;;');
   const tm = term(110, 510, 860, 240, { fs: 28 });
   const res = box(110, 510, 860, 330, 'card', { overflow: 'hidden' });
-  el('div', null, { background: C.ink, color: '#fff', fontWeight: '800', fontSize: '28px', padding: '14px 30px' }, res, 'zxing-cpp로 읽은 결과');
+  el('div', null, { background: C.ink, color: '#fff', fontWeight: '800', fontSize: '28px', padding: '14px 30px' }, res, 'QR로 읽은 결과');
   const rows = [['이름', '우리집_5G'], ['비밀번호', 'kimchi2026!'], ['방식', 'WPA']].map((r, i) => {
     const d = el('div', null, { display: 'flex', alignItems: 'center', padding: '0 30px', height: '88px', borderBottom: i < 2 ? '3px dashed #ddd' : 'none', fontSize: '34px' }, res);
     el('div', null, { width: '220px', color: '#777', fontWeight: '700', fontSize: '28px' }, d, r[0]); el('div', 'mono', { fontWeight: '800', flex: '1' }, d, r[1]);
@@ -314,7 +314,7 @@ SCENES.demo1 = S => {
   const qc = box(1050, 330, 520, 520); const code = qr(MAT.wifi, 460, { left: '30px', top: '30px' }, qc);
   const sec = tagChip('', 1060, 262, { fontSize: '34px' });
   const info = [`29 × 29칸`, `${RES.wifi.px} × ${RES.wifi.px} 픽셀`, `${RES.wifi.bytes}바이트`].map((s, i) => tagChip(s, 1050 + [0, 165, 400][i], 866, { fontSize: '26px' }));
-  const hd = hand('✗ 휴대폰 카메라·실제 접속은 시연에서 확인 못 함', 120, 868, 36, -2);
+  const hd = hand('✗ 실제 와이파이 접속은 확인 못 함 (가상 와이파이)', 120, 868, 36, -2);
   const nb = NB();
   return t => {
     caps.forEach(k => k.render(t));
@@ -477,9 +477,9 @@ SCENES.uses = S => {
 // ---- 11 아쉬운 점: 카드 4장(자막마다) + 빨간 펜 밑줄(②) + 빨간 펜 동그라미(④) ----
 SCENES.cons = S => {
   const c = [0, 1, 2, 3, 4].map(S.cue);
-  const caps = capsOf(S, [[['아쉬운', '점도'], ['*짚어*', '보겠습니다']], [['①', '화면', '없는'], ['*명령어 도구*']], [['②', '형식을'], ['*손으로*', '적어야', '함']], [['③', '휴대폰', '카메라'], ['*확인 못 함*']], [['④', '비밀번호가'], ['QR에', '*그대로*']]]);
-  const K = [['화면 없는 명령어 도구 · 파이썬 따로 설치', '저장소의 와이파이QR.bat는 이름·비밀번호만 물어봄'], ['와이파이 형식을 손으로 적어야 함', '비밀번호 속 ; , : \\ " 는 앞에 \\ (.bat·파이썬 도우미는 자동 처리)'],
-    ['휴대폰 카메라 · 실제 접속은 시연에서 확인 못 함', '읽기 확인은 zxing-cpp 프로그램 기준 · 인쇄 전 내 휴대폰으로 확인'], ['비밀번호가 QR 그림에 그대로 들어감', 'QR을 읽으면 누구나 알 수 있음 → 손님용 네트워크에만']];
+  const caps = capsOf(S, [[['아쉬운', '점도'], ['*짚어*', '보겠습니다']], [['①', '화면', '없는'], ['*명령어 도구*']], [['②', '명령 창에'], ['형식', '*직접 입력*']], [['③', '실제', '접속은'], ['*확인 못 함*']], [['④', '비밀번호가'], ['QR에', '*그대로*']]]);
+  const K = [['화면 없는 명령어 도구 · 파이썬 따로 설치', '저장소의 와이파이QR.bat는 이름·비밀번호만 물어봄'], ['명령 창에 와이파이 형식 글자를 직접 입력해야 함', '비밀번호 속 ; , : \\ " 앞에는 \\ · 와이파이QR.bat는 이름·비밀번호만 물어보고 자동 처리'],
+    ['휴대폰 QR 앱 읽기는 됨 · 실제 접속은 확인 못 함', '시연용 가상 와이파이라 접속 시험 불가 · 인쇄 전 내 휴대폰으로 확인'], ['비밀번호가 QR 그림에 그대로 들어감', 'QR을 읽으면 누구나 알 수 있음 → 손님용 네트워크에만']];
   const cards = K.map((k, i) => { const b = box(110, 330 + i * 150, 1480, 132, 'card', { display: 'flex', alignItems: 'center', gap: '26px', padding: '0 30px' });
     el('div', null, { minWidth: '68px', height: '68px', borderRadius: '16px', background: C.red, color: '#fff', fontWeight: '900', fontSize: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }, b, String(i + 1));
     const tx = el('div', null, {}, b); const h = el('div', null, { fontSize: '36px', fontWeight: '900' }, tx, M.esc(k[0])); el('div', null, { fontSize: '25px', fontWeight: '700', color: '#666' }, tx, M.esc(k[1])); return { b, h }; });

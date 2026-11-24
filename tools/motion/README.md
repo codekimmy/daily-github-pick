@@ -35,7 +35,7 @@
 4. 확인 화면을 찍어 본다 (장마다 '다 나타난 순간' 1장 이상, 전환 순간 1장, 마지막 프레임)
    `python3 ../../../tools/motion/render_motion.py long chk --only 3,10,25,…,last`
    `python3 ../../../tools/motion/render_motion.py anim chk --only 2,10,…,last 1080 1920`
-5. 렌더링
+5. 렌더링 — **매일 예약 작업에서는 하지 않는다. 운영자가 대사 점검·녹음 뒤 요청하는 '영상 제작 단계'(`tools/DAILY_TASK.md` 맨 아래)에서 음성 길이에 맞춰 한 번만 하고, mp4는 커밋하지 않는다 (2026-11-25 운영자 요청)**
    - 롱폼: `python3 ../../../tools/motion/render_motion.py long ../../media/이름-long.mp4`
    - 숏폼 세로: `… anim ../../media/이름-anim-vertical.mp4 1080 1920` / 가로: `… anim ../../media/이름-anim.mp4 1920 1080`
    - 소요(CPU 2개 작업 공간): 롱폼 5분 ≈ 8~9분, 숏폼 45초 ≈ 1분 30초 (한 번에 끝나지 않으면 백그라운드로 돌리고 기다린다)

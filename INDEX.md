@@ -35,3 +35,4 @@
 | 28 | 2026-11-23 | [vseventer/sharp-cli](https://github.com/vseventer/sharp-cli) (속 엔진 [lovell/sharp](https://github.com/lovell/sharp)) | 휴대폰 사진 여러 장을 접고 공기를 빼듯 크기·화질 값으로 줄이고 위치 정보도 빼 주는 무료 '사진 진공 압축팩' | 사진·이미지 | ★★★½☆ | sharp 약 3.3만 (sharp-cli 229) | [바로가기](2026-11-23-sharp-cli/) |
 | 29 | 2026-11-24 | [heuer/segno](https://github.com/heuer/segno) | 와이파이·연락처·주소를 명령 한 줄로 QR 그림으로 찍어 주는 무료 'QR 스티커 인쇄소' (가운데 10% 가림은 H 단계만 읽힘) | 생활·QR | ★★★☆☆ | 822 | [바로가기](2026-11-24-segno/) |
 | 30 | 2026-11-25 | [jrnl-org/jrnl](https://github.com/jrnl-org/jrnl) | 명령 창에 한 줄 쓰면 날짜가 저절로 붙고 @꼬리표·암호까지 되는 무료 '날짜 도장 수첩' (일기·업무 일지) | 기록·일기 | ★★★☆☆ | 약 7,360 | [바로가기](2026-11-25-jrnl/) |
+| 31 | 2026-11-25 | [Pika-Labs/Pika-H3-Flex](https://github.com/Pika-Labs/Pika-H3-Flex) | 글·사진·소리로 소리 붙은 5~15초 영상을 만드는 공개 영상 AI, 공식 확인 H100 80GB 1장·480p 5초 GPU 메모리 약 66~69GiB, 모델 라이선스 제외 지역에 대한민국 포함 | 영상·AI 생성 | 사양체크 | 1.6k | [바로가기](2026-11-25-spec-Pika-H3-Flex/) |

@@ -2,7 +2,7 @@
 
 | 파일 | 하는 일 |
 |---|---|
-| `bench.py` | 빈 가상 환경 설치 시간·함께 설치되는 프로그램 → 처음 실행 질문 3개 → ① 한 줄 쓰기·날짜 말(yesterday·날짜·last monday·한글 '어제') ② 꼬리표·별표·글자·기간 찾기, `--tags` ③ md·JSON·txt 내보내기 ④ `--encrypt`(pexpect로 암호 입력) 후 파일 모양·틀린 암호 3번·맞는 암호 ⑤ 일기장 여러 개 ⑥ 가상 일기 10년치 3,650개 찾기 시간 → `results.json`. HOME을 `/tmp/jrnl-bench/…`로 바꿔 실제 설정과 섞이지 않게 함. 일기·암호는 모두 시연용 가상 자료 |
+| `bench.py` | 빈 가상 환경 설치 시간·함께 설치되는 프로그램 → 처음 실행 질문 3개 → ① 한 줄 쓰기·날짜 표현(yesterday·날짜·last monday·한글 '어제') ② 꼬리표·별표·글자·기간 찾기, `--tags` ③ md·JSON·txt 내보내기 ④ `--encrypt`(pexpect로 암호 입력) 후 파일 모양·틀린 암호 3번·맞는 암호 ⑤ 일기장 여러 개 ⑥ 가상 일기 10년치 3,650개 찾기 시간 → `results.json`. HOME을 `/tmp/jrnl-bench/…`로 바꿔 실제 설정과 섞이지 않게 함. 일기·암호는 모두 시연용 가상 자료 |
 | `demo.sh` | 터미널 녹화용 (`tools/record_terminal.sh demo/demo.sh media/terminal.gif`, 날짜 폴더에서) |
 | `tools_win/한줄일기.bat` | Windows용: 두 번 누르면 한 줄을 묻고 `jrnl.main.run([글])`로 저장(글은 환경 변수로 넘겨 `& % "`도 그대로) → 최근 5개 표시. 안 파이썬 명령은 리눅스에서 같은 방식으로 확인, .bat 자체는 Windows 실행 확인 전 |
 | `mkdata.py` | results.json → `render/data.js` (RES) |

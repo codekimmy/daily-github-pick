@@ -209,7 +209,7 @@ SCENES.demo2 = S => {
 // ---- 05 시연 ③: 일기 → 마크다운 문서 카드(연도·월 제목) + 파일 3개 크기 막대 → 메모장 journal.txt ----
 SCENES.demo3 = S => {
   const c = [0, 1, 2, 3].map(S.cue);
-  const caps = capsOf(S, [[['--format', 'md'], ['→', '*마크다운 파일*']], [['md', '·', 'JSON', '·'], ['*글자 파일*']], [['연도·달', '제목이'], ['*저절로*']], [['원본도', '*메모장*으로'], ['열림']]]);
+  const caps = capsOf(S, [[['--format', 'md'], ['→', '*마크다운 파일*']], [['md', '·', 'JSON', '·'], ['*텍스트 파일*']], [['연도·달', '제목이'], ['*저절로*']], [['원본도', '*메모장*으로'], ['열림']]]);
   const tm = term(110, 330, 780, 190, { fs: 28 });
   const md = box(110, 560, 780, 360, 'card', { padding: '26px 34px', fontFamily: '"DejaVu Sans Mono", monospace' });
   const ML = [['# 2026', 1], ['## November', 2], ['### 2026-11-16 15:00 팀 회의 메모.', 3], ['@회의 다음 주 금요일까지 보고서', 0], ['### 2026-11-20 19:00 친구 생일 파티.', 3]];
@@ -280,7 +280,7 @@ SCENES.demo5 = S => {
   let sd = 25; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
   const hit = Array.from({ length: 3650 }, () => rnd() < BIG.contains.n / 3650), day = Array.from({ length: 3650 }, (_, i) => (i % 365) === 363);
   const cnt = el('div', null, { position: 'absolute', left: '1250px', top: '340px', fontSize: '96px', fontWeight: '900', lineHeight: '1' }, null, '0');
-  const cl = el('div', null, { position: 'absolute', left: '1254px', top: '450px', fontSize: '30px', fontWeight: '800', color: '#666' }, null, '개 · 285KB 글자 파일');
+  const cl = el('div', null, { position: 'absolute', left: '1254px', top: '450px', fontSize: '30px', fontWeight: '800', color: '#666' }, null, '개 · 285KB 텍스트 파일');
   const fnd = el('div', null, { position: 'absolute', left: '1250px', top: '540px', fontSize: '96px', fontWeight: '900', color: C.orange, lineHeight: '1', textShadow: '4px 4px 0 #141414' }, null, '0');
   const fl = el('div', null, { position: 'absolute', left: '1254px', top: '650px', fontSize: '30px', fontWeight: '800', color: '#666' }, null, "개 · '떡볶이'");
   const st = stamp(f2(BIG.contains.sec) + '초', 1290, 700, 54);
@@ -342,8 +342,8 @@ SCENES.uses = S => {
 // ---- 10 아쉬운 점: 카드 4장 + 빨간 펜 밑줄(②) + 동그라미(④) ----
 SCENES.cons = S => {
   const c = [0, 1, 2, 3, 4].map(S.cue);
-  const caps = capsOf(S, [[['아쉬운', '점도'], ['*짚어*', '보겠습니다']], [['①', '화면', '없는'], ['*명령어 도구*']], [['②', '날짜', '말은'], ['*영어만*']], [['③', '상자', '화면에서'], ['*한글 줄 어긋남*']], [['④', '암호를', '잊으면'], ['*끝*', '· 백업 필수']]]);
-  const K = [['화면 없는 명령어 도구 · 휴대폰 앱 없음', '저장소의 한줄일기.bat는 한 줄만 물어보고 저장'], ["날짜 말은 영어만 · 'last monday' → 11월 16일(9일 전)", "한글 '어제:'는 제목 글자로 남음 · 날짜는 2026-11-20 처럼 숫자로 쓰면 확실"],
+  const caps = capsOf(S, [[['아쉬운', '점도'], ['*짚어*', '보겠습니다']], [['①', '명령어로만'], ['*쓰는 도구*']], [['②', '날짜', '표현은'], ['*영어만*']], [['③', '상자', '화면에서'], ['*한글 줄 어긋남*']], [['④', '암호를', '잊으면'], ['*끝*', '· 백업 필수']]]);
+  const K = [['버튼·창 없이 명령어로만 쓰는 도구 · 휴대폰 앱 없음', '저장소의 한줄일기.bat는 한 줄만 물어보고 저장'], ["날짜 표현은 영어만 · 'last monday' → 11월 16일(9일 전)", "한글 '어제:'는 제목 글자로 남음 · 날짜는 2026-11-20 처럼 숫자로 쓰면 확실"],
     ['꾸민 상자 화면(--format fancy) · 꼬리표 표에서 한글 줄 어긋남', '기본 화면·마크다운 내보내기는 한글 그대로'], ['암호를 잊으면 되살릴 방법 없음', '일기 파일(journal.txt)을 따로 백업 · 암호는 따로 적어 두기']];
   const cards = K.map((k, i) => { const b = box(110, 330 + i * 150, 1480, 132, 'card', { display: 'flex', alignItems: 'center', gap: '26px', padding: '0 30px' });
     el('div', null, { minWidth: '68px', height: '68px', borderRadius: '16px', background: C.red, color: '#fff', fontWeight: '900', fontSize: '38px', display: 'flex', alignItems: 'center', justifyContent: 'center' }, b, String(i + 1));

@@ -72,7 +72,7 @@ const THUMBS = {
     const st = stamp(f2(BIG.contains.sec) + '초', 1180, 170, 64, -9);
     const P2 = [[`@운동 꼬리표 ${BIG.tag.n}개`, BIG.tag.sec], [`2020년 일기 ${BIG.year.n}개`, BIG.year.sec], [`별표 일기 ${BIG.starred.n}개`, BIG.starred.sec], [`해마다 오늘 ${BIG.today_in_history.n}개`, BIG.today_in_history.sec]];
     P2.forEach((p, i) => pillOn(pill(`${p[0]} · ${f2(p[1])}초`, true, 1130, 300 + i * 80, 420, 60), true));
-    chip(`글자 파일 ${Math.round(BIG.file_bytes / 1000)}KB · CPU 2개 클라우드`, 70, 730, { fontSize: '28px' });
+    chip(`텍스트 파일 ${Math.round(BIG.file_bytes / 1000)}KB · CPU 2개 클라우드`, 70, 730, { fontSize: '28px' });
     foot(); return t => { cap.render(t); st.render(t, 0); };
   } },
   // ---- 블로그 그림: 암호 자물쇠 ----

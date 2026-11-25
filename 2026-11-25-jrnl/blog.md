@@ -92,7 +92,7 @@ jrnl은 **날짜 도장 수첩**입니다.
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">운영체제</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">Windows 10·11</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">필요한 프로그램</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">파이썬 <b>3.11~3.14</b> (3.13 권장 · 3.15는 jrnl 4.6 설치 조건 밖)</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">따로 설치할 것</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">없음 (편집기로 길게 쓰고 싶으면 Notepad++·VS Code 선택)</td></tr>
-<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">설치 크기</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">약 27MB (리눅스 시연 측정, 함께 설치되는 프로그램 22개 · Windows는 목록이 조금 다를 수 있음)</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">설치 크기</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">약 27MB (리눅스 시연 측정, jrnl이 안에서 쓰는 보조 프로그램 포함, 따로 실행할 일 없음 · Windows는 보조 프로그램 목록이 조금 다를 수 있음)</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">화면</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">화면 없는 명령어 도구 (명령 프롬프트에서 사용) · 저장소의 <code>한줄일기.bat</code>는 두 번 눌러 씀</td></tr>
 </tbody>
 </table>

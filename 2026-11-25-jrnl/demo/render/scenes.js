@@ -126,10 +126,10 @@ SCENES.what = S => {
     nb.render(t, [{ at: c[0] + .4, a: 'enter' }, { at: c[1] + .6, a: 'stamp' }, { at: c[2] + 1.0, a: 'point', dir: 'left' }, { at: c[3] + .6, a: 'nod' }]);
   };
 };
-// ---- 02 설치: 파이썬 카드 → 명령 타이핑 → 3.32초 카운트 + 22개 → 질문 3개 카드(Enter) ----
+// ---- 02 설치: 파이썬 카드 → 명령 타이핑 → 3.32초 카운트 + 보조 프로그램 자동 설치 → 질문 3개 카드(Enter) ----
 SCENES.install = S => {
   const c = [0, 1, 2, 3].map(S.cue);
-  const caps = capsOf(S, [[['먼저', '*파이썬*'], ['3.11 ~ 3.14']], [['명령', '창에'], ['*설치 한 줄*']], [['*' + f2(RES.install.sec) + '초*', '설치'], ['함께', RES.install.others + '개']], [['처음엔', '*질문 3개*'], ['모르면', 'Enter']]]);
+  const caps = capsOf(S, [[['먼저', '*파이썬*'], ['3.11 ~ 3.14']], [['명령', '창에'], ['*설치 한 줄*']], [['*' + f2(RES.install.sec) + '초*', '설치'], ['보조 프로그램', '자동 설치']], [['처음엔', '*질문 3개*'], ['모르면', 'Enter']]]);
   const py = box(110, 340, 600, 300, 'card', { padding: '34px' });
   el('div', null, { fontSize: '46px', fontWeight: '900' }, py, 'python.org');
   el('div', null, { fontSize: '30px', fontWeight: '700', color: '#666', margin: '10px 0 26px' }, py, '파이썬 3.13 받기 (3.11~3.14)');
@@ -137,7 +137,7 @@ SCENES.install = S => {
   const ckb = ck.querySelector('span');
   const tm = term(760, 340, 840, 300, { fs: 30 });
   const sec = el('div', null, { position: 'absolute', left: '110px', top: '690px', fontSize: '110px', fontWeight: '900', color: C.orange, textShadow: '4px 4px 0 #141414' }, null, '0.00초');
-  const sub = el('div', 'chip', { left: '110px', top: '840px', fontSize: '30px' }, null, `함께 설치 ${RES.install.others}개 · 약 ${Math.round(RES.install.mb)}MB`);
+  const sub = el('div', 'chip', { left: '110px', top: '840px', fontSize: '30px' }, null, `보조 프로그램 자동 설치 · 약 ${Math.round(RES.install.mb)}MB`);
   const Q = ['일기 파일 위치?  → Enter (기본 위치)', '암호 걸기? [y/N]  → Enter (안 걸기)', '색 쓰기? [Y/n]  → Enter'];
   const qs = Q.map((q, i) => { const b = box(760, 680 + i * 84, 840, 70, 'card', { display: 'flex', alignItems: 'center', padding: '0 24px', fontSize: '28px', fontWeight: '800' }); b.innerHTML = `<span style="color:${C.orange};margin-right:14px">Q${i + 1}</span>` + M.esc(q); return b; });
   const nb = NB();

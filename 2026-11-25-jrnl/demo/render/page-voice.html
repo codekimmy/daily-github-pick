@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<!-- 날짜 폴더 demo/render/page.html 로 복사해서 쓴다. ?mode=long (롱폼 1920×1080) | ?mode=anim&w=1080&h=1920 (숏폼·과정 애니메이션 세로) | ?mode=anim&w=1920&h=1080 (가로) -->
+<link rel="stylesheet" href="../../../tools/motion/motion.css">
+<script src="../../../tools/motion/motion.js"></script><script src="../../../tools/motion/buddy.js"></script>
+<script src="timing-voice.js"></script><script src="data.js"></script><script src="scenes.js"></script>
+</head><body>
+<script>
+const MODE = new URLSearchParams(location.search).get('mode') || 'long';
+M.run({
+  chapters: MODE === 'long' ? LONG : SHORTS,
+  scenes: SCENES,
+  opts: { title: { trans: 'dots' } },                 // 장별 배경색·전환: { 장id: { bg:'#E3EDF8', trans:'dots' } } (기본: 바탕 5색 차례, 크로스페이드 0.6초)
+  extraEnd: MODE === 'long' ? 0 : 6,                  // 과정 애니메이션은 끝에 엔딩 카드 6초 (기존 규칙)
+  endScene: { name: 'jrnl · 날짜 도장 수첩', disclaimer: DISCLAIMER },
+  disclaimer: DISCLAIMER,
+  brand: ''                                            // 오른쪽 위 채널 이름을 넣으려면 글자를 적음
+});
+</script></body></html>

@@ -270,10 +270,10 @@ SCENES.demo4 = S => {
     nb.render(t, [{ at: c[0] + .4, a: 'enter' }, { at: c[1] + .6 - .35, a: 'stamp' }, { at: c[3] + .4, a: 'oops' }, { at: c[4] + .5, a: 'pen' }]);
   };
 };
-// ---- 07 시연 ⑤: 달력 10칸 × 365점이 차오름(3,650개) → '떡볶이' 칸만 노랑 461개 + 0.34초 → 결과 알약 → 해마다 오늘 9개 ----
+// ---- 07 시연 ⑤: 달력 10칸 × 365점이 차오름(3,650개) → '떡볶이'라고 적힌 날 칸만 노랑 461개 + 0.34초 → 결과 알약 → 해마다 오늘 9개 ----
 SCENES.demo5 = S => {
   const c = [0, 1, 2, 3].map(S.cue);
-  const caps = capsOf(S, [[['가상', '일기'], ['*10년치*', '3,650개']], [["'떡볶이'", '찾기'], ['*' + f2(BIG.contains.sec) + '초*']], [['꼬리표·연도·별표도'], ['*0.3초대*']], [['해마다', '*오늘*'], ['쓴', '일기만']]]);
+  const caps = capsOf(S, [[['가상', '일기'], ['*10년치*', '3,650개']], [["'떡볶이'", '적힌', '날만'], ['*' + f2(BIG.contains.sec) + '초*']], [['꼬리표·연도·별표도'], ['*0.3초대*']], [['해마다', '*오늘*'], ['쓴', '일기만']]]);
   const gd = box(110, 330, 1100, 590, 'card', { padding: '24px 28px' });
   const cv = el('canvas', null, { position: 'absolute', left: '90px', top: '24px' }, gd); cv.width = 980; cv.height = 540; const g = cv.getContext('2d');
   for (let y = 0; y < 10; y++) el('div', null, { position: 'absolute', left: '18px', top: (34 + y * 54) + 'px', fontSize: '22px', fontWeight: '800', color: '#777' }, gd, (y + 1) + '년');

@@ -4,7 +4,7 @@
 thumbnail.jpg → jrnl 썸네일: 날짜 도장이 찍힌 가상 일기 카드 3장과 0.15초 도장, '명령 창 한 줄로 일기 끝'·'10년치 찾기 0.34초' 글자
 terminal.gif → jrnl 터미널 시연: 한 줄 일기 2개 쓰기 → @점심 꼬리표로 1개 찾기 → --tags로 꼬리표 4개 횟수 → 별표 일기 → 마크다운 파일 내보내기 순으로 바뀌는 명령 창 화면
 write-tags.png → jrnl 한 줄 쓰기 0.15초와 @점심 꼬리표 찾기 결과 그림: 가상 일기 4개 중 김치찌개 일기 1개만 남고, --tags 표에 꼬리표 6개가 1번씩 표시된 화면
-ten-years.png → jrnl로 가상 일기 10년치 3,650개에서 '떡볶이'라고 적힌 날 461개를 0.34초에 골라낸 결과 그림, @운동 607개·2020년 366개·별표 118개·해마다 오늘 9개 결과 알약 포함
+ten-years.png → jrnl로 가상 일기 10년치 3,650개에서 '떡볶이'로 검색해 떡볶이를 쓴 날 461개가 0.34초 만에 나온 결과 그림, @운동 607개·2020년 366개·별표 118개·해마다 오늘 9개 결과 알약 포함
 encrypt.png → jrnl 암호 자물쇠 결과 그림: 잠그기 전 432바이트 글자 파일이 0.45초 만에 JRNLv3로 시작하는 732바이트 알 수 없는 글자로 바뀌고, 틀린 암호 3번이면 멈춘 화면
 -->
 # jrnl이란? 명령 창 한 줄로 쓰는 무료 일기장·업무 일지 사용법 총정리 (설치법 포함)
@@ -12,7 +12,7 @@ encrypt.png → jrnl 암호 자물쇠 결과 그림: 잠그기 전 432바이트 
 > **한 줄 요약** — 명령 창에 글을 한 줄 쓰면 날짜·시간을 붙여 저장하고, 꼬리표·날짜·글자로 다시 찾아 주는 무료 일기장 프로그램입니다.
 > ⭐ 7,363 (2026-11-25 확인) · 무료 오픈소스 · GPL-3.0 라이선스
 
-> **일반인 쓸모 ★★★☆☆ (3)** — 명령 창에 한 줄 쓰면 날짜가 붙어 0.15초 만에 저장됐고, 가상 일기 10년치 3,650개에서 특정 낱말이 적힌 날만 골라내는 데도 0.34초였습니다. 암호 자물쇠도 됩니다. 다만 화면 없는 명령어 도구이고 휴대폰 앱이 없어, PC 앞에서 기록하는 사람에게만 쓸 일이 많아 별 세 개입니다.
+> **일반인 쓸모 ★★★☆☆ (3)** — 명령 창에 한 줄 쓰면 날짜가 붙어 0.15초 만에 저장됐고, 가상 일기 10년치 3,650개에서 낱말로 검색해 그 낱말을 쓴 날들이 나오는 데도 0.34초였습니다. 암호 자물쇠도 됩니다. 다만 화면 없는 명령어 도구이고 휴대폰 앱이 없어, PC 앞에서 기록하는 사람에게만 쓸 일이 많아 별 세 개입니다.
 > **이걸로 할 수 있는 것**
 > 1. **업무 일지·회의 메모**를 명령 한 줄로 남기고 `@회의` 꼬리표로 모아 본다 (시연: 평균 0.15초)
 > 2. **한 줄 일기·가계부 메모**를 쌓고 "해마다 오늘 쓴 일기"를 꺼내 본다 (시연: 가상 10년치에서 9개, 0.32초)
@@ -67,7 +67,7 @@ jrnl은 **날짜 도장 수첩**입니다.
 <tr><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">찾은 것</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">명령</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">개수</th><th style="border: 1px solid #bbbbbb; padding: 6px 10px; background-color: #f3f3f3; text-align: left;">시간</th></tr>
 </thead>
 <tbody>
-<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">'떡볶이'라고 적힌 날</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>-contains 떡볶이</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">461개</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">0.34초</td></tr>
+<tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">'떡볶이'로 검색 → 떡볶이를 쓴 날</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>-contains 떡볶이</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">461개</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">0.34초</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>@운동</code> 꼬리표</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>@운동</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">607개</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">0.34초</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">2020년 일기</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>-year 2020</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">366개</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">0.33초</td></tr>
 <tr><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">별표 일기</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;"><code>-starred</code></td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">118개</td><td style="border: 1px solid #bbbbbb; padding: 6px 10px;">0.33초</td></tr>
@@ -76,7 +76,7 @@ jrnl은 **날짜 도장 수첩**입니다.
 </tbody>
 </table>
 
-[이미지: ten-years.png | 대체 텍스트: jrnl로 가상 일기 10년치 3,650개에서 '떡볶이'라고 적힌 날 461개를 0.34초에 골라낸 결과 그림, @운동 607개·2020년 366개·별표 118개·해마다 오늘 9개 결과 알약 포함]
+[이미지: ten-years.png | 대체 텍스트: jrnl로 가상 일기 10년치 3,650개에서 '떡볶이'로 검색해 떡볶이를 쓴 날 461개가 0.34초 만에 나온 결과 그림, @운동 607개·2020년 366개·별표 118개·해마다 오늘 9개 결과 알약 포함]
 
 **아쉬운 점** — 화면 없는 명령어 도구이고 휴대폰 앱이 없습니다. 꾸민 상자 화면(`--format fancy`)과 `--tags` 표에서는 한글 줄이 어긋났습니다(기본 화면·마크다운 내보내기는 한글 그대로). 처음 실행 때 질문 3개(영어)에 답해야 합니다.
 

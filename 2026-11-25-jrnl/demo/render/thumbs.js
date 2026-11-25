@@ -18,7 +18,7 @@ function entry(x, y, w, date, title, body, o = {}) {   // scenes.js 의 일기 �
   if (o.dim) { b.style.opacity = .4; b.style.filter = 'grayscale(1)'; }
   return b;
 }
-function grid(x, y, w, h, hitCol = C.orange) {   // 10년 × 365일 칸 ('떡볶이'라고 적힌 날 주황)
+function grid(x, y, w, h, hitCol = C.orange) {   // 10년 × 365일 칸 (떡볶이를 쓴 날 주황)
   const b = box(x, y, w, h, 'card', { padding: '18px' }); const cv = el('canvas', null, { position: 'absolute', left: '18px', top: '18px' }, b);
   cv.width = w - 36; cv.height = h - 36; const g = cv.getContext('2d'); let sd = 25; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
   const cw = cv.width / 365, rh = cv.height / 10;

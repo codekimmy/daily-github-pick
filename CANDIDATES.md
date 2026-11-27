@@ -26,7 +26,7 @@
 |  | li-plus/seam-carving | 사물은 그대로 두고 사진 비율만 줄이기 | 중국 | 119 | pip `seam-carving` | 800→500px 23초 | 사진 가운데만 쏙 | ★3 |
 | ✅ Day 28 | lovell/sharp (sharp-cli) | 사진 용량 줄이기·WebP 변환 | 영국 | 3.3만 | npm `sharp-cli` | 0.29초, 21.7KB→1.9KB (11/23 재확인: sharp-cli 6.1.0·sharp 0.35.4, 설치 약 3.5초·32개·37.7MB, 가상 사진 6장 16.5→1.64MB 0.49초, WebP 1.01·AVIF 0.52(11.9초)·PNG 23.3MB, WebP 화질 95→20 480→28KB, 위치 정보 기본 삭제(-m 유지), 세로 사진은 --autoOrient 없으면 누움, -o 원본 폴더면 묻지 않고 덮어씀, HEIC 실패, 파일 이름 [ ] → No input files, 60장 165→10.1MB 7.53초) | 용량 10분의 1 | ★3 |
 | ✅ Day 23 | ImageOptim/gifski | 영상·사진을 고화질 GIF로 | 영국 | 5.7천 | crates `gifski` | 빌드 100초, 변환 0.4~0.8초 (11/19 재확인: 1.34.0, 빌드 39초, cargo 기본 설치는 mp4 직접 못 읽음 → `ffmpeg -f yuv4mpegpipe - \| gifski -o x.gif -`, 노을 5초 영상 ffmpeg 기본 5.2MB·팔레트 3.1MB·gifski 1.4MB(SSIM 0.954 최고), 커피잔 사진 영상 팔레트 9.9MB→gifski 5.6MB(SSIM은 0.947>0.894), 화면 녹화는 팔레트 58KB<gifski 98KB, -W 320 -r 10 -Q 70 → 0.95MB, Windows는 winget ImageOptim.gifski 화면 프로그램 1.14.4) | GIF가 이렇게 선명? | ★4 |
-|  | cedricbonhomme/Stegano | 사진 속에 비밀 글 숨기기 | 룩셈부르크 | 594 | pip `stegano` | 0.4초. 한글은 `-e UTF-32LE` 필요 | 이 사진엔 편지가 숨어 있다 | ★3 |
+| ✅ Day 34 | cedricbonhomme/Stegano | 사진 속에 비밀 글 숨기기 | 룩셈부르크 | 594 | pip `stegano` | 0.4초. 한글은 `-e UTF-32LE` 필요 (11/28 재확인: 3.0.0, 설치 2.93초·함께 설치되는 프로그램 6개 384.4MB(opencv-python 301MB), 한글은 기본 UTF-8로 됨, 숨기기 0.22초·꺼내기 0.17초·바뀐 점 0.02%·색 번호 최대 1칸, JPG 95·100 다시 저장·1% 줄이기·위쪽 자르기 → 사라짐, -o .jpg는 오류 없이 꺼낼 수 없음, 같은 이름 묻지 않고 덮어씀, 1280×720에 한글 11만 5천 자) | 이 사진엔 편지가 숨어 있다 | ★3 |
 |  | sepandhaghighi/samila | 수학 공식으로 추상화 그리기 | 이란 | 1.2천 | pip `samila` | 6~12초 | 시드 하나가 세상에 하나뿐인 그림 | ★3 |
 |  | oxipng/oxipng · sharkdp/pastel | PNG 무손실 압축 · 색 섞기 계산기 | 커뮤니티·독일 | 4.3천·6.5천 | crates | 성공 | 단독으로는 약함 | ★2 |
 

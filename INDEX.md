@@ -39,3 +39,4 @@
 | 32 | 2026-11-26 | [jgm/pandoc](https://github.com/jgm/pandoc) | 메모장에 쓴 글을 명령 한 줄로 워드·파워포인트·전자책으로 옮겨 적는 무료 '문서 통역사' (HWP 안 됨 · PDF는 typst 따로) | 문서·변환 | ★★★½☆ | 약 4.7만 | [바로가기](2026-11-26-pandoc/) |
 | 33 | 2026-11-27 | [TotallyNotChase/glitch-this](https://github.com/TotallyNotChase/glitch-this) | 멀쩡한 그림을 명령 한 줄로 지직거리는 고장 화면·움직이는 GIF로 만드는 무료 '일부러 고장 낸 텔레비전' (파이썬 먼저 · 줄무늬는 밝기 절반) | 사진·재미 | ★★½☆☆ | 1,797 | [바로가기](2026-11-27-glitch-this/) |
 | 34 | 2026-11-28 | [cedricbonhomme/Stegano](https://github.com/cedricbonhomme/Stegano) | 그림 속 색 번호 끝자리에 쪽지를 숨기고 다시 꺼내는 무료 '투명 잉크 편지' (숨기기일 뿐 암호화 아님 · JPG로 바꾸면 쪽지 사라짐) | 보안·숨기기 | ★★½☆☆ | 594 | [바로가기](2026-11-28-stegano/) |
+| 35 | 2026-11-28 | [MiniMax-AI/MiniMax-H3-Image](https://github.com/MiniMax-AI/MiniMax-H3-Image) | 글·참고 그림으로 약 1,600만 화소 그림을 만들고 고치는 공개 그림 AI, 공식 최소 VRAM 표기 없음 · 공식 예시는 80GB 그래픽카드에서 번갈아 올려 최고 약 65GB · 모델 라이선스 제외 지역에 대한민국 포함 | 이미지·AI 생성 | 사양체크 | 477 | [바로가기](2026-11-28-spec-MiniMax-H3-Image/) |

@@ -1,0 +1,177 @@
+{
+ "install": {
+  "venv_sec": 2.463,
+  "pip_sec": 1.362,
+  "rc": 0,
+  "packages": {
+   "glitch_this": "1.0.3",
+   "numpy": "2.5.5",
+   "pillow": "13.0.0",
+   "pip": "26.2.2"
+  },
+  "site_mb": 83.9,
+  "self_kb": 36.6,
+  "python": "3.13.18"
+ },
+ "offline": {
+  "rc": 0,
+  "sec": 0.429,
+  "made": true,
+  "cached": false,
+  "version_line": false
+ },
+ "online": {
+  "rc": 0,
+  "sec": 0.229,
+  "cached": true,
+  "out": [
+   "Glitched Image saved in \"온라인.png\"",
+   "Time taken to glitch: 0.024394750595092773",
+   "Time taken to save: 0.01771688461303711",
+   "Total Time taken: 0.042112112045288086",
+   "Current version: 1.0.3 | Latest version: 1.0.3"
+  ],
+  "cache_file": "site-packages/glitch_this/version.info"
+ },
+ "levels": {
+  "1": {
+   "sec": 0.185,
+   "rc": 0,
+   "kb": 31.3,
+   "changed_pct": 0.4
+  },
+  "5": {
+   "sec": 0.169,
+   "rc": 0,
+   "kb": 31.0,
+   "changed_pct": 7.8
+  },
+  "10": {
+   "sec": 0.177,
+   "rc": 0,
+   "kb": 31.1,
+   "changed_pct": 9.7
+  }
+ },
+ "default_name": {
+  "rc": 0,
+  "file": [
+   "glitched_겨울바다.png"
+  ],
+  "msg": "Current version: 1.0.3 | Latest version: 1.0.3"
+ },
+ "color": {
+  "sec": 0.159,
+  "rc": 0,
+  "changed_pct": 11.6,
+  "bright": 161,
+  "bright_orig": 161
+ },
+ "scan": {
+  "sec": 0.166,
+  "rc": 0,
+  "changed_pct": 53.9,
+  "bright": 81,
+  "bright_orig": 161
+ },
+ "both": {
+  "sec": 0.171,
+  "rc": 0,
+  "changed_pct": 55.8,
+  "bright": 81,
+  "bright_orig": 161
+ },
+ "seed": {
+  "same_seed_identical": true,
+  "no_seed_identical": false
+ },
+ "gif": {
+  "sec": 1.409,
+  "rc": 0,
+  "frames": 23,
+  "duration_ms": 200,
+  "help_says": "centiseconds",
+  "kb": 333,
+  "msg": "Current version: 1.0.3 | Latest version: 1.0.3"
+ },
+ "gif_short": {
+  "sec": 0.677,
+  "frames": 10,
+  "duration_ms": 100,
+  "kb": 129
+ },
+ "gif_seed": {
+  "frames": 1,
+  "duration_ms": 4600
+ },
+ "gif_in": {
+  "sec": 0.183,
+  "rc": 0,
+  "frames": 3,
+  "src_frames": 3
+ },
+ "jpg": {
+  "sec": 0.166,
+  "rc": 0,
+  "fmt": "JPEG",
+  "src_exif": 2,
+  "out_exif": 0,
+  "src_kb": 84,
+  "out_kb": 77
+ },
+ "ext_ignored": {
+  "rc": 0,
+  "files": [
+   "바꿈.png"
+  ]
+ },
+ "big": {
+  "sec": 0.441,
+  "rc": 0,
+  "mp": 12
+ },
+ "big_gif": {
+  "sec": 11.59,
+  "rc": 0,
+  "frames": 10,
+  "mb": 0.5
+ },
+ "batch20": {
+  "sec": 3.9,
+  "files": 20
+ },
+ "lib": {
+  "sec": 0.127,
+  "rc": 0,
+  "made": true
+ },
+ "errors": {
+  "exists": {
+   "rc": 1,
+   "err": "Exception: lv5.png already exists / Cannot overwrite existing file unless -f or --force is included / Program Aborted",
+   "out": ""
+  },
+  "level": {
+   "rc": 1,
+   "err": "ValueError: glitch_amount parameter must be a positive number in range 0.1 to 10.0, inclusive",
+   "out": ""
+  },
+  "missing": {
+   "rc": 1,
+   "err": "FileNotFoundError: No image found at given path",
+   "out": ""
+  },
+  "gif_noflag": {
+   "rc": 1,
+   "err": "Exception: File format not supported - must be a non-animated image file",
+   "out": ""
+  },
+  "space": {
+   "rc": 2,
+   "err": "glitch_this: error: argument Glitch_Level: invalid float value: '바다.png'"
+  },
+  "space_quoted": {
+   "rc": 0
+  }
+ }
+}

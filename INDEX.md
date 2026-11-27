@@ -37,3 +37,4 @@
 | 30 | 2026-11-25 | [jrnl-org/jrnl](https://github.com/jrnl-org/jrnl) | 명령 창에 한 줄 쓰면 날짜가 저절로 붙고 @꼬리표·암호까지 되는 무료 '날짜 도장 수첩' (일기·업무 일지) | 기록·일기 | ★★★☆☆ | 약 7,360 | [바로가기](2026-11-25-jrnl/) |
 | 31 | 2026-11-25 | [Pika-Labs/Pika-H3-Flex](https://github.com/Pika-Labs/Pika-H3-Flex) | 글·사진·소리로 소리 붙은 5~15초 영상을 만드는 공개 영상 AI, 공식 확인 H100 80GB 1장·480p 5초 GPU 메모리 약 66~69GiB, 모델 라이선스 제외 지역에 대한민국 포함 | 영상·AI 생성 | 사양체크 | 1.6k | [바로가기](2026-11-25-spec-Pika-H3-Flex/) |
 | 32 | 2026-11-26 | [jgm/pandoc](https://github.com/jgm/pandoc) | 메모장에 쓴 글을 명령 한 줄로 워드·파워포인트·전자책으로 옮겨 적는 무료 '문서 통역사' (HWP 안 됨 · PDF는 typst 따로) | 문서·변환 | ★★★½☆ | 약 4.7만 | [바로가기](2026-11-26-pandoc/) |
+| 33 | 2026-11-27 | [TotallyNotChase/glitch-this](https://github.com/TotallyNotChase/glitch-this) | 멀쩡한 그림을 명령 한 줄로 지직거리는 고장 화면·움직이는 GIF로 만드는 무료 '일부러 고장 낸 텔레비전' (파이썬 먼저 · 줄무늬는 밝기 절반) | 사진·재미 | ★★½☆☆ | 1,797 | [바로가기](2026-11-27-glitch-this/) |
